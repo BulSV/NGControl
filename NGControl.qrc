@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/elisat.png</file>
+        <file>Resources/left.png</file>
+        <file>Resources/right.png</file>
+        <file>Resources/NGControl.png</file>
+    </qresource>
+</RCC>
