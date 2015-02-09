@@ -154,6 +154,7 @@ Dialog::Dialog(QWidget *parent) :
     connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(cbPortChanged()));
     connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(cbPortChanged()));
     connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
+    connect(bSetTemp, SIGNAL(clicked()), this, SLOT(writeTemp()));
     connect(itsBlinkTimeColor, SIGNAL(timeout()), this, SLOT(colorIsRx()));
     connect(itsBlinkTimeNone, SIGNAL(timeout()), this, SLOT(colorNoneRx()));
     connect(itsTimeToDisplay, SIGNAL(timeout()), this, SLOT(display()));
@@ -248,6 +249,16 @@ void Dialog::received(bool isReceived)
             itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
         }
     }
+}
+
+void Dialog::writeTemp()
+{
+    QMultiMap<QString, QString> dataTemp;
+
+    dataTemp.insert("CODE", "0");
+    dataTemp.insert("TEMP", QString::number(lcdSetTemp->value()));
+    itsProtocol->setDataToWrite(dataTemp);
+    itsProtocol->writeData();
 }
 
 void Dialog::setColorLCD(QLCDNumber *lcd, bool isHeat)

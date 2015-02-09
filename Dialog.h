@@ -67,6 +67,7 @@ private slots:
     void closePort();
     void cbPortChanged();
     void received(bool isReceived);
+    void writeTemp();
     // мигание надписи "Rx" при получении пакета
     void colorNoneRx();
     void colorIsRx();

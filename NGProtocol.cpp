@@ -1,5 +1,9 @@
 #include "NGProtocol.h"
 
+#ifdef DEBUG
+#include <QDebug>
+#endif
+
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
 #define BYTESLENTH 8
@@ -74,7 +78,7 @@ void NGProtocol::writeData()
     QByteArray ba;
 
     ba.append(STARTBYTE);
-    ba.append(itsWriteData.value("CODE"));
+    ba.append(itsWriteData.value("CODE").toInt());
     ba.append(intToByteArray(itsWriteData.value("TEMP").toInt(), 2).at(0));
     ba.append(intToByteArray(itsWriteData.value("TEMP").toInt(), 2).at(1));
     ba.append('\0');
@@ -83,6 +87,8 @@ void NGProtocol::writeData()
     ba.append(STOPBYTE);
 
     itsComPort->setWriteData(ba);
+    for(int i = 0; i < ba.size(); ++i)
+    qDebug() << "ba =" << (int)ba.at(i);
     itsComPort->writeData();
 }
 
