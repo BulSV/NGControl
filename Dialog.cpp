@@ -28,7 +28,8 @@
 #define FORMAT 'f'
 #define PRECISION 2
 
-#define BLINKTIME 500 // ms
+#define BLINKTIMETX 200 // ms
+#define BLINKTIMERX 500 // ms
 #define DISPLAYTIME 100 // ms
 
 Dialog::Dialog(QWidget *parent) :
@@ -55,8 +56,10 @@ Dialog::Dialog(QWidget *parent) :
         itsComPort(new ComPort(itsPort, ComPort::READ, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
         itsProtocol(new NGProtocol(itsComPort, this)),
         itsStatusBar (new QStatusBar(this)),
-        itsBlinkTimeNone(new QTimer(this)),
-        itsBlinkTimeColor(new QTimer(this)),
+        itsBlinkTimeTxNone(new QTimer(this)),
+        itsBlinkTimeRxNone(new QTimer(this)),
+        itsBlinkTimeTxColor(new QTimer(this)),
+        itsBlinkTimeRxColor(new QTimer(this)),
         itsTimeToDisplay(new QTimer(this))
 {
     setLayout(new QVBoxLayout(this));
@@ -135,8 +138,10 @@ Dialog::Dialog(QWidget *parent) :
 
     itsStatusBar->show();
 
-    itsBlinkTimeNone->setInterval(BLINKTIME);
-    itsBlinkTimeColor->setInterval(BLINKTIME);
+    itsBlinkTimeTxNone->setInterval(BLINKTIMETX);
+    itsBlinkTimeRxNone->setInterval(BLINKTIMERX);
+    itsBlinkTimeTxColor->setInterval(BLINKTIMETX);
+    itsBlinkTimeRxColor->setInterval(BLINKTIMERX);
     itsTimeToDisplay->setInterval(DISPLAYTIME);
 
     QList<QLCDNumber*> list;
@@ -155,8 +160,10 @@ Dialog::Dialog(QWidget *parent) :
     connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(cbPortChanged()));
     connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
     connect(bSetTemp, SIGNAL(clicked()), this, SLOT(writeTemp()));
-    connect(itsBlinkTimeColor, SIGNAL(timeout()), this, SLOT(colorIsRx()));
-    connect(itsBlinkTimeNone, SIGNAL(timeout()), this, SLOT(colorNoneRx()));
+    connect(itsBlinkTimeTxColor, SIGNAL(timeout()), this, SLOT(colorIsTx()));
+    connect(itsBlinkTimeRxColor, SIGNAL(timeout()), this, SLOT(colorIsRx()));
+    connect(itsBlinkTimeTxNone, SIGNAL(timeout()), this, SLOT(colorTxNone()));
+    connect(itsBlinkTimeRxNone, SIGNAL(timeout()), this, SLOT(colorRxNone()));
     connect(itsTimeToDisplay, SIGNAL(timeout()), this, SLOT(display()));
 
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
@@ -217,8 +224,10 @@ void Dialog::openPort()
 void Dialog::closePort()
 {
     itsPort->close();
-    itsBlinkTimeNone->stop();
-    itsBlinkTimeColor->stop();
+    itsBlinkTimeTxNone->stop();
+    itsBlinkTimeTxColor->stop();
+    itsBlinkTimeRxNone->stop();
+    itsBlinkTimeRxColor->stop();
     lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
     lRx->setStyleSheet("background: red; font: bold; font-size: 10pt");
     bPortStop->setEnabled(false);
@@ -235,8 +244,8 @@ void Dialog::cbPortChanged()
 void Dialog::received(bool isReceived)
 {
     if(isReceived) {
-        if(!itsBlinkTimeColor->isActive() && !itsBlinkTimeNone->isActive()) {
-            itsBlinkTimeColor->start();
+        if(!itsBlinkTimeRxColor->isActive() && !itsBlinkTimeRxNone->isActive()) {
+            itsBlinkTimeRxColor->start();
             lRx->setStyleSheet("background: green; font: bold; font-size: 10pt");
         }
 
@@ -257,10 +266,20 @@ void Dialog::writeTemp()
 {
     QMultiMap<QString, QString> dataTemp;
 
+    if(!itsBlinkTimeTxColor->isActive() && !itsBlinkTimeTxNone->isActive()) {
+        itsBlinkTimeTxColor->start();
+        lTx->setStyleSheet("background: green; font: bold; font-size: 10pt");
+    }
+
     dataTemp.insert("CODE", "0");
     dataTemp.insert("TEMP", QString::number(lcdSetTemp->value()));
     itsProtocol->setDataToWrite(dataTemp);
     itsProtocol->writeData();
+}
+
+void Dialog::colorTxNone()
+{
+    itsBlinkTimeTxNone->stop();
 }
 
 void Dialog::setColorLCD(QLCDNumber *lcd, bool isHeat)
@@ -309,16 +328,22 @@ QString &Dialog::addTrailingZeros(QString &str, int prec)
 }
 
 void Dialog::colorIsRx()
-{
-    lTx->setStyleSheet("background: none; font: bold; font-size: 10pt");
+{    
     lRx->setStyleSheet("background: none; font: bold; font-size: 10pt");
-    itsBlinkTimeColor->stop();
-    itsBlinkTimeNone->start();
+    itsBlinkTimeRxColor->stop();
+    itsBlinkTimeRxNone->start();
 }
 
-void Dialog::colorNoneRx()
+void Dialog::colorRxNone()
 {
-    itsBlinkTimeNone->stop();
+    itsBlinkTimeRxNone->stop();
+}
+
+void Dialog::colorIsTx()
+{
+    lTx->setStyleSheet("background: none; font: bold; font-size: 10pt");
+    itsBlinkTimeTxColor->stop();
+    itsBlinkTimeTxNone->start();
 }
 
 void Dialog::display()

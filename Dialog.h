@@ -58,8 +58,10 @@ class Dialog : public QDialog
     QString &addTrailingZeros(QString &str, int prec);
 
     QStatusBar *itsStatusBar;
-    QTimer *itsBlinkTimeNone;
-    QTimer *itsBlinkTimeColor;
+    QTimer *itsBlinkTimeTxNone;
+    QTimer *itsBlinkTimeRxNone;
+    QTimer *itsBlinkTimeTxColor;
+    QTimer *itsBlinkTimeRxColor;
     QTimer *itsTimeToDisplay;
 
 private slots:
@@ -69,7 +71,9 @@ private slots:
     void received(bool isReceived);
     void writeTemp();
     // мигание надписи "Rx" при получении пакета
-    void colorNoneRx();
+    void colorTxNone();
+    void colorRxNone();
+    void colorIsTx();
     void colorIsRx();
     void display();
 public:

@@ -46,16 +46,12 @@ QMultiMap<QString, QString> NGProtocol::getReadedData() const
 
 void NGProtocol::readData(bool isReaded)
 {
-    itsReadData.clear();
-
-    qDebug() << "Readed data";
+    itsReadData.clear();    
 
     if(isReaded) {
         QByteArray ba;
 
-        ba = itsComPort->getReadData();
-
-        qDebug() << "Readed data:" << ba.toInt();
+        ba = itsComPort->getReadData();        
 
         itsReadData.insert(QString("CODE"), QString(ba.at(1)));
         itsReadData.insert(QString("SENS1"),
@@ -83,8 +79,11 @@ void NGProtocol::writeData()
     ba.append(STOPBYTE);
 
     itsComPort->setWriteData(ba);
-    for(int i = 0; i < ba.size(); ++i)
-    qDebug() << "ba =" << (int)ba.at(i);
+#ifdef DEBUG
+    for(int i = 0; i < ba.size(); ++i) {
+        qDebug() << "ba =" << (int)ba.at(i);
+    }
+#endif
     itsComPort->writeData();
 }
 
