@@ -71,19 +71,6 @@ Dialog::Dialog(QWidget *parent) :
     lRx->setAlignment(Qt::AlignCenter);
     lRx->setMargin(2);
 
-    QGridLayout *gridUp = new QGridLayout;
-    gridUp->addWidget(lPort, 0, 0);
-    gridUp->addWidget(cbPort, 0, 1);
-    gridUp->addWidget(lBaud, 1, 0);
-    gridUp->addWidget(cbBaud, 1, 1);
-    // помещаю логотип фирмы
-    gridUp->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 2, 2, 5);
-    gridUp->addWidget(bPortStart, 2, 1);
-    gridUp->addWidget(bPortStop, 2, 2);
-    gridUp->addWidget(lTx, 2, 3);
-    gridUp->addWidget(lRx, 2, 4);
-    gridUp->setSpacing(5);
-
     QGridLayout *gridTemp = new QGridLayout;
     gridTemp->addWidget(lcdSetTemp, 0, 0, 1, 3);
     gridTemp->addWidget(bDownTemp, 1, 0);
@@ -101,9 +88,19 @@ Dialog::Dialog(QWidget *parent) :
     gbSensors->setLayout(gridInfo);
 
     QGridLayout *grid = new QGridLayout;
-    grid->addItem(gridUp, 0, 0, 1, 2);
-    grid->addWidget(gbSetTemp, 1, 0);
-    grid->addWidget(gbSensors, 1, 1);
+    grid->addWidget(lPort, 0, 0);
+    grid->addWidget(cbPort, 0, 1);
+    grid->addWidget(lBaud, 1, 0);
+    grid->addWidget(cbBaud, 1, 1);
+    // пещаю логотип фирмы
+    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 2, 2, 5);
+    grid->addWidget(bPortStart, 2, 1);
+    grid->addWidget(bPortStop, 2, 2);
+    grid->addWidget(lTx, 2, 3);
+    grid->addWidget(lRx, 2, 4);
+    grid->addWidget(gbSetTemp, 3, 0, 1, 2);
+    grid->addWidget(gbSensors, 3, 2, 1, 3);
+    grid->setSpacing(5);
 
     layout()->addItem(grid);
     layout()->addWidget(itsStatusBar);
@@ -166,7 +163,7 @@ Dialog::Dialog(QWidget *parent) :
 }
 
 Dialog::~Dialog()
-{    
+{
     itsPort->close();
 }
 
@@ -197,9 +194,9 @@ void Dialog::openPort()
         itsPort->setFlowControl(QSerialPort::NoFlowControl);
 
         itsStatusBar->showMessage(QString::fromUtf8("Port: ") +
-                             QString(itsPort->portName()) +                             
+                             QString(itsPort->portName()) +
                              QString::fromUtf8(" | Baud: ") +
-                             QString(QString::number(itsPort->baudRate())) +                             
+                             QString(QString::number(itsPort->baudRate())) +
                              QString::fromUtf8(" | Data bits: ") +
                              QString(QString::number(itsPort->dataBits())));
         bPortStart->setEnabled(false);
