@@ -17,6 +17,7 @@
 #include <QLCDNumber>
 #include "ComPort.h"
 #include "IProtocol.h"
+#include "NGProtocol.h"
 
 class Dialog : public QDialog
 {
@@ -29,7 +30,7 @@ class Dialog : public QDialog
     QPushButton *bPortStart;
     QPushButton *bPortStop;
     QLabel *lTx;
-    QLabel *lRx;    
+    QLabel *lRx;
 
     QLCDNumber *lcdSetTemp;
     QLCDNumber *lcdSensor1Termo;

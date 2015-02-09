@@ -53,7 +53,7 @@ Dialog::Dialog(QWidget *parent) :
         gbSensors(new QGroupBox(QString::fromUtf8("Info"), this)),
         itsPort(new QSerialPort(this)),
         itsComPort(new ComPort(itsPort, ComPort::READ, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
-//        itsProtocol(new ReadSensorProtocol(itsComPort, this)),
+        itsProtocol(new NGProtocol(itsComPort, this)),
         itsStatusBar (new QStatusBar(this)),
         itsBlinkTimeNone(new QTimer(this)),
         itsBlinkTimeColor(new QTimer(this)),
@@ -153,7 +153,7 @@ Dialog::Dialog(QWidget *parent) :
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
     connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(cbPortChanged()));
     connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(cbPortChanged()));
-//    connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
+    connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
     connect(itsBlinkTimeColor, SIGNAL(timeout()), this, SLOT(colorIsRx()));
     connect(itsBlinkTimeNone, SIGNAL(timeout()), this, SLOT(colorNoneRx()));
     connect(itsTimeToDisplay, SIGNAL(timeout()), this, SLOT(display()));
@@ -222,7 +222,7 @@ void Dialog::closePort()
     lRx->setStyleSheet("background: red; font: bold; font-size: 10pt");
     bPortStop->setEnabled(false);
     bPortStart->setEnabled(true);
-//    itsProtocol->resetProtocol();
+    itsProtocol->resetProtocol();
 }
 
 void Dialog::cbPortChanged()
@@ -233,21 +233,21 @@ void Dialog::cbPortChanged()
 
 void Dialog::received(bool isReceived)
 {
-//    if(isReceived) {
-//        if(!itsBlinkTimeColor->isActive() && !itsBlinkTimeNone->isActive()) {
-//            itsBlinkTimeColor->start();
-//            lRx->setStyleSheet("background: green; font: bold; font-size: 10pt");
-//        }
+    if(isReceived) {
+        if(!itsBlinkTimeColor->isActive() && !itsBlinkTimeNone->isActive()) {
+            itsBlinkTimeColor->start();
+            lRx->setStyleSheet("background: green; font: bold; font-size: 10pt");
+        }
 
-//        if(!itsTimeToDisplay->isActive()) {
-//            itsTimeToDisplay->start();
-//        }
+        if(!itsTimeToDisplay->isActive()) {
+            itsTimeToDisplay->start();
+        }
 
-//        QList<QString> strKeysList = itsProtocol->getReadedData().keys();
-//        for(int i = 0; i < itsProtocol->getReadedData().size(); ++i) {
-//            itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
-//        }
-//    }
+        QList<QString> strKeysList = itsProtocol->getReadedData().keys();
+        for(int i = 0; i < itsProtocol->getReadedData().size(); ++i) {
+            itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
+        }
+    }
 }
 
 void Dialog::setColorLCD(QLCDNumber *lcd, bool isHeat)

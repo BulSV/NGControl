@@ -39,12 +39,14 @@ else {
 HEADERS += \
     ComPort.h \
     IProtocol.h \
-    Dialog.h
+    Dialog.h \
+    NGProtocol.h
 
 SOURCES += \
     ComPort.cpp \
     Dialog.cpp \
-    main.cpp
+    main.cpp \
+    NGProtocol.cpp
 
 RESOURCES += \
     NGControl.qrc
