@@ -48,24 +48,20 @@ void NGProtocol::readData(bool isReaded)
 {
     itsReadData.clear();
 
+    qDebug() << "Readed data";
+
     if(isReaded) {
         QByteArray ba;
 
         ba = itsComPort->getReadData();
 
-        for(int i = 1, sensor = static_cast<int>(NGProtocol::CPU); i < BYTESLENTH - 1; i += 2, ++sensor) {
-            if(sensor != static_cast<int>(NGProtocol::CPU)) {
-                itsReadData.insert(sensorToString(static_cast<NGProtocol::SENSORS>(sensor)),
-                                   QString::number(tempCorr(tempSensors(wordToInt(ba.mid(i, 2))),
-                                                            static_cast<NGProtocol::SENSORS>(sensor)),
-                                                   FORMAT, PRECISION));
-            } else {
-                itsReadData.insert(sensorToString(static_cast<NGProtocol::SENSORS>(sensor)),
-                                   QString::number(tempCorr(tempCPU(wordToInt(ba.mid(i, 2))),
-                                                            NGProtocol::CPU),
-                                                   FORMAT, PRECISION));
-            }
-        }
+        qDebug() << "Readed data:" << ba.toInt();
+
+        itsReadData.insert(QString("CODE"), QString(ba.at(1)));
+        itsReadData.insert(QString("SENS1"),
+                           QString::number(tempCorr(tempSensors(wordToInt(ba.mid(2, 2))), SENSOR1), FORMAT, PRECISION));
+        itsReadData.insert(QString("SENS2"),
+                           QString::number(tempCorr(tempSensors(wordToInt(ba.mid(4, 2))), SENSOR2), FORMAT, PRECISION));
 
         emit DataIsReaded(true);
     } else {
@@ -201,10 +197,10 @@ QString NGProtocol::sensorToString(NGProtocol::SENSORS sensor)
         return "CPU";
         break;
     case SENSOR1:
-        return "SENSOR1";
+        return "SENS1";
         break;
     case SENSOR2:
-        return "SENSOR2";
+        return "SENS2";
         break;
     default:
         return "CPU";
