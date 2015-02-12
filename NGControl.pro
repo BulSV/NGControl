@@ -40,13 +40,17 @@ HEADERS += \
     ComPort.h \
     IProtocol.h \
     Dialog.h \
-    NGProtocol.h
+    NGProtocol.h \
+    RewindButton.h \
+    SpinBox.h
 
 SOURCES += \
     ComPort.cpp \
     Dialog.cpp \
     main.cpp \
-    NGProtocol.cpp
+    NGProtocol.cpp \
+    RewindButton.cpp \
+    SpinBox.cpp
 
 RESOURCES += \
     NGControl.qrc
