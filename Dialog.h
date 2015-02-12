@@ -42,8 +42,6 @@ class Dialog : public QDialog
     QLabel *lSensor2;
 
     QPushButton *bSetTemp;
-//    QPushButton *bDownTemp;
-//    QPushButton *bUpTemp;
 
     QGroupBox *gbSetTemp;
     QGroupBox *gbSensors;

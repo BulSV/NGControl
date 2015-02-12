@@ -88,6 +88,7 @@ Dialog::Dialog(QWidget *parent) :
     gridInfo->addWidget(lcdSensor1Termo, 0, 1);
     gridInfo->addWidget(lSensor2, 1, 0);
     gridInfo->addWidget(lcdSensor2Termo, 1, 1);
+    gridInfo->addItem(new QSpacerItem(bSetTemp->width(), bSetTemp->height()), 2, 0, 2, 2);
     gridInfo->setSpacing(5);
 
     gbSetTemp->setLayout(gridTemp);
