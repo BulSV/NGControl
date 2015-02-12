@@ -76,7 +76,7 @@ QByteArray ComPort::getWriteData() const
 
 void ComPort::writeData()
 {
-    if(itsComMode != READ) {
+    if(itsComMode != READ && itsPort->isOpen()) {
         itsPort->write(itsWriteData);
         emit DataIsWrited(true);
         emit WritedData(itsWriteData);

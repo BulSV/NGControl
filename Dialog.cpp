@@ -245,8 +245,16 @@ void Dialog::closePort()
 
 void Dialog::cbPortChanged()
 {
-    bPortStart->setEnabled(true);
+    itsPort->close();
+    itsBlinkTimeTxNone->stop();
+    itsBlinkTimeTxColor->stop();
+    itsBlinkTimeRxNone->stop();
+    itsBlinkTimeRxColor->stop();
+    lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
+    lRx->setStyleSheet("background: red; font: bold; font-size: 10pt");
     bPortStop->setEnabled(false);
+    bPortStart->setEnabled(true);
+    itsProtocol->resetProtocol();
 }
 
 void Dialog::received(bool isReceived)
@@ -272,17 +280,19 @@ void Dialog::received(bool isReceived)
 
 void Dialog::writeTemp()
 {
-    QMultiMap<QString, QString> dataTemp;
+    if(itsPort->isOpen()) {
+        QMultiMap<QString, QString> dataTemp;
 
-    if(!itsBlinkTimeTxColor->isActive() && !itsBlinkTimeTxNone->isActive()) {
-        itsBlinkTimeTxColor->start();
-        lTx->setStyleSheet("background: green; font: bold; font-size: 10pt");
+        if(!itsBlinkTimeTxColor->isActive() && !itsBlinkTimeTxNone->isActive()) {
+            itsBlinkTimeTxColor->start();
+            lTx->setStyleSheet("background: green; font: bold; font-size: 10pt");
+        }
+
+        dataTemp.insert("CODE", "0");
+        dataTemp.insert("TEMP", QString::number(sbSetTemp->value()));
+        itsProtocol->setDataToWrite(dataTemp);
+        itsProtocol->writeData();
     }
-
-    dataTemp.insert("CODE", "0");
-    dataTemp.insert("TEMP", QString::number(sbSetTemp->value()));
-    itsProtocol->setDataToWrite(dataTemp);
-    itsProtocol->writeData();
 }
 
 void Dialog::colorTxNone()
