@@ -5,13 +5,11 @@
 #include <QTimer>
 
 #include "RewindButton.h"
+#include "CustomSpinBox.h"
 
 class SpinBox : public QWidget
 {
-    Q_OBJECT
-    QSpinBox *sbInput;
-    RewindButton *bDown;
-    RewindButton *bUp;
+    Q_OBJECT   
 public:
     explicit SpinBox(const QIcon &iconDown,
                      const QIcon &iconUp,
@@ -37,6 +35,12 @@ signals:
     void downButtonReleased();
     void upButtonPressed();
     void upButtonReleased();
+private slots:
+    void ButtonsReleasedFocus();
+private:
+    CustomSpinBox *sbInput;
+    RewindButton *bDown;
+    RewindButton *bUp;
 };
 
 #endif // SPINBOX_H

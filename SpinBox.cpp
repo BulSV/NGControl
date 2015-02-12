@@ -1,5 +1,6 @@
 #include "SpinBox.h"
 #include <QGridLayout>
+#include <QLineEdit>
 
 SpinBox::SpinBox(const QIcon &iconDown,
                  const QIcon &iconUp,
@@ -8,11 +9,11 @@ SpinBox::SpinBox(const QIcon &iconDown,
                  int timeToRewind,
                  QWidget *parent)
     : QWidget(parent)
-    , sbInput(new QSpinBox(this))
+    , sbInput(new CustomSpinBox(this))
     , bDown(new RewindButton(iconDown, textDown, timeToRewind, this))
     , bUp(new RewindButton(iconUp, textUp, timeToRewind, this))
 {
-    sbInput->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    sbInput->setButtonSymbols(QAbstractSpinBox::NoButtons);    
 
     QGridLayout *grid = new QGridLayout(this);
     grid->addWidget(sbInput, 0, 0, 1, 2);
@@ -27,9 +28,11 @@ SpinBox::SpinBox(const QIcon &iconDown,
 
     connect(bDown, SIGNAL(mousePressed()), this, SIGNAL(downButtonPressed()));
     connect(bDown, SIGNAL(mouseReleased()), this, SIGNAL(downButtonReleased()));
+    connect(bDown, SIGNAL(mouseReleased()), this, SLOT(ButtonsReleasedFocus()));
 
     connect(bUp, SIGNAL(mousePressed()), this, SIGNAL(upButtonPressed()));
     connect(bUp, SIGNAL(mouseReleased()), this, SIGNAL(upButtonReleased()));
+    connect(bUp, SIGNAL(mouseReleased()), this, SLOT(ButtonsReleasedFocus()));
 }
 
 SpinBox::SpinBox(const QString &textDown,
@@ -37,11 +40,11 @@ SpinBox::SpinBox(const QString &textDown,
                  int timeToRewind,
                  QWidget *parent)
     : QWidget(parent)
-    , sbInput(new QSpinBox(this))
+    , sbInput(new CustomSpinBox(this))
     , bDown(new RewindButton(textDown, timeToRewind, this))
     , bUp(new RewindButton(textUp, timeToRewind, this))
 {
-    sbInput->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    sbInput->setButtonSymbols(QAbstractSpinBox::NoButtons);    
 
     QGridLayout *grid = new QGridLayout(this);
     grid->addWidget(sbInput, 0, 0, 1, 2);
@@ -56,9 +59,11 @@ SpinBox::SpinBox(const QString &textDown,
 
     connect(bDown, SIGNAL(mousePressed()), this, SIGNAL(downButtonPressed()));
     connect(bDown, SIGNAL(mouseReleased()), this, SIGNAL(downButtonReleased()));
+    connect(bDown, SIGNAL(mouseReleased()), sbInput, SLOT(deselectSB()));
 
     connect(bUp, SIGNAL(mousePressed()), this, SIGNAL(upButtonPressed()));
     connect(bUp, SIGNAL(mouseReleased()), this, SIGNAL(upButtonReleased()));
+    connect(bUp, SIGNAL(mouseReleased()), sbInput, SLOT(deselectSB()));
 }
 
 void SpinBox::setIconDownButton(const QIcon &icon)
@@ -84,6 +89,11 @@ void SpinBox::setTextUpButton(const QString &text)
 void SpinBox::setValue(const int &value)
 {
     sbInput->setValue(value);
+}
+
+void SpinBox::ButtonsReleasedFocus()
+{
+    sbInput->setFocus();
 }
 
 void SpinBox::setRange(const int &min, const int &max)
