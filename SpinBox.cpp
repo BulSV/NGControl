@@ -1,6 +1,5 @@
 #include "SpinBox.h"
 #include <QGridLayout>
-#include <QLineEdit>
 
 SpinBox::SpinBox(const QIcon &iconDown,
                  const QIcon &iconUp,
@@ -9,7 +8,7 @@ SpinBox::SpinBox(const QIcon &iconDown,
                  int timeToRewind,
                  QWidget *parent)
     : QWidget(parent)
-    , sbInput(new CustomSpinBox(this))
+    , sbInput(new QSpinBox(this))
     , bDown(new RewindButton(iconDown, textDown, timeToRewind, this))
     , bUp(new RewindButton(iconUp, textUp, timeToRewind, this))
 {
@@ -40,7 +39,7 @@ SpinBox::SpinBox(const QString &textDown,
                  int timeToRewind,
                  QWidget *parent)
     : QWidget(parent)
-    , sbInput(new CustomSpinBox(this))
+    , sbInput(new QSpinBox(this))
     , bDown(new RewindButton(textDown, timeToRewind, this))
     , bUp(new RewindButton(textUp, timeToRewind, this))
 {
