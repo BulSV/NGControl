@@ -58,7 +58,7 @@ Dialog::Dialog(QWidget *parent) :
         gbSetTemp(new QGroupBox(QString::fromUtf8("Temperature"), this)),
         gbSensors(new QGroupBox(QString::fromUtf8("Info"), this)),
         itsPort(new QSerialPort(this)),
-        itsComPort(new ComPort(itsPort, ComPort::READWRITE, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
+        itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
         itsProtocol(new NGProtocol(itsComPort, this)),
         itsStatusBar (new QStatusBar(this)),
         itsBlinkTimeTxNone(new QTimer(this)),
@@ -182,7 +182,7 @@ void Dialog::openPort()
     itsPort->close();
     itsPort->setPortName(cbPort->currentText());
 
-    if(itsPort->open(QSerialPort::ReadOnly))
+    if(itsPort->open(QSerialPort::ReadWrite))
     {
         switch (cbBaud->currentIndex()) {
         case 0:

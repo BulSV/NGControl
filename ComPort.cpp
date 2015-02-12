@@ -1,20 +1,14 @@
-#ifdef DEBUG
-#include <QDebug>
-#endif
-
 #include "ComPort.h"
 #include <QApplication>
 #include <QTime>
 
 ComPort::ComPort(QSerialPort *port,
-                 ComPort::COMMODE comMode,
                  int startByte,
                  int stopByte,
                  int packetLenght,
                  QObject *parent)
     : QObject(parent),
       itsPort(port),
-      itsComMode(comMode),
       itsStartByte(startByte),
       itsStopByte(stopByte),
       itsPacketLenght(packetLenght),
@@ -28,7 +22,7 @@ ComPort::ComPort(QSerialPort *port,
 
 void ComPort::readData()
 {
-    if(itsComMode != WRITE) {
+    if(itsPort->openMode() != QSerialPort::WriteOnly) {
         QByteArray buffer;
 
         if(itsPort->bytesAvailable() > 0) {
@@ -76,7 +70,7 @@ QByteArray ComPort::getWriteData() const
 
 void ComPort::writeData()
 {
-    if(itsComMode != READ && itsPort->isOpen()) {
+    if(itsPort->openMode() != QSerialPort::ReadOnly && itsPort->isOpen()) {
         itsPort->write(itsWriteData);
         emit DataIsWrited(true);
         emit WritedData(itsWriteData);

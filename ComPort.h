@@ -9,13 +9,7 @@ class ComPort: public QObject
 {
     Q_OBJECT
 public:
-    enum COMMODE {
-        READ = 0x01,
-        WRITE = 0x02,
-        READWRITE = READ | WRITE
-    };
     ComPort(QSerialPort *port,
-            ComPort::COMMODE comMode = READWRITE,
             int startByte = 0x55,
             int stopByte = 0xAA,
             int packetLenght = 8,
@@ -34,8 +28,6 @@ private slots:
     void readData();
 private:
     QSerialPort *itsPort;
-
-    COMMODE itsComMode;
 
     QByteArray itsReadData;
     QByteArray itsWriteData;
