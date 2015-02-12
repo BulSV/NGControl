@@ -164,8 +164,8 @@ Dialog::Dialog(QWidget *parent) :
 
     connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
-    connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(cbPortChanged()));
-    connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(cbPortChanged()));
+    connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
+    connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
     connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
     connect(bSetTemp, SIGNAL(clicked()), this, SLOT(writeTemp()));
     connect(itsBlinkTimeTxColor, SIGNAL(timeout()), this, SLOT(colorIsTx()));
@@ -230,20 +230,6 @@ void Dialog::openPort()
 }
 
 void Dialog::closePort()
-{
-    itsPort->close();
-    itsBlinkTimeTxNone->stop();
-    itsBlinkTimeTxColor->stop();
-    itsBlinkTimeRxNone->stop();
-    itsBlinkTimeRxColor->stop();
-    lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
-    lRx->setStyleSheet("background: red; font: bold; font-size: 10pt");
-    bPortStop->setEnabled(false);
-    bPortStart->setEnabled(true);
-    itsProtocol->resetProtocol();
-}
-
-void Dialog::cbPortChanged()
 {
     itsPort->close();
     itsBlinkTimeTxNone->stop();

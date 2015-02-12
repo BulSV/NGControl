@@ -68,14 +68,14 @@ class Dialog : public QDialog
 private slots:
     void openPort();
     void closePort();
-    void cbPortChanged();
     void received(bool isReceived);
     void writeTemp();
-    // мигание надписи "Rx" при получении пакета
+    // мигание надписей "Rx" - при получении и "Tx" - при отправке пакета
     void colorTxNone();
     void colorRxNone();
     void colorIsTx();
     void colorIsRx();
+    // display current Rx data
     void display();
 public:
     explicit Dialog(QWidget *parent = 0);
