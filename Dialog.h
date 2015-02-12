@@ -15,6 +15,7 @@
 #include <QStatusBar>
 #include <QTimer>
 #include <QLCDNumber>
+#include <QSpinBox>
 #include "ComPort.h"
 #include "IProtocol.h"
 #include "NGProtocol.h"
@@ -32,7 +33,7 @@ class Dialog : public QDialog
     QLabel *lTx;
     QLabel *lRx;
 
-    QLCDNumber *lcdSetTemp;
+    QSpinBox *sbSetTemp;
     QLCDNumber *lcdSensor1Termo;
     QLCDNumber *lcdSensor2Termo;
 

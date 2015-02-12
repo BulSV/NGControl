@@ -32,6 +32,10 @@
 #define BLINKTIMERX 500 // ms
 #define DISPLAYTIME 100 // ms
 
+#define TEMPRANGE_MIN -50 // degrees Celsius
+#define TEMPRANGE_MAX 50 // degrees Celsius
+#define NORMAL_TEMP 35 // degrees Celsius
+
 Dialog::Dialog(QWidget *parent) :
         QDialog(parent),
         lPort(new QLabel(QString::fromUtf8("Port"), this)),
@@ -42,7 +46,7 @@ Dialog::Dialog(QWidget *parent) :
         bPortStop(new QPushButton(QString::fromUtf8("Stop"), this)),
         lTx(new QLabel("  Tx  ", this)),
         lRx(new QLabel("  Rx  ", this)),
-        lcdSetTemp(new QLCDNumber(this)),
+        sbSetTemp(new QSpinBox(this)),
         lcdSensor1Termo(new QLCDNumber(this)),
         lcdSensor2Termo(new QLCDNumber(this)),
         lSensor1(new QLabel(QString::fromUtf8("Sensor 1:"), this)),
@@ -75,7 +79,7 @@ Dialog::Dialog(QWidget *parent) :
     lRx->setMargin(2);
 
     QGridLayout *gridTemp = new QGridLayout;
-    gridTemp->addWidget(lcdSetTemp, 0, 0, 1, 3);
+    gridTemp->addWidget(sbSetTemp, 0, 0, 1, 3);
     gridTemp->addWidget(bDownTemp, 1, 0);
     gridTemp->addWidget(bSetTemp, 1, 1);
     gridTemp->addWidget(bUpTemp, 1, 2);
@@ -144,8 +148,12 @@ Dialog::Dialog(QWidget *parent) :
     itsBlinkTimeRxColor->setInterval(BLINKTIMERX);
     itsTimeToDisplay->setInterval(DISPLAYTIME);
 
+    sbSetTemp->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX);
+    sbSetTemp->setValue(NORMAL_TEMP);
+
     QList<QLCDNumber*> list;
-    list << lcdSetTemp << lcdSensor1Termo << lcdSensor2Termo;
+    list << lcdSensor1Termo << lcdSensor2Termo;
     foreach(QLCDNumber *lcd, list) {
         lcd->setMinimumSize(80, 40);
         lcd->setMaximumSize(80, 40);
@@ -272,7 +280,7 @@ void Dialog::writeTemp()
     }
 
     dataTemp.insert("CODE", "0");
-    dataTemp.insert("TEMP", QString::number(lcdSetTemp->value()));
+    dataTemp.insert("TEMP", QString::number(sbSetTemp->value()));
     itsProtocol->setDataToWrite(dataTemp);
     itsProtocol->writeData();
 }
@@ -328,7 +336,7 @@ QString &Dialog::addTrailingZeros(QString &str, int prec)
 }
 
 void Dialog::colorIsRx()
-{    
+{
     lRx->setStyleSheet("background: none; font: bold; font-size: 10pt");
     itsBlinkTimeRxColor->stop();
     itsBlinkTimeRxNone->start();
