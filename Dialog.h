@@ -19,6 +19,7 @@
 #include "ComPort.h"
 #include "IProtocol.h"
 #include "NGProtocol.h"
+#include "SpinBox.h"
 
 class Dialog : public QDialog
 {
@@ -33,7 +34,7 @@ class Dialog : public QDialog
     QLabel *lTx;
     QLabel *lRx;
 
-    QSpinBox *sbSetTemp;
+    SpinBox *sbSetTemp;
     QLCDNumber *lcdSensor1Termo;
     QLCDNumber *lcdSensor2Termo;
 
@@ -41,8 +42,8 @@ class Dialog : public QDialog
     QLabel *lSensor2;
 
     QPushButton *bSetTemp;
-    QPushButton *bDownTemp;
-    QPushButton *bUpTemp;
+//    QPushButton *bDownTemp;
+//    QPushButton *bUpTemp;
 
     QGroupBox *gbSetTemp;
     QGroupBox *gbSensors;

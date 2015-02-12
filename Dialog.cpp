@@ -32,6 +32,8 @@
 #define BLINKTIMERX 500 // ms
 #define DISPLAYTIME 100 // ms
 
+#define REWINDTIME 50 // ms
+
 #define TEMPRANGE_MIN -50 // degrees Celsius
 #define TEMPRANGE_MAX 50 // degrees Celsius
 #define NORMAL_TEMP 35 // degrees Celsius
@@ -46,18 +48,17 @@ Dialog::Dialog(QWidget *parent) :
         bPortStop(new QPushButton(QString::fromUtf8("Stop"), this)),
         lTx(new QLabel("  Tx  ", this)),
         lRx(new QLabel("  Rx  ", this)),
-        sbSetTemp(new QSpinBox(this)),
+        sbSetTemp(new SpinBox(QIcon(":/Resources/left.png"), QIcon(":/Resources/right.png"),
+                              QString::fromUtf8(""), QString::fromUtf8(""), REWINDTIME, this)),
         lcdSensor1Termo(new QLCDNumber(this)),
         lcdSensor2Termo(new QLCDNumber(this)),
         lSensor1(new QLabel(QString::fromUtf8("Sensor 1:"), this)),
         lSensor2(new QLabel(QString::fromUtf8("Sensor 2:"), this)),
         bSetTemp(new QPushButton(QString::fromUtf8("Set"), this)),
-        bDownTemp(new QPushButton(QIcon(":/Resources/left.png"), QString::fromUtf8(""), this)),
-        bUpTemp(new QPushButton(QIcon(":/Resources/right.png"), QString::fromUtf8(""), this)),
         gbSetTemp(new QGroupBox(QString::fromUtf8("Temperature"), this)),
         gbSensors(new QGroupBox(QString::fromUtf8("Info"), this)),
         itsPort(new QSerialPort(this)),
-        itsComPort(new ComPort(itsPort, ComPort::READ, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
+        itsComPort(new ComPort(itsPort, ComPort::READWRITE, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
         itsProtocol(new NGProtocol(itsComPort, this)),
         itsStatusBar (new QStatusBar(this)),
         itsBlinkTimeTxNone(new QTimer(this)),
@@ -80,9 +81,7 @@ Dialog::Dialog(QWidget *parent) :
 
     QGridLayout *gridTemp = new QGridLayout;
     gridTemp->addWidget(sbSetTemp, 0, 0, 1, 3);
-    gridTemp->addWidget(bDownTemp, 1, 0);
     gridTemp->addWidget(bSetTemp, 1, 1);
-    gridTemp->addWidget(bUpTemp, 1, 2);
 
     QGridLayout *gridInfo = new QGridLayout;
     gridInfo->addWidget(lSensor1, 0, 0);
@@ -136,10 +135,6 @@ Dialog::Dialog(QWidget *parent) :
     cbBaud->setEditable(false);
     bPortStop->setEnabled(false);
 
-    bDownTemp->setMaximumSize(25, 25);
-    bSetTemp->setMaximumSize(40, 25);
-    bUpTemp->setMaximumSize(25, 25);
-
     itsStatusBar->show();
 
     itsBlinkTimeTxNone->setInterval(BLINKTIMETX);
@@ -148,7 +143,6 @@ Dialog::Dialog(QWidget *parent) :
     itsBlinkTimeRxColor->setInterval(BLINKTIMERX);
     itsTimeToDisplay->setInterval(DISPLAYTIME);
 
-    sbSetTemp->setButtonSymbols(QAbstractSpinBox::NoButtons);
     sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX);
     sbSetTemp->setValue(NORMAL_TEMP);
 

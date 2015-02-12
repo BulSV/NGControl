@@ -81,6 +81,11 @@ void SpinBox::setTextUpButton(const QString &text)
     bUp->setText(text);
 }
 
+void SpinBox::setValue(const int &value)
+{
+    sbInput->setValue(value);
+}
+
 void SpinBox::setRange(const int &min, const int &max)
 {
     sbInput->setRange(min, max);

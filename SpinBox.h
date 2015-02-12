@@ -30,6 +30,8 @@ public slots:
     void setTextDownButton(const QString &text);
     void setIconUpButton(const QIcon &icon);
     void setTextUpButton(const QString &text);
+
+    void setValue(const int &value);
 signals:
     void downButtonPressed();
     void downButtonReleased();
