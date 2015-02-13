@@ -356,7 +356,7 @@ void Dialog::display()
     list << lcdSensor2Termo << lcdSensor1Termo;
     QString tempStr;
 
-    for(int k = 0; k < list.size(); ++k) {
+    for(int k = 0; k < list.size() && k < itsSensorsList.size(); ++k) {
         tempStr = itsSensorsList.at(itsSensorsList.size() - 1 - k);
 
         if(list.at(k)->digitCount() < addTrailingZeros(tempStr, PRECISION).size())
