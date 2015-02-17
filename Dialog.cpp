@@ -88,7 +88,6 @@ Dialog::Dialog(QWidget *parent) :
     gridInfo->addWidget(lcdSensor1Termo, 0, 1);
     gridInfo->addWidget(lSensor2, 1, 0);
     gridInfo->addWidget(lcdSensor2Termo, 1, 1);
-    gridInfo->addItem(new QSpacerItem(bSetTemp->width(), bSetTemp->height()), 2, 0, 2, 2);
     gridInfo->setSpacing(5);
 
     gbSetTemp->setLayout(gridTemp);
@@ -105,8 +104,8 @@ Dialog::Dialog(QWidget *parent) :
     grid->addWidget(bPortStop, 2, 2);
     grid->addWidget(lTx, 2, 3);
     grid->addWidget(lRx, 2, 4);
-    grid->addWidget(gbSetTemp, 3, 0, 1, 2);
-    grid->addWidget(gbSensors, 3, 2, 1, 3);
+    grid->addWidget(gbSetTemp, 3, 0, 3, 2);
+    grid->addWidget(gbSensors, 3, 2, 3, 3);
     grid->setSpacing(5);
 
     layout()->addItem(grid);
