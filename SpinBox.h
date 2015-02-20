@@ -5,10 +5,11 @@
 #include <QTimer>
 
 #include "RewindButton.h"
+#include "ISpinBox.h"
 
-class SpinBox : public QWidget
+class SpinBox : public ISpinBox
 {
-    Q_OBJECT   
+    Q_OBJECT
 public:
     explicit SpinBox(const QIcon &iconDown,
                      const QIcon &iconUp,
