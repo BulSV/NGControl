@@ -26,6 +26,7 @@ signals:
     void downButtonReleased();
     void upButtonPressed();
     void upButtonReleased();
+    void valueChanged();
 };
 
 #endif // ISPINBOX_H

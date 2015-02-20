@@ -149,6 +149,7 @@ Dialog::Dialog(QWidget *parent) :
 
     sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX);
     sbSetTemp->setValue(NORMAL_TEMP);
+    colorSetTempLCD();
 
     QList<QLCDNumber*> list;
     list << lcdSensor1Termo << lcdSensor2Termo << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
@@ -171,6 +172,8 @@ Dialog::Dialog(QWidget *parent) :
     connect(itsBlinkTimeTxNone, SIGNAL(timeout()), this, SLOT(colorTxNone()));
     connect(itsBlinkTimeRxNone, SIGNAL(timeout()), this, SLOT(colorRxNone()));
     connect(itsTimeToDisplay, SIGNAL(timeout()), this, SLOT(display()));
+
+    connect(sbSetTemp, SIGNAL(valueChanged()), this, SLOT(colorSetTempLCD()));
 
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
     connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
@@ -375,4 +378,9 @@ void Dialog::display()
     }
 
     itsSensorsList.clear();
+}
+
+void Dialog::colorSetTempLCD()
+{
+    setColorLCD(dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget()), sbSetTemp->value() > 0);
 }

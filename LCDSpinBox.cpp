@@ -103,6 +103,9 @@ void LCDSpinBox::setupConnect()
     connect(m_bDown, SIGNAL(nextValue()), this, SLOT(downStep()));
     connect(m_bUp, SIGNAL(nextValue()), this, SLOT(upStep()));
 
+    connect(m_bDown, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
+    connect(m_bUp, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
+
     connect(m_bDown, SIGNAL(mousePressed()), this, SIGNAL(downButtonPressed()));
     connect(m_bDown, SIGNAL(mouseReleased()), this, SIGNAL(downButtonReleased()));
 
