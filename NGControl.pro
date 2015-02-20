@@ -44,7 +44,8 @@ HEADERS += \
     RewindButton.h \
     SpinBox.h \
     ISpinBox.h \
-    LCDSpinBox.h
+    LCDSpinBox.h \
+    SpinBoxButton.h
 
 SOURCES += \
     ComPort.cpp \
@@ -54,7 +55,8 @@ SOURCES += \
     RewindButton.cpp \
     SpinBox.cpp \
     ISpinBox.cpp \
-    LCDSpinBox.cpp
+    LCDSpinBox.cpp \
+    SpinBoxButton.cpp
 
 RESOURCES += \
     NGControl.qrc
