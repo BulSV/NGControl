@@ -27,8 +27,13 @@ public:
                         DIGIT_MODE mode = DEC_MODE,
                         QWidget *parent = 0);
     virtual ~LCDSpinBox();
+
     virtual void setRange(const int &min, const int& max);
     virtual int value() const;
+
+    virtual QWidget *spinWidget() const;
+    virtual QWidget *buttunDownWidget() const;
+    virtual QWidget *buttonUpWidget() const;
 public slots:
     virtual void setIconDownButton(const QIcon &icon);
     virtual void setTextDownButton(const QString &text);

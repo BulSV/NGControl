@@ -19,7 +19,7 @@
 #include "ComPort.h"
 #include "IProtocol.h"
 #include "NGProtocol.h"
-#include "SpinBox.h"
+#include "LCDSpinBox.h"
 
 class Dialog : public QDialog
 {

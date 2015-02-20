@@ -21,15 +21,20 @@ public:
                      const QString &textUp,
                      int timeToRewind = 200,
                      QWidget *parent = 0);
-    void setRange(const int &min, const int& max);
-    int value() const;
-public slots:
-    void setIconDownButton(const QIcon &icon);
-    void setTextDownButton(const QString &text);
-    void setIconUpButton(const QIcon &icon);
-    void setTextUpButton(const QString &text);
 
-    void setValue(const int &value);
+    virtual void setRange(const int &min, const int& max);
+    virtual int value() const;
+
+    virtual QWidget *spinWidget() const;
+    virtual QWidget *buttunDownWidget() const;
+    virtual QWidget *buttonUpWidget() const;
+public slots:
+    virtual void setIconDownButton(const QIcon &icon);
+    virtual void setTextDownButton(const QString &text);
+    virtual void setIconUpButton(const QIcon &icon);
+    virtual void setTextUpButton(const QString &text);
+
+    virtual void setValue(const int &value);
 signals:
     void downButtonPressed();
     void downButtonReleased();

@@ -11,6 +11,9 @@ public:
     virtual ~ISpinBox();
     virtual void setRange(const int &min, const int& max) = 0;
     virtual int value() const = 0;
+    virtual QWidget *spinWidget() const = 0;
+    virtual QWidget *buttunDownWidget() const = 0;
+    virtual QWidget *buttonUpWidget() const = 0;
 public slots:
     virtual void setIconDownButton(const QIcon &icon) = 0;
     virtual void setTextDownButton(const QString &text) = 0;

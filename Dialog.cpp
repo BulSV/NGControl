@@ -48,8 +48,12 @@ Dialog::Dialog(QWidget *parent) :
         bPortStop(new QPushButton(QString::fromUtf8("Stop"), this)),
         lTx(new QLabel("  Tx  ", this)),
         lRx(new QLabel("  Rx  ", this)),
-        sbSetTemp(new SpinBox(QIcon(":/Resources/left.png"), QIcon(":/Resources/right.png"),
-                              QString::fromUtf8(""), QString::fromUtf8(""), REWINDTIME, this)),
+        sbSetTemp(new LCDSpinBox(QIcon(":/Resources/left.png"),
+                                   QIcon(":/Resources/right.png"),
+                                   QString::fromUtf8(""),
+                                   QString::fromUtf8(""),
+                                   LCDSpinBox::DEC_MODE,
+                                   this)),
         lcdSensor1Termo(new QLCDNumber(this)),
         lcdSensor2Termo(new QLCDNumber(this)),
         lSensor1(new QLabel(QString::fromUtf8("Sensor 1, °C:"), this)),
@@ -147,7 +151,7 @@ Dialog::Dialog(QWidget *parent) :
     sbSetTemp->setValue(NORMAL_TEMP);
 
     QList<QLCDNumber*> list;
-    list << lcdSensor1Termo << lcdSensor2Termo;
+    list << lcdSensor1Termo << lcdSensor2Termo << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
     foreach(QLCDNumber *lcd, list) {
         lcd->setMinimumSize(80, 40);
         lcd->setMaximumSize(80, 40);

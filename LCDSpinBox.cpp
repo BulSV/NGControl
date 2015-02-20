@@ -43,6 +43,21 @@ int LCDSpinBox::value() const
     return m_LCDNumber->value();
 }
 
+QWidget *LCDSpinBox::spinWidget() const
+{
+    return m_LCDNumber;
+}
+
+QWidget *LCDSpinBox::buttunDownWidget() const
+{
+    return m_bDown;
+}
+
+QWidget *LCDSpinBox::buttonUpWidget() const
+{
+    return m_bUp;
+}
+
 void LCDSpinBox::setIconDownButton(const QIcon &icon)
 {
     m_bDown->setIcon(icon);

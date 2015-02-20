@@ -104,3 +104,18 @@ int SpinBox::value() const
 {
     return sbInput->value();
 }
+
+QWidget *SpinBox::spinWidget() const
+{
+    return sbInput;
+}
+
+QWidget *SpinBox::buttunDownWidget() const
+{
+    return bDown;
+}
+
+QWidget *SpinBox::buttonUpWidget() const
+{
+    return bUp;
+}
