@@ -34,7 +34,7 @@ class Dialog : public QDialog
     QLabel *lTx;
     QLabel *lRx;
 
-    SpinBox *sbSetTemp;
+    ISpinBox *sbSetTemp;
     QLCDNumber *lcdSensor1Termo;
     QLCDNumber *lcdSensor2Termo;
 

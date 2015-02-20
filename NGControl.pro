@@ -43,7 +43,8 @@ HEADERS += \
     NGProtocol.h \
     RewindButton.h \
     SpinBox.h \
-    ISpinBox.h
+    ISpinBox.h \
+    LCDSpinBox.h
 
 SOURCES += \
     ComPort.cpp \
@@ -52,7 +53,8 @@ SOURCES += \
     NGProtocol.cpp \
     RewindButton.cpp \
     SpinBox.cpp \
-    ISpinBox.cpp
+    ISpinBox.cpp \
+    LCDSpinBox.cpp
 
 RESOURCES += \
     NGControl.qrc
