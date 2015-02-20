@@ -52,10 +52,16 @@ private:
     QPushButton *m_bUp;
 
     int m_base;
+    int m_min;
+    int m_max;
 
     void setupGui();
+    void setupConnect();
     void digitsBase(DIGIT_MODE mode);
     int digitCount(const int &value);
+private slots:
+    void downStep();
+    void upStep();
 };
 
 #endif // LCDSPINBOX_H

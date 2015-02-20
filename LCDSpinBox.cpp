@@ -14,6 +14,7 @@ LCDSpinBox::LCDSpinBox(const QIcon &iconDown,
 {
     setupGui();
     digitsBase(mode);
+    setupConnect();
 }
 
 LCDSpinBox::LCDSpinBox(const QString &textDown,
@@ -27,6 +28,7 @@ LCDSpinBox::LCDSpinBox(const QString &textDown,
 {
     setupGui();
     digitsBase(mode);
+    setupConnect();
 }
 
 LCDSpinBox::~LCDSpinBox()
@@ -35,6 +37,8 @@ LCDSpinBox::~LCDSpinBox()
 
 void LCDSpinBox::setRange(const int &min, const int &max)
 {
+    m_min = min;
+    m_max = max;
     m_LCDNumber->setDigitCount(qMax(digitCount(min), digitCount(max)));
 }
 
@@ -94,6 +98,12 @@ void LCDSpinBox::setupGui()
     mainLayout->setSpacing(5);
 }
 
+void LCDSpinBox::setupConnect()
+{
+    connect(m_bDown, SIGNAL(clicked()), this, SLOT(downStep()));
+    connect(m_bUp, SIGNAL(clicked()), this, SLOT(upStep()));
+}
+
 void LCDSpinBox::digitsBase(LCDSpinBox::DIGIT_MODE mode)
 {
     switch (mode) {
@@ -131,4 +141,18 @@ int LCDSpinBox::digitCount(const int &value)
     }
 
     return digits;
+}
+
+void LCDSpinBox::downStep()
+{
+    if(static_cast<int>(m_LCDNumber->value()) - 1 >= m_min) {
+        m_LCDNumber->display(static_cast<int>(m_LCDNumber->value()) - 1);
+    }
+}
+
+void LCDSpinBox::upStep()
+{
+    if(static_cast<int>(m_LCDNumber->value()) + 1 <= m_max) {
+        m_LCDNumber->display(static_cast<int>(m_LCDNumber->value()) + 1);
+    }
 }
