@@ -4,6 +4,7 @@
 #include <QLCDNumber>
 #include <QPushButton>
 #include "ISpinBox.h"
+#include "RewindButton.h"
 
 class LCDSpinBox : public ISpinBox
 {
@@ -41,11 +42,6 @@ public slots:
     virtual void setTextUpButton(const QString &text);
 
     virtual void setValue(const int &value);
-signals:
-    void downButtonPressed();
-    void downButtonReleased();
-    void upButtonPressed();
-    void upButtonReleased();
 private:
     QLCDNumber *m_LCDNumber;
     QPushButton *m_bDown;

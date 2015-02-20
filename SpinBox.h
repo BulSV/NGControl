@@ -35,11 +35,6 @@ public slots:
     virtual void setTextUpButton(const QString &text);
 
     virtual void setValue(const int &value);
-signals:
-    void downButtonPressed();
-    void downButtonReleased();
-    void upButtonPressed();
-    void upButtonReleased();
 private slots:
     void ButtonsReleasedFocus();
 private:

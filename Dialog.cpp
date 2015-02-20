@@ -172,8 +172,8 @@ Dialog::Dialog(QWidget *parent) :
     connect(itsBlinkTimeRxNone, SIGNAL(timeout()), this, SLOT(colorRxNone()));
     connect(itsTimeToDisplay, SIGNAL(timeout()), this, SLOT(display()));
 
-    connect(sbSetTemp, SIGNAL(downButtonReleased()), this, SLOT(writeTemp()));
-    connect(sbSetTemp, SIGNAL(upButtonReleased()), this, SLOT(writeTemp()));
+//    connect(sbSetTemp, SIGNAL(downButtonReleased()), this, SLOT(writeTemp()));
+//    connect(sbSetTemp, SIGNAL(upButtonReleased()), this, SLOT(writeTemp()));
 
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
     connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
