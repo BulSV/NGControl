@@ -9,8 +9,8 @@ LCDSpinBox::LCDSpinBox(const QIcon &iconDown,
                        QWidget *parent) :
     ISpinBox(parent)
   , m_LCDNumber(new QLCDNumber(this))
-  , m_bDown(new RewindButton(iconDown, textDown, 200, this))
-  , m_bUp(new RewindButton(iconUp, textUp, 200, this))
+  , m_bDown(new SpinBoxButton(iconDown, textDown, 500, 0.25, this))
+  , m_bUp(new SpinBoxButton(iconUp, textUp, 500, 0.25, this))
 {
     setupGui();
     digitsBase(mode);
@@ -23,8 +23,8 @@ LCDSpinBox::LCDSpinBox(const QString &textDown,
                        QWidget *parent) :
     ISpinBox(parent)
   , m_LCDNumber(new QLCDNumber(this))
-  , m_bDown(new RewindButton(textDown, 200, this))
-  , m_bUp(new RewindButton(textUp, 200, this))
+  , m_bDown(new SpinBoxButton(textDown, 500, 0.25, this))
+  , m_bUp(new SpinBoxButton(textUp, 500, 0.25, this))
 {
     setupGui();
     digitsBase(mode);
@@ -100,11 +100,8 @@ void LCDSpinBox::setupGui()
 
 void LCDSpinBox::setupConnect()
 {
-//    connect(m_bDown, SIGNAL(clicked()), this, SLOT(downStep()));
-//    connect(m_bUp, SIGNAL(clicked()), this, SLOT(upStep()));
-
-    connect(m_bDown, SIGNAL(nextValueSetting()), this, SLOT(downStep()));
-    connect(m_bUp, SIGNAL(nextValueSetting()), this, SLOT(upStep()));
+    connect(m_bDown, SIGNAL(nextValue()), this, SLOT(downStep()));
+    connect(m_bUp, SIGNAL(nextValue()), this, SLOT(upStep()));
 
     connect(m_bDown, SIGNAL(mousePressed()), this, SIGNAL(downButtonPressed()));
     connect(m_bDown, SIGNAL(mouseReleased()), this, SIGNAL(downButtonReleased()));

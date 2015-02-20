@@ -4,7 +4,7 @@
 #include <QLCDNumber>
 #include <QPushButton>
 #include "ISpinBox.h"
-#include "RewindButton.h"
+#include "SpinBoxButton.h"
 
 class LCDSpinBox : public ISpinBox
 {
