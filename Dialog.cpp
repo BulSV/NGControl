@@ -73,12 +73,12 @@ Dialog::Dialog(QWidget *parent) :
 {
     setLayout(new QVBoxLayout(this));
 
-    lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
+    lTx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
     lTx->setFrameStyle(QFrame::Box);
     lTx->setAlignment(Qt::AlignCenter);
     lTx->setMargin(2);
 
-    lRx->setStyleSheet("background: red; font: bold; font-size: 10pt");
+    lRx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
     lRx->setFrameStyle(QFrame::Box);
     lRx->setAlignment(Qt::AlignCenter);
     lRx->setMargin(2);
@@ -225,8 +225,8 @@ void Dialog::openPort()
     {
         itsStatusBar->showMessage(QString::fromUtf8("Error opening port: ") +
                              QString(itsPort->portName()));
-        lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
-        lRx->setStyleSheet("background: red; font: bold; font-size: 10pt");
+        lTx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
+        lRx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
     }
 }
 
@@ -237,8 +237,8 @@ void Dialog::closePort()
     itsBlinkTimeTxColor->stop();
     itsBlinkTimeRxNone->stop();
     itsBlinkTimeRxColor->stop();
-    lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
-    lRx->setStyleSheet("background: red; font: bold; font-size: 10pt");
+    lTx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
+    lRx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
     bPortStop->setEnabled(false);
     bPortStart->setEnabled(true);
     itsProtocol->resetProtocol();
@@ -272,7 +272,7 @@ void Dialog::writeTemp()
 
         if(!itsBlinkTimeTxColor->isActive() && !itsBlinkTimeTxNone->isActive()) {
             itsBlinkTimeTxColor->start();
-            lTx->setStyleSheet("background: green; font: bold; font-size: 10pt");
+            lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
         }
 
         dataTemp.insert("CODE", "0");
