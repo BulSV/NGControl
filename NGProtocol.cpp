@@ -46,18 +46,18 @@ QMultiMap<QString, QString> NGProtocol::getReadedData() const
 
 void NGProtocol::readData(bool isReaded)
 {
-    itsReadData.clear();    
+    itsReadData.clear();
 
     if(isReaded) {
         QByteArray ba;
 
-        ba = itsComPort->getReadData();        
+        ba = itsComPort->getReadData();
 
-        itsReadData.insert(QString("CODE"), QString(ba.at(1)));
+        itsReadData.insert(QString("TEMP"), QString::number(wordToInt(ba.mid(1, 2))));
         itsReadData.insert(QString("SENS1"),
-                           QString::number(tempCorr(tempSensors(wordToInt(ba.mid(2, 2))), SENSOR1), FORMAT, PRECISION));
+                           QString::number(tempCorr(tempSensors(wordToInt(ba.mid(3, 2))), SENSOR1), FORMAT, PRECISION));
         itsReadData.insert(QString("SENS2"),
-                           QString::number(tempCorr(tempSensors(wordToInt(ba.mid(4, 2))), SENSOR2), FORMAT, PRECISION));
+                           QString::number(tempCorr(tempSensors(wordToInt(ba.mid(5, 2))), SENSOR2), FORMAT, PRECISION));
 
         emit DataIsReaded(true);
     } else {

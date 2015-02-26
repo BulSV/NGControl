@@ -261,9 +261,7 @@ void Dialog::received(bool isReceived)
 
         QList<QString> strKeysList = itsProtocol->getReadedData().keys();
         for(int i = 0; i < itsProtocol->getReadedData().size(); ++i) {
-            if(strKeysList.at(i) != "CODE") {
-                itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
-            }
+            itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
         }
     }
 }
@@ -360,7 +358,7 @@ void Dialog::display()
     itsTimeToDisplay->stop();
 
     QList<QLCDNumber*> list;
-    list << lcdSensor2Termo << lcdSensor1Termo;
+    list << lcdInstalledTemp << lcdSensor2Termo << lcdSensor1Termo;
     QString tempStr;
 
     for(int k = 0; k < list.size() && k < itsSensorsList.size(); ++k) {
