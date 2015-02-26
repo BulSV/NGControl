@@ -54,6 +54,7 @@ Dialog::Dialog(QWidget *parent) :
                                    QString::fromUtf8(""),
                                    LCDSpinBox::DEC_MODE,
                                    this)),
+        lcdInstalledTemp(new QLCDNumber(this)),
         lcdSensor1Termo(new QLCDNumber(this)),
         lcdSensor2Termo(new QLCDNumber(this)),
         lSensor1(new QLabel(QString::fromUtf8("Sensor 1, °C:"), this)),
@@ -88,10 +89,12 @@ Dialog::Dialog(QWidget *parent) :
     gridTemp->addWidget(bSetTemp, 1, 1);
 
     QGridLayout *gridInfo = new QGridLayout;
-    gridInfo->addWidget(lSensor1, 0, 0);
-    gridInfo->addWidget(lcdSensor1Termo, 0, 1);
-    gridInfo->addWidget(lSensor2, 1, 0);
-    gridInfo->addWidget(lcdSensor2Termo, 1, 1);
+    gridInfo->addWidget(new QLabel("Installed, °C:", this), 0, 0);
+    gridInfo->addWidget(lcdInstalledTemp, 0, 1);
+    gridInfo->addWidget(lSensor1, 1, 0);
+    gridInfo->addWidget(lcdSensor1Termo, 1, 1);
+    gridInfo->addWidget(lSensor2, 2, 0);
+    gridInfo->addWidget(lcdSensor2Termo, 2, 1);
     gridInfo->setSpacing(5);
 
     gbSetTemp->setLayout(gridTemp);
@@ -152,7 +155,7 @@ Dialog::Dialog(QWidget *parent) :
     colorSetTempLCD();
 
     QList<QLCDNumber*> list;
-    list << lcdSensor1Termo << lcdSensor2Termo << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
+    list << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
     foreach(QLCDNumber *lcd, list) {
         lcd->setMinimumSize(80, 40);
         lcd->setMaximumSize(80, 40);
