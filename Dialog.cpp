@@ -70,7 +70,8 @@ Dialog::Dialog(QWidget *parent) :
         itsBlinkTimeRxNone(new QTimer(this)),
         itsBlinkTimeTxColor(new QTimer(this)),
         itsBlinkTimeRxColor(new QTimer(this)),
-        itsTimeToDisplay(new QTimer(this))
+        itsTimeToDisplay(new QTimer(this)),
+        plotterDialog(new PlotterDialog("NG Control: Plotter", this))
 {
     setLayout(new QVBoxLayout(this));
 
@@ -180,6 +181,9 @@ Dialog::Dialog(QWidget *parent) :
 
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
     connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
+
+    QShortcut *plotterShortcut = new QShortcut(QKeySequence("F2"), this);
+    connect(plotterShortcut, SIGNAL(activated()), plotterDialog, SLOT(show()));
 }
 
 Dialog::~Dialog()

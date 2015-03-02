@@ -1,8 +1,12 @@
 greaterThan(QT_MAJOR_VERSION, 4) {
-    QT       += widgets serialport
+    QT       += widgets serialport printsupport
 } else {
     include($$QTSERIALPORT_PROJECT_ROOT/src/serialport/qt4support/serialport.prf)
 }
+
+unix:QWT_LOCATION = /usr/local/qwt-6.1.2
+INCLUDEPATH += $${QWT_LOCATION}/include/
+LIBS += -L$${QWT_LOCATION}/lib/ -lqwt
 
 TEMPLATE = app
 win32:RC_FILE = NGControl.rc
@@ -45,7 +49,8 @@ HEADERS += \
     SpinBox.h \
     ISpinBox.h \
     LCDSpinBox.h \
-    SpinBoxButton.h
+    SpinBoxButton.h \
+    PlotterDialog.h
 
 SOURCES += \
     ComPort.cpp \
@@ -56,7 +61,8 @@ SOURCES += \
     SpinBox.cpp \
     ISpinBox.cpp \
     LCDSpinBox.cpp \
-    SpinBoxButton.cpp
+    SpinBoxButton.cpp \
+    PlotterDialog.cpp
 
 RESOURCES += \
     NGControl.qrc

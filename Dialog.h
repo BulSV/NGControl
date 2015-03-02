@@ -20,6 +20,7 @@
 #include "IProtocol.h"
 #include "NGProtocol.h"
 #include "LCDSpinBox.h"
+#include "PlotterDialog.h"
 
 class Dialog : public QDialog
 {
@@ -65,6 +66,7 @@ class Dialog : public QDialog
     QTimer *itsBlinkTimeRxColor;
     QTimer *itsTimeToDisplay;
 
+    PlotterDialog *plotterDialog;
 private slots:
     void openPort();
     void closePort();
