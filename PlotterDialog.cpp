@@ -1,7 +1,8 @@
 #include "PlotterDialog.h"
-#include <QGridLayout>
+//#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QFrame>
+//#include <QFrame>
 #include <QStringList>
 #include <qwt_plot_canvas.h>
 #include <qwt_legend.h>
@@ -9,21 +10,49 @@
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent),
-    m_sbInterval(new QSpinBox(this)),
+    m_lTimeInterval(new QLabel(this)),
+    m_sdTimeInterval(new QwtKnob(this)),
+
+    m_lInstalledTempInterval(new QLabel(this)),
+    m_sdInstalledTempInterval(new QwtKnob(this)),
+
+    m_lSensor1TempInterval(new QLabel(this)),
+    m_sdSensor1TempInterval(new QwtKnob(this)),
+
+    m_lSensor2TempInterval(new QLabel(this)),
+    m_sdSensor2TempInterval(new QwtKnob(this)),
+
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this))
 {
     setWindowTitle(title);
-    m_sbInterval->setRange(10, 600);
-    m_sbInterval->setSingleStep(5);
-    m_sbInterval->setSuffix(" sec");
-    m_sbInterval->setValue(60);
+
+    QList<QwtKnob*> knobList;
+    knobList << m_sdTimeInterval << m_sdInstalledTempInterval
+             << m_sdSensor1TempInterval << m_sdSensor2TempInterval;
+    knobStyling(knobList);
+
+    m_sdTimeInterval->setScale(10, 600);
+    m_sdTimeInterval->setScaleStepSize(100);
+    m_sdTimeInterval->setSingleSteps(1);
+    m_sdTimeInterval->setScaleMaxMajor(10);
+    m_sdTimeInterval->setScaleMaxMinor(10);
+    m_sdTimeInterval->setTotalSteps(600-10);
+    m_sdTimeInterval->setValue(60);
+
+    m_sdInstalledTempInterval->setScale(-50, 50);
+    m_sdInstalledTempInterval->setScaleStepSize(10);
+    m_sdInstalledTempInterval->setSingleSteps(1);
+    m_sdInstalledTempInterval->setScaleMaxMajor(10);
+    m_sdInstalledTempInterval->setScaleMaxMinor(10);
+    m_sdInstalledTempInterval->setTotalSteps(100);
+    m_sdInstalledTempInterval->setValue(35);
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius(5);
-    canvas->setFrameShadow(QwtPlotCanvas::Raised);
+    canvas->setFrameShadow(QwtPlotCanvas::Sunken);
     m_plot->setCanvas(canvas);
-    m_plot->setCanvasBackground(QBrush(QColor(Qt::black)));
+    m_plot->setCanvasBackground(QBrush(QColor("#FFFFFF")));
 
     // legend
     QwtLegend *legend = new QwtLegend;
@@ -33,13 +62,13 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QwtPlotGrid *grid = new QwtPlotGrid;
     grid->enableXMin( true );
     grid->enableYMin( true );
-    grid->setMajorPen( Qt::white, 0 );
-    grid->setMinorPen( Qt::white, 0, Qt::DotLine );
+    grid->setMajorPen( Qt::black, 0 );
+    grid->setMinorPen( Qt::black, 0, Qt::DotLine );
     grid->attach( m_plot );
 
     // axes
     m_plot->setAxisTitle( QwtPlot::xBottom, "Time, sec" );
-    m_plot->setAxisScale(QwtPlot::xBottom, 0, m_sbInterval->value());
+    m_plot->setAxisScale(QwtPlot::xBottom, 0, m_sdTimeInterval->value());
     m_plot->setAxisMaxMajor( QwtPlot::xBottom, 10 );
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, 5);
 
@@ -54,7 +83,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QVector<double> y;
 
     for(int i = 0; i < 3; ++i) {
-        for(int j = 0; j < m_sbInterval->value(); ++j) {
+        for(int j = 0; j < m_sdTimeInterval->value(); ++j) {
             x.append(j);
             y.append(2*(2*i + 1)*qSin(j + 10*i));
         }
@@ -70,7 +99,11 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     setupGUI();
 
-    connect(m_sbInterval, SIGNAL(valueChanged(int)), this, SLOT(changeInterval(int)));
+    connect(m_sdTimeInterval, SIGNAL(valueChanged(double)), this, SLOT(changeTimeInterval(double)));
+    connect(m_sdTimeInterval, SIGNAL(valueChanged(double)), m_lTimeInterval, SLOT(setNum(double)));
+    connect(m_sdInstalledTempInterval, SIGNAL(valueChanged(double)), m_lInstalledTempInterval, SLOT(setNum(double)));
+    connect(m_sdSensor1TempInterval, SIGNAL(valueChanged(double)), m_lSensor1TempInterval, SLOT(setNum(double)));
+    connect(m_sdSensor2TempInterval, SIGNAL(valueChanged(double)), m_lSensor2TempInterval, SLOT(setNum(double)));
 }
 
 void PlotterDialog::setCurves(const QMultiMap<QString, QVector<double> > &curves)
@@ -95,27 +128,39 @@ void PlotterDialog::setCurves(const QMultiMap<QString, QVector<double> > &curves
 
 void PlotterDialog::setupGUI()
 {
-    QFrame *hline = new QFrame(this);
-    hline->setFrameShape(QFrame::HLine);
-    hline->setFrameShadow(QFrame::Sunken);
+    QVBoxLayout *knobsLayout = new QVBoxLayout;
+    knobsLayout->addWidget(m_lTimeInterval, Qt::AlignCenter);
+    knobsLayout->addWidget(m_sdTimeInterval, Qt::AlignCenter);
+    knobsLayout->addWidget(m_lInstalledTempInterval, Qt::AlignCenter);
+    knobsLayout->addWidget(m_sdInstalledTempInterval, Qt::AlignCenter);
+    knobsLayout->addWidget(m_lSensor1TempInterval, Qt::AlignCenter);
+    knobsLayout->addWidget(m_sdSensor1TempInterval, Qt::AlignCenter);
+    knobsLayout->addWidget(m_lSensor2TempInterval, Qt::AlignCenter);
+    knobsLayout->addWidget(m_sdSensor2TempInterval, Qt::AlignCenter);
+    knobsLayout->setSpacing(5);
 
-    QHBoxLayout *hTop = new QHBoxLayout;
-    hTop->addWidget(new QLabel("Time interval:"));
-    hTop->addWidget(m_sbInterval);
-    hTop->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding));
-    hTop->setSpacing(5);
+    QHBoxLayout *plotLayout = new QHBoxLayout;
+    plotLayout->addWidget(m_plot, 1);
+    plotLayout->addItem(knobsLayout);
+    plotLayout->setSpacing(5);
 
-    QGridLayout *grid = new QGridLayout;
-    grid->addItem(hTop, 0, 0, 1, 3);
-    grid->addWidget(hline, 1, 0, 1, 3);
-    grid->addWidget(m_plot, 2, 0, 1, 3);
-    grid->addWidget(m_sbarInfo, 3, 0, 1, 3);
-    grid->setSpacing(5);
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addItem(plotLayout);
+    mainLayout->addWidget(m_sbarInfo);
+    mainLayout->setSpacing(5);
 
-    setLayout(grid);
+    setLayout(mainLayout);
 }
 
-void PlotterDialog::changeInterval(int interval)
+void PlotterDialog::knobStyling(QList<QwtKnob *> &knobList)
+{
+    foreach (QwtKnob *knob, knobList) {
+        knob->setKnobStyle(QwtKnob::Sunken);
+        knob->setMarkerStyle(QwtKnob::Tick);
+    }
+}
+
+void PlotterDialog::changeTimeInterval(double interval)
 {
     m_plot->setAxisScale(QwtPlot::xBottom, 0, interval);
 }
