@@ -18,38 +18,56 @@
 #define YMINORDIVISION 5
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
-    QDialog(parent),
-    m_lcdTimeInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
-                                     QIcon(":/Resources/up.png"),
-                                     QString::fromUtf8(""),
-                                     QString::fromUtf8(""),
-                                     QLCDNumber::Dec,
-                                     LCDSpinBox::RIGHT,
-                                     this)),
-    m_lcdInstalledTempInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
-                                              QIcon(":/Resources/up.png"),
-                                              QString::fromUtf8(""),
-                                              QString::fromUtf8(""),
-                                              QLCDNumber::Dec,
-                                              LCDSpinBox::RIGHT,
-                                              this)),
-    m_lcdSensor1TempInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
-                                            QIcon(":/Resources/up.png"),
-                                            QString::fromUtf8(""),
-                                            QString::fromUtf8(""),
-                                            QLCDNumber::Dec,
-                                            LCDSpinBox::RIGHT,
-                                            this)),
-    m_lcdSensor2TempInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
-                                            QIcon(":/Resources/up.png"),
-                                            QString::fromUtf8(""),
-                                            QString::fromUtf8(""),
-                                            QLCDNumber::Dec,
-                                            LCDSpinBox::RIGHT,
-                                            this)),
+    QDialog(parent),    
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this))
 {
+    QVector<double> timeSamples;
+    timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
+
+    QVector<double> tempSamples;
+    tempSamples << 0.5 << 1 << 2 << 5 << 10;
+
+    m_lcdTimeInterval = new LCDSampleSpinBox(timeSamples,
+                                             QIcon(":/Resources/down.png"),
+                                             QIcon(":/Resources/up.png"),
+                                             QString::fromUtf8(""),
+                                             QString::fromUtf8(""),
+                                             QLCDNumber::Dec,
+                                             LCDSpinBox::RIGHT,
+                                             this);
+    m_lcdTimeInterval->setValue(9);
+
+    m_lcdInstalledTempInterval = new LCDSampleSpinBox(tempSamples,
+                                                      QIcon(":/Resources/down.png"),
+                                                      QIcon(":/Resources/up.png"),
+                                                      QString::fromUtf8(""),
+                                                      QString::fromUtf8(""),
+                                                      QLCDNumber::Dec,
+                                                      LCDSpinBox::RIGHT,
+                                                      this);
+    m_lcdInstalledTempInterval->setValue(4);
+
+    m_lcdSensor1TempInterval = new LCDSampleSpinBox(tempSamples,
+                                                    QIcon(":/Resources/down.png"),
+                                                    QIcon(":/Resources/up.png"),
+                                                    QString::fromUtf8(""),
+                                                    QString::fromUtf8(""),
+                                                    QLCDNumber::Dec,
+                                                    LCDSpinBox::RIGHT,
+                                                    this);
+    m_lcdSensor1TempInterval->setValue(4);
+
+    m_lcdSensor2TempInterval = new LCDSampleSpinBox(tempSamples,
+                                                    QIcon(":/Resources/down.png"),
+                                                    QIcon(":/Resources/up.png"),
+                                                    QString::fromUtf8(""),
+                                                    QString::fromUtf8(""),
+                                                    QLCDNumber::Dec,
+                                                    LCDSpinBox::RIGHT,
+                                                    this);
+    m_lcdSensor2TempInterval->setValue(4);
+
     setWindowTitle(title);
 
     QList<QLCDNumber*> lcdList;
@@ -57,10 +75,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
             << dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())
                << dynamic_cast<QLCDNumber*>(m_lcdSensor1TempInterval->spinWidget())
                << dynamic_cast<QLCDNumber*>(m_lcdSensor2TempInterval->spinWidget());
-    lcdStyling(lcdList);
-
-    QList<double> timeTicksPos;
-    timeTicksPos << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
+    lcdStyling(lcdList);    
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius(5);

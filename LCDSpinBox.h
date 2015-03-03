@@ -57,9 +57,9 @@ private:
     void setupConnect();
     void digitsBase(QLCDNumber::Mode mode);
     int digitCount(const int &value);
-private slots:
-    void downStep();
-    void upStep();
+protected slots:
+    virtual void downStep();
+    virtual void upStep();
 };
 
 #endif // LCDSPINBOX_H
