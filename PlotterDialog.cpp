@@ -19,55 +19,48 @@
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent),
-    m_lcdTimeInterval(new QLCDNumber(this)),
-    m_knobTimeInterval(new QwtKnob(this)),
-
-    m_lcdInstalledTempInterval(new QLCDNumber(this)),
-    m_knobInstalledTempInterval(new QwtKnob(this)),
-
-    m_lcdSensor1TempInterval(new QLCDNumber(this)),
-    m_knobSensor1TempInterval(new QwtKnob(this)),
-
-    m_lcdSensor2TempInterval(new QLCDNumber(this)),
-    m_knobSensor2TempInterval(new QwtKnob(this)),
-
+    m_lcdTimeInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
+                                     QIcon(":/Resources/up.png"),
+                                     QString::fromUtf8(""),
+                                     QString::fromUtf8(""),
+                                     LCDSpinBox::DEC_MODE,
+                                     LCDSpinBox::RIGHT,
+                                     this)),
+    m_lcdInstalledTempInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
+                                              QIcon(":/Resources/up.png"),
+                                              QString::fromUtf8(""),
+                                              QString::fromUtf8(""),
+                                              LCDSpinBox::DEC_MODE,
+                                              LCDSpinBox::RIGHT,
+                                              this)),
+    m_lcdSensor1TempInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
+                                            QIcon(":/Resources/up.png"),
+                                            QString::fromUtf8(""),
+                                            QString::fromUtf8(""),
+                                            LCDSpinBox::DEC_MODE,
+                                            LCDSpinBox::RIGHT,
+                                            this)),
+    m_lcdSensor2TempInterval(new LCDSpinBox(QIcon(":/Resources/down.png"),
+                                            QIcon(":/Resources/up.png"),
+                                            QString::fromUtf8(""),
+                                            QString::fromUtf8(""),
+                                            LCDSpinBox::DEC_MODE,
+                                            LCDSpinBox::RIGHT,
+                                            this)),
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this))
 {
     setWindowTitle(title);
 
-    QList<QwtKnob*> knobList;
-    knobList << m_knobTimeInterval << m_knobInstalledTempInterval
-             << m_knobSensor1TempInterval << m_knobSensor2TempInterval;
-    knobStyling(knobList);
-
     QList<QLCDNumber*> lcdList;
-    lcdList << m_lcdTimeInterval << m_lcdInstalledTempInterval
-               << m_lcdSensor1TempInterval << m_lcdSensor2TempInterval;
+    lcdList << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())
+            << dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())
+               << dynamic_cast<QLCDNumber*>(m_lcdSensor1TempInterval->spinWidget())
+               << dynamic_cast<QLCDNumber*>(m_lcdSensor2TempInterval->spinWidget());
     lcdStyling(lcdList);
 
     QList<double> timeTicksPos;
     timeTicksPos << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
-
-    QwtScaleDiv timeScaleDiv;
-    timeScaleDiv.setTicks(QwtScaleDiv::MajorTick, timeTicksPos);
-    timeScaleDiv.setInterval(0.5, 60);
-
-    m_knobTimeInterval->setScale(0, 600);
-//    m_knobTimeInterval->setScaleStepSize(0);
-    m_knobTimeInterval->setSingleSteps(0.5);
-    m_knobTimeInterval->setScaleMaxMajor(10);
-    m_knobTimeInterval->setScaleMaxMinor(1);
-//    m_knobTimeInterval->setTotalSteps(60/0.5);
-    m_knobTimeInterval->setValue(1);
-
-    m_knobInstalledTempInterval->setScale(-50, 50);
-    m_knobInstalledTempInterval->setScaleStepSize(10);
-    m_knobInstalledTempInterval->setSingleSteps(1);
-    m_knobInstalledTempInterval->setScaleMaxMajor(10);
-    m_knobInstalledTempInterval->setScaleMaxMinor(10);
-    m_knobInstalledTempInterval->setTotalSteps(100);
-    m_knobInstalledTempInterval->setValue(35);
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius(5);
@@ -151,13 +144,9 @@ void PlotterDialog::setupGUI()
 {
     QGridLayout *knobsLayout = new QGridLayout;
     knobsLayout->addWidget(m_lcdTimeInterval, 0, 0);
-    knobsLayout->addWidget(m_knobTimeInterval, 0, 1);
     knobsLayout->addWidget(m_lcdInstalledTempInterval, 1, 0);
-    knobsLayout->addWidget(m_knobInstalledTempInterval, 1, 1);
     knobsLayout->addWidget(m_lcdSensor1TempInterval, 2, 0);
-    knobsLayout->addWidget(m_knobSensor1TempInterval, 2, 1);
     knobsLayout->addWidget(m_lcdSensor2TempInterval, 3, 0);
-    knobsLayout->addWidget(m_knobSensor2TempInterval, 3, 1);
     knobsLayout->setSpacing(5);
 
     QHBoxLayout *plotLayout = new QHBoxLayout;
@@ -171,14 +160,6 @@ void PlotterDialog::setupGUI()
     mainLayout->setSpacing(5);
 
     setLayout(mainLayout);
-}
-
-void PlotterDialog::knobStyling(QList<QwtKnob *> &knobList)
-{
-    foreach (QwtKnob *knob, knobList) {
-        knob->setKnobStyle(QwtKnob::Sunken);
-        knob->setMarkerStyle(QwtKnob::Tick);
-    }
 }
 
 void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
@@ -199,12 +180,6 @@ void PlotterDialog::changeTimeInterval(double interval)
 
 void PlotterDialog::setupConnections()
 {
-    connect(m_knobTimeInterval, SIGNAL(valueChanged(double)), this, SLOT(changeTimeInterval(double)));
-
-    connect(m_knobTimeInterval, SIGNAL(valueChanged(double)), m_lcdTimeInterval, SLOT(display(double)));
-    connect(m_knobInstalledTempInterval, SIGNAL(valueChanged(double)), m_lcdInstalledTempInterval, SLOT(display(double)));
-    connect(m_knobSensor1TempInterval, SIGNAL(valueChanged(double)), m_lcdSensor1TempInterval, SLOT(display(double)));
-    connect(m_knobSensor2TempInterval, SIGNAL(valueChanged(double)), m_lcdSensor2TempInterval, SLOT(display(double)));
 }
 
 void PlotterDialog::setColorLCD(QLCDNumber *lcd, bool isHeat)

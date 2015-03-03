@@ -9,7 +9,7 @@
 #include <qwt_knob.h>
 #include <QVector>
 #include <QMultiMap>
-#include <QLCDNumber>
+#include "LCDSpinBox.h"
 
 class PlotterDialog : public QDialog
 {
@@ -21,17 +21,10 @@ signals:
 
 public slots:
 private:
-    QLCDNumber *m_lcdTimeInterval;
-    QwtKnob *m_knobTimeInterval;
-
-    QLCDNumber *m_lcdInstalledTempInterval;
-    QwtKnob *m_knobInstalledTempInterval;
-
-    QLCDNumber *m_lcdSensor1TempInterval;
-    QwtKnob *m_knobSensor1TempInterval;
-
-    QLCDNumber *m_lcdSensor2TempInterval;
-    QwtKnob *m_knobSensor2TempInterval;
+    LCDSpinBox *m_lcdTimeInterval;
+    LCDSpinBox *m_lcdInstalledTempInterval;
+    LCDSpinBox *m_lcdSensor1TempInterval;
+    LCDSpinBox *m_lcdSensor2TempInterval;
 
     QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;
@@ -39,7 +32,6 @@ private:
 
     void setupGUI();
     void setupConnections();
-    void knobStyling(QList<QwtKnob *> &knobList);
     void lcdStyling(QList<QLCDNumber *> &lcdList);
     void setColorLCD(QLCDNumber *lcd, bool isHeat);
     QString &addTrailingZeros(QString &str, int prec);
