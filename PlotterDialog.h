@@ -41,6 +41,8 @@ private:
     void setupConnections();
     void knobStyling(QList<QwtKnob *> &knobList);
     void lcdStyling(QList<QLCDNumber *> &lcdList);
+    void setColorLCD(QLCDNumber *lcd, bool isHeat);
+    QString &addTrailingZeros(QString &str, int prec);
 private slots:
     void changeTimeInterval(double interval);
 };

@@ -4,5 +4,7 @@
         <file>Resources/left.png</file>
         <file>Resources/right.png</file>
         <file>Resources/NGControl.png</file>
+        <file>Resources/down.png</file>
+        <file>Resources/up.png</file>
     </qresource>
 </RCC>

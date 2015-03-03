@@ -17,15 +17,24 @@ public:
         HEX_MODE
     };
 
+    enum LAYOUT {
+        TOP,
+        BOTTOM,
+        LEFT,
+        RIGHT
+    };
+
     explicit LCDSpinBox(const QIcon &iconDown,
                         const QIcon &iconUp,
                         const QString &textDown = 0,
                         const QString &textUp = 0,
                         DIGIT_MODE mode = DEC_MODE,
+                        LAYOUT layout = BOTTOM,
                         QWidget *parent = 0);
     explicit LCDSpinBox(const QString &textDown,
                         const QString &textUp,
                         DIGIT_MODE mode = DEC_MODE,
+                        LAYOUT layout = BOTTOM,
                         QWidget *parent = 0);
     virtual ~LCDSpinBox();
 
@@ -51,7 +60,7 @@ private:
     int m_min;
     int m_max;
 
-    void setupGui();
+    void setupGui(LAYOUT layout);
     void setupConnect();
     void digitsBase(DIGIT_MODE mode);
     int digitCount(const int &value);

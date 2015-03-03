@@ -206,3 +206,49 @@ void PlotterDialog::setupConnections()
     connect(m_knobSensor1TempInterval, SIGNAL(valueChanged(double)), m_lcdSensor1TempInterval, SLOT(display(double)));
     connect(m_knobSensor2TempInterval, SIGNAL(valueChanged(double)), m_lcdSensor2TempInterval, SLOT(display(double)));
 }
+
+void PlotterDialog::setColorLCD(QLCDNumber *lcd, bool isHeat)
+{
+    QPalette palette;
+    // get the palette
+    palette = lcd->palette();
+    if(isHeat) {
+        // foreground color
+        palette.setColor(palette.WindowText, QColor(100, 0, 0));
+        // "light" border
+        palette.setColor(palette.Light, QColor(100, 0, 0));
+        // "dark" border
+        palette.setColor(palette.Dark, QColor(100, 0, 0));
+    } else {
+        // foreground color
+        palette.setColor(palette.WindowText, QColor(0, 0, 100));
+        // "light" border
+        palette.setColor(palette.Light, QColor(0, 0, 100));
+        // "dark" border
+        palette.setColor(palette.Dark, QColor(0, 0, 100));
+    }
+    // set the palette
+    lcd->setPalette(palette);
+}
+
+QString &PlotterDialog::addTrailingZeros(QString &str, int prec)
+{
+    if(str.isEmpty() || prec < 1) { // if prec == 0 then it's no sense
+        return str;
+    }
+
+    int pointIndex = str.indexOf(".");
+    if(pointIndex == -1) {
+        str.append(".");
+        pointIndex = str.size() - 1;
+    }
+
+    if(str.size() - 1 - pointIndex < prec) {
+        int size = str.size();
+        for(int i = 0; i < prec - (size - 1 - pointIndex); ++i) {
+            str.append("0");
+        }
+    }
+
+    return str;
+}
