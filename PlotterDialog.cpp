@@ -2,6 +2,7 @@
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGroupBox>
 //#include <QFrame>
 #include <QStringList>
 #include <qwt_plot_canvas.h>
@@ -157,12 +158,25 @@ void PlotterDialog::setCurves(const QMultiMap<QString, QVector<double> > &curves
 
 void PlotterDialog::setupGUI()
 {
-    QGridLayout *knobsLayout = new QGridLayout;
-    knobsLayout->addWidget(m_lcdTimeInterval, 0, 0);
-    knobsLayout->addWidget(m_lcdInstalledTempInterval, 1, 0);
-    knobsLayout->addWidget(m_lcdSensor1TempInterval, 2, 0);
-    knobsLayout->addWidget(m_lcdSensor2TempInterval, 3, 0);
-    knobsLayout->setSpacing(5);
+    QVBoxLayout *timeLayout = new QVBoxLayout;
+    timeLayout->addWidget(m_lcdTimeInterval);
+    timeLayout->setSpacing(5);
+
+    QGroupBox *gbTime = new QGroupBox("sec/div", this);
+    gbTime->setLayout(timeLayout);
+
+    QGridLayout *tempLayout = new QGridLayout;
+    tempLayout->addWidget(m_lcdInstalledTempInterval, 0, 0);
+    tempLayout->addWidget(m_lcdSensor1TempInterval, 1, 0);
+    tempLayout->addWidget(m_lcdSensor2TempInterval, 2, 0);
+    tempLayout->setSpacing(5);
+
+    QGroupBox *gbTemp = new QGroupBox("°C/div", this);
+    gbTemp->setLayout(tempLayout);
+
+    QVBoxLayout *knobsLayout = new QVBoxLayout;
+    knobsLayout->addWidget(gbTime);
+    knobsLayout->addWidget(gbTemp);
 
     QHBoxLayout *plotLayout = new QHBoxLayout;
     plotLayout->addWidget(m_plot, 1);
