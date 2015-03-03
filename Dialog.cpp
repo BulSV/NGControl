@@ -52,7 +52,7 @@ Dialog::Dialog(QWidget *parent) :
                                  QIcon(":/Resources/right.png"),
                                  QString::fromUtf8(""),
                                  QString::fromUtf8(""),
-                                 LCDSpinBox::DEC_MODE,
+                                 QLCDNumber::Dec,
                                  LCDSpinBox::BOTTOM,
                                  this)),
         lcdInstalledTemp(new QLCDNumber(this)),

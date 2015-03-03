@@ -10,13 +10,6 @@ class LCDSpinBox : public ISpinBox
 {
     Q_OBJECT
 public:
-    enum DIGIT_MODE {
-        BIN_MODE,
-        OCT_MODE,
-        DEC_MODE,
-        HEX_MODE
-    };
-
     enum LAYOUT {
         TOP,
         BOTTOM,
@@ -28,12 +21,12 @@ public:
                         const QIcon &iconUp,
                         const QString &textDown = 0,
                         const QString &textUp = 0,
-                        DIGIT_MODE mode = DEC_MODE,
+                        QLCDNumber::Mode mode = QLCDNumber::Dec,
                         LAYOUT layout = BOTTOM,
                         QWidget *parent = 0);
     explicit LCDSpinBox(const QString &textDown,
                         const QString &textUp,
-                        DIGIT_MODE mode = DEC_MODE,
+                        QLCDNumber::Mode mode = QLCDNumber::Dec,
                         LAYOUT layout = BOTTOM,
                         QWidget *parent = 0);
     virtual ~LCDSpinBox();
@@ -62,7 +55,7 @@ private:
 
     void setupGui(LAYOUT layout);
     void setupConnect();
-    void digitsBase(DIGIT_MODE mode);
+    void digitsBase(QLCDNumber::Mode mode);
     int digitCount(const int &value);
 private slots:
     void downStep();

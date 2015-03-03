@@ -5,7 +5,7 @@ LCDSpinBox::LCDSpinBox(const QIcon &iconDown,
                        const QIcon &iconUp,
                        const QString &textDown,
                        const QString &textUp,
-                       DIGIT_MODE mode,
+                       QLCDNumber::Mode mode,
                        LAYOUT layout,
                        QWidget *parent) :
     ISpinBox(parent)
@@ -20,7 +20,7 @@ LCDSpinBox::LCDSpinBox(const QIcon &iconDown,
 
 LCDSpinBox::LCDSpinBox(const QString &textDown,
                        const QString &textUp,
-                       DIGIT_MODE mode,
+                       QLCDNumber::Mode mode,
                        LAYOUT layout,
                        QWidget *parent) :
     ISpinBox(parent)
@@ -144,23 +144,28 @@ void LCDSpinBox::setupConnect()
     connect(m_bUp, SIGNAL(mouseReleased()), this, SIGNAL(upButtonReleased()));
 }
 
-void LCDSpinBox::digitsBase(LCDSpinBox::DIGIT_MODE mode)
+void LCDSpinBox::digitsBase(QLCDNumber::Mode mode)
 {
     switch (mode) {
-    case BIN_MODE:
+    case QLCDNumber::Bin:
         m_base = 2;
+        m_LCDNumber->setMode(QLCDNumber::Bin);
         break;
-    case OCT_MODE:
+    case QLCDNumber::Oct:
         m_base = 8;
+        m_LCDNumber->setMode(QLCDNumber::Oct);
         break;
-    case DEC_MODE:
+    case QLCDNumber::Dec:
         m_base = 10;
+        m_LCDNumber->setMode(QLCDNumber::Dec);
         break;
-    case HEX_MODE:
+    case QLCDNumber::Hex:
         m_base = 16;
+        m_LCDNumber->setMode(QLCDNumber::Hex);
         break;
     default:
         m_base = 10;
+        m_LCDNumber->setMode(QLCDNumber::Dec);
         break;
     }
 }
