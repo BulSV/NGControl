@@ -9,6 +9,7 @@
 #include <qwt_knob.h>
 #include <QVector>
 #include <QMultiMap>
+#include <QLCDNumber>
 
 class PlotterDialog : public QDialog
 {
@@ -20,24 +21,26 @@ signals:
 
 public slots:
 private:
-    QLabel *m_lTimeInterval;
-    QwtKnob *m_sdTimeInterval;
+    QLCDNumber *m_lcdTimeInterval;
+    QwtKnob *m_knobTimeInterval;
 
-    QLabel *m_lInstalledTempInterval;
-    QwtKnob *m_sdInstalledTempInterval;
+    QLCDNumber *m_lcdInstalledTempInterval;
+    QwtKnob *m_knobInstalledTempInterval;
 
-    QLabel *m_lSensor1TempInterval;
-    QwtKnob *m_sdSensor1TempInterval;
+    QLCDNumber *m_lcdSensor1TempInterval;
+    QwtKnob *m_knobSensor1TempInterval;
 
-    QLabel *m_lSensor2TempInterval;
-    QwtKnob *m_sdSensor2TempInterval;
+    QLCDNumber *m_lcdSensor2TempInterval;
+    QwtKnob *m_knobSensor2TempInterval;
 
     QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
 
     void setupGUI();
+    void setupConnections();
     void knobStyling(QList<QwtKnob *> &knobList);
+    void lcdStyling(QList<QLCDNumber *> &lcdList);
 private slots:
     void changeTimeInterval(double interval);
 };

@@ -49,6 +49,8 @@ private:
     QString sensorToString(SENSORS sensor);
     // disintegrating number of byte by byte
     QByteArray intToByteArray(const int &value, const int &numBytes);
+    // negative temp correction for non sensors
+    float negativeTempCorr(int temp);
 };
 
 #endif // READSENSORPROTOCOL_H

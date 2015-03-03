@@ -53,7 +53,7 @@ void NGProtocol::readData(bool isReaded)
 
         ba = itsComPort->getReadData();
 
-        itsReadData.insert(QString("TEMP"), QString::number(wordToInt(ba.mid(1, 2))));
+        itsReadData.insert(QString("TEMP"), QString::number(negativeTempCorr(wordToInt(ba.mid(1, 2)))));
         itsReadData.insert(QString("SENS1"),
                            QString::number(tempCorr(tempSensors(wordToInt(ba.mid(3, 2))), SENSOR1), FORMAT, PRECISION));
         itsReadData.insert(QString("SENS2"),
@@ -216,4 +216,13 @@ QByteArray NGProtocol::intToByteArray(const int &value, const int &numBytes)
     }
 
     return ba;
+}
+
+float NGProtocol::negativeTempCorr(int temp)
+{
+    if(temp & NEGATIVE) {
+        return -static_cast<float>(qAbs(temp - OFFSET));
+    } else {
+        return static_cast<float>(temp);
+    }
 }
