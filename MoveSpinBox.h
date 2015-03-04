@@ -16,7 +16,7 @@ public:
         RIGHT
     };
 
-    explicit MoveSpinBox(const QIcon &iconSpin,
+    explicit MoveSpinBox(const QString &textSpin,
                          const QIcon &iconDown,
                          const QIcon &iconUp,
                          const QString &textDown = 0,

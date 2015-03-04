@@ -10,6 +10,7 @@
 #include <QVector>
 #include <QMultiMap>
 #include "LCDSampleSpinBox.h"
+#include "MoveSpinBox.h"
 
 class PlotterDialog : public QDialog
 {
@@ -23,8 +24,8 @@ public slots:
 private:
     ISpinBox *m_lcdTimeInterval;
     ISpinBox *m_lcdInstalledTempInterval;
-    ISpinBox *m_lcdSensor1TempInterval;
-    ISpinBox *m_lcdSensor2TempInterval;
+    ISpinBox *m_msbTimeInterval;
+    ISpinBox *m_msbTempInterval;
 
     QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;

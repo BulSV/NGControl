@@ -1,7 +1,7 @@
 #include "MoveSpinBox.h"
 #include <QGridLayout>
 
-MoveSpinBox::MoveSpinBox(const QIcon &iconSpin,
+MoveSpinBox::MoveSpinBox(const QString &textSpin,
                          const QIcon &iconDown,
                          const QIcon &iconUp,
                          const QString &textDown,
@@ -9,12 +9,7 @@ MoveSpinBox::MoveSpinBox(const QIcon &iconSpin,
                          LAYOUT layout,
                          QWidget *parent) :
     ISpinBox(parent),
-    m_Label(new QLabel(QString("<img src='")
-//                       + iconSpin.themeSearchPaths()
-//                       + QString("/")
-                       + iconSpin.themeName()
-                       + QString("' height='64' width='64'/>")
-                       , this)),
+    m_Label(new QLabel(textSpin, this)),
     m_bDown(new SpinBoxButton(iconDown, textDown, 500, 0.25, this)),
     m_bUp(new SpinBoxButton(iconUp, textUp, 500, 0.25, this)),
     m_min(0),
@@ -22,6 +17,7 @@ MoveSpinBox::MoveSpinBox(const QIcon &iconSpin,
     m_step(0)
 {
     setupGui(layout);
+    setupConnect();
 }
 
 MoveSpinBox::MoveSpinBox(const QString &textSpin,
@@ -38,6 +34,7 @@ MoveSpinBox::MoveSpinBox(const QString &textSpin,
     m_step(0)
 {
     setupGui(layout);
+    setupConnect();
 }
 
 void MoveSpinBox::setRange(const double &min, const double &max, const double &step)
@@ -101,11 +98,11 @@ void MoveSpinBox::setupGui(MoveSpinBox::LAYOUT layout)
     case TOP:
         mainLayout->addWidget(m_bDown, 0, 0);
         mainLayout->addWidget(m_bUp, 0, 1);
-        mainLayout->addWidget(m_Label, 1, 0, 1, 2);
+        mainLayout->addWidget(m_Label, 1, 0, 1, 2, Qt::AlignCenter);
         mainLayout->setSpacing(5);
         break;
     case BOTTOM:
-        mainLayout->addWidget(m_Label, 0, 0, 1, 2);
+        mainLayout->addWidget(m_Label, 0, 0, 1, 2, Qt::AlignCenter);
         mainLayout->addWidget(m_bDown, 1, 0);
         mainLayout->addWidget(m_bUp, 1, 1);
         mainLayout->setSpacing(5);

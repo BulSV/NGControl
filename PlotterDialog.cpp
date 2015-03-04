@@ -49,33 +49,29 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                       this);
     m_lcdInstalledTempInterval->setValue(tempSamples.size());
 
-    m_lcdSensor1TempInterval = new LCDSampleSpinBox(tempSamples,
-                                                    QIcon(":/Resources/down.png"),
-                                                    QIcon(":/Resources/up.png"),
-                                                    QString::fromUtf8(""),
-                                                    QString::fromUtf8(""),
-                                                    QLCDNumber::Dec,
-                                                    LCDSpinBox::RIGHT,
-                                                    this);
-    m_lcdSensor1TempInterval->setValue(tempSamples.size());
+    m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='48' width='48'/>",
+                                        QIcon(":/Resources/left.png"),
+                                        QIcon(":/Resources/right.png"),
+                                        QString::fromUtf8(""),
+                                        QString::fromUtf8(""),
+                                        MoveSpinBox::BOTTOM,
+                                        this);
+    m_msbTimeInterval->setValue(tempSamples.size());
 
-    m_lcdSensor2TempInterval = new LCDSampleSpinBox(tempSamples,
-                                                    QIcon(":/Resources/down.png"),
-                                                    QIcon(":/Resources/up.png"),
-                                                    QString::fromUtf8(""),
-                                                    QString::fromUtf8(""),
-                                                    QLCDNumber::Dec,
-                                                    LCDSpinBox::RIGHT,
-                                                    this);
-    m_lcdSensor2TempInterval->setValue(tempSamples.size());
+    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.png' height='48' width='48'/>",
+                                        QIcon(":/Resources/down.png"),
+                                        QIcon(":/Resources/up.png"),
+                                        QString::fromUtf8(""),
+                                        QString::fromUtf8(""),
+                                        MoveSpinBox::RIGHT,
+                                        this);
+    m_msbTempInterval->setValue(tempSamples.size());
 
     setWindowTitle(title);
 
     QList<QLCDNumber*> lcdList;
     lcdList << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())
-            << dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())
-               << dynamic_cast<QLCDNumber*>(m_lcdSensor1TempInterval->spinWidget())
-               << dynamic_cast<QLCDNumber*>(m_lcdSensor2TempInterval->spinWidget());
+            << dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget());
     lcdStyling(lcdList);
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
@@ -166,15 +162,16 @@ void PlotterDialog::setupGUI()
 {
     QVBoxLayout *timeLayout = new QVBoxLayout;
     timeLayout->addWidget(m_lcdTimeInterval);
+    timeLayout->addWidget(m_msbTimeInterval);
     timeLayout->setSpacing(5);
 
     QGroupBox *gbTime = new QGroupBox("sec/div", this);
     gbTime->setLayout(timeLayout);
 
-    QGridLayout *tempLayout = new QGridLayout;
-    tempLayout->addWidget(m_lcdInstalledTempInterval, 0, 0);
-    tempLayout->addWidget(m_lcdSensor1TempInterval, 1, 0);
-    tempLayout->addWidget(m_lcdSensor2TempInterval, 2, 0);
+    QVBoxLayout *tempLayout = new QVBoxLayout;
+    tempLayout->addWidget(m_lcdInstalledTempInterval);
+    tempLayout->addWidget(m_msbTempInterval);
+
     tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);
