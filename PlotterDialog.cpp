@@ -209,27 +209,29 @@ void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
 void PlotterDialog::changeTimeInterval()
 {
     m_plot->setAxisScale(QwtPlot::xBottom,
-                         0,
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION);
+                         m_msbTimeInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value());
 }
 
 void PlotterDialog::changeTempInterval()
 {
     m_plot->setAxisScale(QwtPlot::yLeft,
-                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2);
+                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value());
 }
 
 void PlotterDialog::moveTimeInterval()
 {
-    m_plot->setAxisScale(QwtPlot::xBottom, m_msbTimeInterval->value(),
+    m_plot->setAxisScale(QwtPlot::xBottom,
+                         m_msbTimeInterval->value(),
                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value());
 }
 
 void PlotterDialog::moveTempInterval()
 {
-    m_plot->setAxisScale(QwtPlot::xBottom, -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTimeInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTimeInterval->value());
+    m_plot->setAxisScale(QwtPlot::yLeft,
+                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value());
 }
 
 void PlotterDialog::setupConnections()
