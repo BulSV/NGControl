@@ -283,7 +283,7 @@ void Dialog::writeTemp()
         }
 
         dataTemp.insert("CODE", "0");
-        dataTemp.insert("TEMP", QString::number(sbSetTemp->value()));
+        dataTemp.insert("TEMP", QString::number(static_cast<int>(sbSetTemp->value())));
         itsProtocol->setDataToWrite(dataTemp);
         itsProtocol->writeData();
     }

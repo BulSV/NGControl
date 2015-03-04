@@ -51,7 +51,7 @@ void LCDSpinBox::setRange(const double &min, const double &max, const double &st
     m_step = static_cast<int>(step);
 }
 
-int LCDSpinBox::value() const
+double LCDSpinBox::value() const
 {
     return m_LCDNumber->value();
 }

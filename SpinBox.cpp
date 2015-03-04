@@ -100,9 +100,9 @@ void SpinBox::setRange(const int &min, const int &max)
     sbInput->setRange(min, max);
 }
 
-int SpinBox::value() const
+double SpinBox::value() const
 {
-    return sbInput->value();
+    return static_cast<double>(sbInput->value());
 }
 
 QWidget *SpinBox::spinWidget() const

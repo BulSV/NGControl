@@ -44,7 +44,7 @@ void MoveSpinBox::setRange(const double &min, const double &max, const double &s
     m_step = step;
 }
 
-int MoveSpinBox::value() const
+double MoveSpinBox::value() const
 {
     return m_current;
 }
@@ -145,14 +145,14 @@ void MoveSpinBox::setupConnect()
 
 void MoveSpinBox::downStep()
 {
-    if(m_current - 1 >= m_min) {
-        --m_current;
+    if(m_current - m_step >= m_min) {
+        m_current -= m_step;
     }
 }
 
 void MoveSpinBox::upStep()
 {
-    if(m_current + 1 <= m_max) {
-        ++m_current;
+    if(m_current + m_step <= m_max) {
+        m_current += m_step;
     }
 }

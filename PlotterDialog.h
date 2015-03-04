@@ -39,6 +39,8 @@ private:
 private slots:
     void changeTimeInterval();
     void changeTempInterval();
+    void moveTimeInterval();
+    void moveTempInterval();
 };
 
 #endif // PLOTTERDIALOG_H

@@ -30,7 +30,7 @@ public:
                          QWidget *parent = 0);
 
     virtual void setRange(const double &min, const double& max, const double &step);
-    virtual int value() const;
+    virtual double value() const;
 
     virtual QWidget *spinWidget() const;
     virtual QWidget *buttunDownWidget() const;
