@@ -10,6 +10,10 @@
 #include <qwt_plot_grid.h>
 #include <qwt_scale_div.h>
 //#include <qwt_panner.h>
+#include <qwt_plot_picker.h>
+#include <qwt_picker_machine.h>
+#include <qwt_plot_marker.h>
+//#include <qwt_symbol.h>
 
 #define XDIVISION 10
 #define XMAJORDIVISION 10
@@ -81,7 +85,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     m_plot->setCanvas(canvas);
     m_plot->setCanvasBackground(QBrush(QColor("#FFFFFF")));
-    m_plot->setCursor(QCursor(Qt::CrossCursor));
 
     // legend
     QwtLegend *legend = new QwtLegend;
@@ -130,6 +133,32 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
         x.clear();
         y.clear();
     }
+
+    QwtPlotPicker *d_picker = new QwtPlotPicker(QwtPlot::xBottom,
+                                                QwtPlot::yLeft,
+                                                QwtPlotPicker::CrossRubberBand,
+                                                QwtPicker::ActiveOnly,
+                                                m_plot->canvas());
+    d_picker->setStateMachine(new QwtPickerDragPointMachine());
+    d_picker->setRubberBandPen(QColor(Qt::black));
+    d_picker->setTrackerPen(QColor(Qt::black));
+
+    /*QwtPlotMarker *d_marker1 = new QwtPlotMarker();
+    d_marker1->setValue( 0.0, 0.0 );
+    d_marker1->setLineStyle( QwtPlotMarker::VLine );
+    d_marker1->setLabelAlignment( Qt::AlignRight | Qt::AlignBottom );
+    d_marker1->setLinePen( Qt::green, 0, Qt::DashDotLine );
+    d_marker1->attach( m_plot );
+
+    QwtPlotMarker *d_marker2 = new QwtPlotMarker();
+    d_marker2->setLineStyle( QwtPlotMarker::HLine );
+    d_marker2->setLabelAlignment( Qt::AlignRight | Qt::AlignBottom );
+    d_marker2->setLinePen( QColor( 200, 150, 0 ), 0, Qt::DashDotLine );
+    d_marker2->setSymbol( new QwtSymbol( QwtSymbol::Diamond,
+                                         QColor( Qt::yellow ),
+                                         QColor( Qt::green ),
+                                         QSize( 8, 8 ) ) );
+    d_marker2->attach( m_plot );*/
 
     setCurves(curves);
 
