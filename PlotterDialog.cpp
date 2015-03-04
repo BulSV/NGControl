@@ -223,14 +223,14 @@ void PlotterDialog::changeTempInterval()
 void PlotterDialog::moveTimeInterval()
 {
     QwtPanner panner(m_plot->canvas());
-    panner.move(m_msbTimeInterval->value(), 0);
+    panner.move(static_cast<int>(m_msbTimeInterval->value()), 0);
     qDebug() << "moveTimeInterval():" << m_msbTimeInterval->value();
 }
 
 void PlotterDialog::moveTempInterval()
 {
     QwtPanner panner(m_plot->canvas());
-    panner.move(0, m_msbTempInterval->value());
+    panner.move(0, static_cast<int>(m_msbTempInterval->value()));
     qDebug() << "moveTempInterval():" << m_msbTempInterval->value();
 }
 
