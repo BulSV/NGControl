@@ -9,7 +9,7 @@ class ISpinBox : public QWidget
 public:
     explicit ISpinBox(QWidget *parent = 0);
     virtual ~ISpinBox();
-    virtual void setRange(const double &min, const double& max) = 0;
+    virtual void setRange(const double &min, const double& max, const double &step) = 0;
     virtual int value() const = 0;
     virtual QWidget *spinWidget() const = 0;
     virtual QWidget *buttunDownWidget() const = 0;
@@ -20,7 +20,7 @@ public slots:
     virtual void setIconUpButton(const QIcon &icon) = 0;
     virtual void setTextUpButton(const QString &text) = 0;
 
-    virtual void setValue(const int &value) = 0;
+    virtual void setValue(const double &value) = 0;
 signals:
     void downButtonPressed();
     void downButtonReleased();

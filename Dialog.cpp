@@ -36,6 +36,7 @@
 
 #define TEMPRANGE_MIN -50 // degrees Celsius
 #define TEMPRANGE_MAX 50 // degrees Celsius
+#define TEMPSTEP 1 // degrees Celsius
 #define NORMAL_TEMP 35 // degrees Celsius
 
 Dialog::Dialog(QWidget *parent) :
@@ -152,7 +153,7 @@ Dialog::Dialog(QWidget *parent) :
     itsBlinkTimeRxColor->setInterval(BLINKTIMERX);
     itsTimeToDisplay->setInterval(DISPLAYTIME);
 
-    sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX);
+    sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX, TEMPSTEP);
     sbSetTemp->setValue(NORMAL_TEMP);
     colorSetTempLCD();
 

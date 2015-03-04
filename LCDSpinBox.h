@@ -31,7 +31,7 @@ public:
                         QWidget *parent = 0);
     virtual ~LCDSpinBox();
 
-    virtual void setRange(const double &min, const double &max);
+    virtual void setRange(const double &min, const double &max, const double &step);
     virtual int value() const;
 
     virtual QWidget *spinWidget() const;
@@ -43,7 +43,7 @@ public slots:
     virtual void setIconUpButton(const QIcon &icon);
     virtual void setTextUpButton(const QString &text);
 
-    virtual void setValue(const int &value);
+    virtual void setValue(const double &value);
 private:
     QLCDNumber *m_LCDNumber;
     QPushButton *m_bDown;
@@ -52,6 +52,7 @@ private:
     int m_base;
     int m_min;
     int m_max;
+    int m_step;
 
     void setupGui(LAYOUT layout);
     void setupConnect();

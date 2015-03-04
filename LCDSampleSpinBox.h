@@ -22,9 +22,9 @@ public:
                               QLCDNumber::Mode mode = QLCDNumber::Dec,
                               LAYOUT layout = BOTTOM,
                               QWidget *parent = 0);
-    virtual void setRange(const double &min, const double& max);
+    virtual void setRange(const double &min, const double& max, const double &step);
 public slots:
-    virtual void setValue(const int &value);
+    virtual void setValue(const double &value);
 private:
     QVector<double> m_SamplesValues;
     int m_CurrentSampleIndex;

@@ -6,5 +6,7 @@
         <file>Resources/NGControl.png</file>
         <file>Resources/down.png</file>
         <file>Resources/up.png</file>
+        <file>Resources/LeftRight.png</file>
+        <file>Resources/UpDown.png</file>
     </qresource>
 </RCC>

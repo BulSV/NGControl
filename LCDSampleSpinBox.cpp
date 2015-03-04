@@ -28,13 +28,13 @@ LCDSampleSpinBox::LCDSampleSpinBox(const QVector<double> &samplesValues,
     setDigitCount();
 }
 
-void LCDSampleSpinBox::setRange(const double &min, const double &max)
+void LCDSampleSpinBox::setRange(const double &min, const double &max, const double &step)
 {
 }
 
-void LCDSampleSpinBox::setValue(const int &sampleIndex)
+void LCDSampleSpinBox::setValue(const double &sampleIndex)
 {
-    if(sampleIndex < 0 || sampleIndex > m_SamplesValues.size() - 1) {
+    if(static_cast<int>(sampleIndex) < 0 || static_cast<int>(sampleIndex) > m_SamplesValues.size() - 1) {
         m_CurrentSampleIndex = 0;
     } else {
         m_CurrentSampleIndex = sampleIndex;

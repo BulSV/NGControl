@@ -24,7 +24,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot(new QwtPlot(this))
 {
     QVector<double> timeSamples;
-    timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30;
+    timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
 
     QVector<double> tempSamples;
     tempSamples << 0.5 << 1 << 2 << 5 << 10;

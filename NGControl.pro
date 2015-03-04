@@ -55,7 +55,8 @@ HEADERS += \
     LCDSpinBox.h \
     SpinBoxButton.h \
     PlotterDialog.h \
-    LCDSampleSpinBox.h
+    LCDSampleSpinBox.h \
+    MoveSpinBox.h
 
 SOURCES += \
     ComPort.cpp \
@@ -68,7 +69,8 @@ SOURCES += \
     LCDSpinBox.cpp \
     SpinBoxButton.cpp \
     PlotterDialog.cpp \
-    LCDSampleSpinBox.cpp
+    LCDSampleSpinBox.cpp \
+    MoveSpinBox.cpp
 
 RESOURCES += \
     NGControl.qrc
