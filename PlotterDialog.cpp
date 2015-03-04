@@ -24,7 +24,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot(new QwtPlot(this))
 {
     QVector<double> timeSamples;
-    timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
+    timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30;
 
     QVector<double> tempSamples;
     tempSamples << 0.5 << 1 << 2 << 5 << 10;
@@ -37,7 +37,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                              QLCDNumber::Dec,
                                              LCDSpinBox::RIGHT,
                                              this);
-    m_lcdTimeInterval->setValue(9);
+    m_lcdTimeInterval->setValue(timeSamples.size());
 
     m_lcdInstalledTempInterval = new LCDSampleSpinBox(tempSamples,
                                                       QIcon(":/Resources/down.png"),
@@ -47,7 +47,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                       QLCDNumber::Dec,
                                                       LCDSpinBox::RIGHT,
                                                       this);
-    m_lcdInstalledTempInterval->setValue(4);
+    m_lcdInstalledTempInterval->setValue(tempSamples.size());
 
     m_lcdSensor1TempInterval = new LCDSampleSpinBox(tempSamples,
                                                     QIcon(":/Resources/down.png"),
@@ -57,7 +57,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                     QLCDNumber::Dec,
                                                     LCDSpinBox::RIGHT,
                                                     this);
-    m_lcdSensor1TempInterval->setValue(4);
+    m_lcdSensor1TempInterval->setValue(tempSamples.size());
 
     m_lcdSensor2TempInterval = new LCDSampleSpinBox(tempSamples,
                                                     QIcon(":/Resources/down.png"),
@@ -67,7 +67,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                     QLCDNumber::Dec,
                                                     LCDSpinBox::RIGHT,
                                                     this);
-    m_lcdSensor2TempInterval->setValue(4);
+    m_lcdSensor2TempInterval->setValue(tempSamples.size());
 
     setWindowTitle(title);
 
@@ -77,8 +77,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                << dynamic_cast<QLCDNumber*>(m_lcdSensor1TempInterval->spinWidget())
                << dynamic_cast<QLCDNumber*>(m_lcdSensor2TempInterval->spinWidget());
     lcdStyling(lcdList);
-
-    m_lcdTimeInterval->setRange(0, 60);
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius(5);
@@ -101,13 +99,17 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     // axes
     m_plot->setAxisTitle( QwtPlot::xBottom, "Time, sec" );
-    m_plot->setAxisScale(QwtPlot::xBottom, -XDIVISION/2, XDIVISION/2);
+    m_plot->setAxisScale(QwtPlot::xBottom,
+                         -dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION/2,
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION/2);
     m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::xBottom, false);
 
     m_plot->setAxisTitle( QwtPlot::yLeft, "Temperature, °C" );
-    m_plot->setAxisScale(QwtPlot::yLeft, -YDIVISION/2, YDIVISION/2);
+    m_plot->setAxisScale(QwtPlot::yLeft,
+                         -dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())->value() * YDIVISION/2,
+                         dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())->value() * YDIVISION/2);
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
@@ -200,7 +202,6 @@ void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
     foreach(QLCDNumber *lcd, lcdList) {
         lcd->setMinimumSize(80, 40);
         lcd->setMaximumSize(80, 40);
-        lcd->setDigitCount(6);
         lcd->setSegmentStyle(QLCDNumber::Flat);
         lcd->setFrameStyle(QFrame::NoFrame);
     }
@@ -208,13 +209,15 @@ void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
 
 void PlotterDialog::changeTimeInterval()
 {
-    m_plot->setAxisScale(QwtPlot::xBottom, -dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION/2,
+    m_plot->setAxisScale(QwtPlot::xBottom,
+                         -dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION/2,
                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION/2);
 }
 
 void PlotterDialog::changeTempInterval()
 {
-    m_plot->setAxisScale(QwtPlot::yLeft, -dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())->value() * YDIVISION/2,
+    m_plot->setAxisScale(QwtPlot::yLeft,
+                         -dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())->value() * YDIVISION/2,
                          dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())->value() * YDIVISION/2);
 }
 
