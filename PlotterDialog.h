@@ -23,7 +23,7 @@ signals:
 public slots:
 private:
     ISpinBox *m_lcdTimeInterval;
-    ISpinBox *m_lcdInstalledTempInterval;
+    ISpinBox *m_lcdTempInterval;
     ISpinBox *m_msbTimeInterval;
     ISpinBox *m_msbTempInterval;
 
