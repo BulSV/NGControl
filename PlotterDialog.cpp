@@ -19,7 +19,7 @@
 #define YMINORDIVISION 5
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
-    QDialog(parent),    
+    QDialog(parent),
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this))
 {
@@ -76,7 +76,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
             << dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())
                << dynamic_cast<QLCDNumber*>(m_lcdSensor1TempInterval->spinWidget())
                << dynamic_cast<QLCDNumber*>(m_lcdSensor2TempInterval->spinWidget());
-    lcdStyling(lcdList);    
+    lcdStyling(lcdList);
+
+    m_lcdTimeInterval->setRange(0, 60);
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius(5);
@@ -101,12 +103,14 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisTitle( QwtPlot::xBottom, "Time, sec" );
     m_plot->setAxisScale(QwtPlot::xBottom, -XDIVISION/2, XDIVISION/2);
     m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );
-    m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION);
+    m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
+    m_plot->setAxisAutoScale( QwtPlot::xBottom, false);
 
     m_plot->setAxisTitle( QwtPlot::yLeft, "Temperature, °C" );
     m_plot->setAxisScale(QwtPlot::yLeft, -YDIVISION/2, YDIVISION/2);
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
+    m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
 
 //    m_plot->enableAxis(QwtPlot::xBottom, false);
 //    m_plot->enableAxis(QwtPlot::yLeft, false);
@@ -147,7 +151,7 @@ void PlotterDialog::setCurves(const QMultiMap<QString, QVector<double> > &curves
         m_Curves[i]->setLegendAttribute( QwtPlotCurve::LegendShowLine );
         m_Curves[i]->setYAxis( QwtPlot::yLeft );
         m_Curves[i]->setXAxis( QwtPlot::xBottom );
-        m_Curves[i]->setTitle(listKeys.at(i));
+        m_Curves[i]->setTitle( listKeys.at(i) );
         m_Curves[i]->setPen(static_cast<Qt::GlobalColor>(i + 9));
 //        m_Curves[i]->setPen(Qt::green);
         m_Curves[i]->setSamples( curves.lowerBound( listKeys.at(i) ).value(),
@@ -202,13 +206,22 @@ void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
     }
 }
 
-void PlotterDialog::changeTimeInterval(double interval)
+void PlotterDialog::changeTimeInterval()
 {
-    m_plot->setAxisScale(QwtPlot::xBottom, 0, interval);
+    m_plot->setAxisScale(QwtPlot::xBottom, -dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION/2,
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION/2);
+}
+
+void PlotterDialog::changeTempInterval()
+{
+    m_plot->setAxisScale(QwtPlot::yLeft, -dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())->value() * YDIVISION/2,
+                         dynamic_cast<QLCDNumber*>(m_lcdInstalledTempInterval->spinWidget())->value() * YDIVISION/2);
 }
 
 void PlotterDialog::setupConnections()
 {
+    connect(m_lcdTimeInterval, SIGNAL(valueChanged()), this, SLOT(changeTimeInterval()));
+    connect(m_lcdInstalledTempInterval, SIGNAL(valueChanged()), this, SLOT(changeTempInterval()));
 }
 
 void PlotterDialog::setColorLCD(QLCDNumber *lcd, bool isHeat)

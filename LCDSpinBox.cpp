@@ -37,10 +37,10 @@ LCDSpinBox::~LCDSpinBox()
 {
 }
 
-void LCDSpinBox::setRange(const int &min, const int &max)
+void LCDSpinBox::setRange(const double &min, const double &max)
 {
-    m_min = min;
-    m_max = max;
+    m_min = static_cast<int>(min);
+    m_max = static_cast<int>(max);
     m_LCDNumber->setDigitCount(qMax(digitCount(min), digitCount(max)));
 }
 

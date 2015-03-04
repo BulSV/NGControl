@@ -36,7 +36,8 @@ private:
     void setColorLCD(QLCDNumber *lcd, bool isHeat);
     QString &addTrailingZeros(QString &str, int prec);
 private slots:
-    void changeTimeInterval(double interval);
+    void changeTimeInterval();
+    void changeTempInterval();
 };
 
 #endif // PLOTTERDIALOG_H

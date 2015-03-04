@@ -31,7 +31,7 @@ public:
                         QWidget *parent = 0);
     virtual ~LCDSpinBox();
 
-    virtual void setRange(const int &min, const int& max);
+    virtual void setRange(const double &min, const double &max);
     virtual int value() const;
 
     virtual QWidget *spinWidget() const;
