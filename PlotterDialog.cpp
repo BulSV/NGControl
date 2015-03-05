@@ -27,6 +27,10 @@
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent),
+    m_cbTimeAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
+    m_cbTempAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
+    m_TimeAccurateFactor(1.0),
+    m_TempAccurateFactor(1.0),
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this))
 {
@@ -197,6 +201,7 @@ void PlotterDialog::setupGUI()
 {
     QVBoxLayout *timeLayout = new QVBoxLayout;
     timeLayout->addWidget(m_lcdTimeInterval);
+    timeLayout->addWidget(m_cbTimeAccurate);
     timeLayout->addWidget(m_msbTimeInterval);
     timeLayout->setSpacing(5);
 
@@ -205,6 +210,7 @@ void PlotterDialog::setupGUI()
 
     QVBoxLayout *tempLayout = new QVBoxLayout;
     tempLayout->addWidget(m_lcdTempInterval);
+    tempLayout->addWidget(m_cbTempAccurate);
     tempLayout->addWidget(m_msbTempInterval);
 
     tempLayout->setSpacing(5);
@@ -242,33 +248,51 @@ void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
 void PlotterDialog::changeTimeInterval()
 {
     m_plot->setAxisScale(QwtPlot::xBottom,
-                         m_msbTimeInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value(),
+                         m_msbTimeInterval->value() * m_TimeAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value() * m_TimeAccurateFactor,
                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
 }
 
 void PlotterDialog::changeTempInterval()
 {
     m_plot->setAxisScale(QwtPlot::yLeft,
-                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
 }
 
 void PlotterDialog::moveTimeInterval()
 {
     m_plot->setAxisScale(QwtPlot::xBottom,
-                         m_msbTimeInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value(),
+                         m_msbTimeInterval->value() * m_TimeAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value() * m_TimeAccurateFactor,
                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
 }
 
 void PlotterDialog::moveTempInterval()
 {
     m_plot->setAxisScale(QwtPlot::yLeft,
-                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
+}
+
+void PlotterDialog::changeTimeAccurateFactor(bool isChecked)
+{
+    if(isChecked) {
+        m_TimeAccurateFactor *= 0.1;
+    } else {
+        m_TimeAccurateFactor *= 10;
+    }
+}
+
+void PlotterDialog::changeTempAccurateFactor(bool isChecked)
+{
+    if(isChecked) {
+        m_TempAccurateFactor *= 0.1;
+    } else {
+        m_TempAccurateFactor *= 10;
+    }
 }
 
 void PlotterDialog::setupConnections()
@@ -277,6 +301,9 @@ void PlotterDialog::setupConnections()
     connect(m_lcdTempInterval, SIGNAL(valueChanged()), this, SLOT(changeTempInterval()));
     connect(m_msbTimeInterval, SIGNAL(valueChanged()), this, SLOT(moveTimeInterval()));
     connect(m_msbTempInterval, SIGNAL(valueChanged()), this, SLOT(moveTempInterval()));
+
+    connect(m_cbTimeAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTimeAccurateFactor(bool)));
+    connect(m_cbTempAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactor(bool)));
 }
 
 void PlotterDialog::setColorLCD(QLCDNumber *lcd, bool isHeat)

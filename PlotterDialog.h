@@ -9,6 +9,7 @@
 #include <qwt_knob.h>
 #include <QVector>
 #include <QMultiMap>
+#include <QCheckBox>
 #include "LCDSampleSpinBox.h"
 #include "MoveSpinBox.h"
 
@@ -27,6 +28,12 @@ private:
     ISpinBox *m_msbTimeInterval;
     ISpinBox *m_msbTempInterval;
 
+    QCheckBox *m_cbTimeAccurate;
+    QCheckBox *m_cbTempAccurate;
+
+    double m_TimeAccurateFactor;
+    double m_TempAccurateFactor;
+
     QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
@@ -41,6 +48,9 @@ private slots:
     void changeTempInterval();
     void moveTimeInterval();
     void moveTempInterval();
+
+    void changeTimeAccurateFactor(bool isChecked);
+    void changeTempAccurateFactor(bool isChecked);
 };
 
 #endif // PLOTTERDIALOG_H
