@@ -102,7 +102,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisTitle( QwtPlot::xBottom, "Time, sec" );
     m_plot->setAxisScale(QwtPlot::xBottom,
                          0,
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION);
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION );
     m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::xBottom, false);
@@ -110,7 +110,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisTitle( QwtPlot::yLeft, "Temperature, °C" );
     m_plot->setAxisScale(QwtPlot::yLeft,
                          -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2);
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
@@ -124,7 +124,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QVector<double> y;
 
     for(int i = 0; i < 3; ++i) {
-        for(int j = 0; j < 60; ++j) {
+        for(double j = 0; j < 600.0; j += 0.1) {
             x.append(j);
             y.append(2*(2*i + 1)*qSin(j + 10*i));
         }

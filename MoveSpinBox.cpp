@@ -14,7 +14,8 @@ MoveSpinBox::MoveSpinBox(const QString &textSpin,
     m_bUp(new SpinBoxButton(iconUp, textUp, 500, 0.25, this)),
     m_min(0),
     m_max(0),
-    m_step(0)
+    m_step(0),
+    m_current(0)
 {
     setupGui(layout);
     setupConnect();
@@ -31,7 +32,8 @@ MoveSpinBox::MoveSpinBox(const QString &textSpin,
     m_bUp(new SpinBoxButton(textUp, 500, 0.25, this)),
     m_min(0),
     m_max(0),
-    m_step(0)
+    m_step(0),
+    m_current(0)
 {
     setupGui(layout);
     setupConnect();
