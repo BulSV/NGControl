@@ -18,10 +18,12 @@
 #define XDIVISION 10
 #define XMAJORDIVISION 10
 #define XMINORDIVISION 5
+#define XSCALESTEP 1
 
 #define YDIVISION 8
 #define YMAJORDIVISION 10
 #define YMINORDIVISION 5
+#define YSCALESTEP 1
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent),
@@ -102,7 +104,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisTitle( QwtPlot::xBottom, "Time, sec" );
     m_plot->setAxisScale(QwtPlot::xBottom,
                          0,
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION );
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::xBottom, false);
@@ -110,7 +113,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisTitle( QwtPlot::yLeft, "Temperature, °C" );
     m_plot->setAxisScale(QwtPlot::yLeft,
                          -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 );
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
@@ -239,28 +243,32 @@ void PlotterDialog::changeTimeInterval()
 {
     m_plot->setAxisScale(QwtPlot::xBottom,
                          m_msbTimeInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value());
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
 }
 
 void PlotterDialog::changeTempInterval()
 {
     m_plot->setAxisScale(QwtPlot::yLeft,
                          -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value());
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
 }
 
 void PlotterDialog::moveTimeInterval()
 {
     m_plot->setAxisScale(QwtPlot::xBottom,
                          m_msbTimeInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value());
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
 }
 
 void PlotterDialog::moveTempInterval()
 {
     m_plot->setAxisScale(QwtPlot::yLeft,
                          -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value());
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
 }
 
 void PlotterDialog::setupConnections()
