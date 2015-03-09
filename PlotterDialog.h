@@ -8,8 +8,9 @@
 #include <qwt_plot_curve.h>
 #include <qwt_knob.h>
 #include <QVector>
-#include <QMultiMap>
+#include <QMap>
 #include <QCheckBox>
+#include <QTime>
 #include "LCDSampleSpinBox.h"
 #include "MoveSpinBox.h"
 
@@ -18,10 +19,12 @@ class PlotterDialog : public QDialog
     Q_OBJECT
 public:
     explicit PlotterDialog(const QString &title, QWidget *parent = 0);
-    void setCurves(const QMultiMap<QString, QVector<double> > &curves);
+    void setCurves(const QMap<QString, Qt::GlobalColor> &curves);
 signals:
 
 public slots:
+    void appendData(const QMap<QString, QVector<double> > &curvesData);
+    void updatePlot();
 private:
     ISpinBox *m_lcdTimeInterval;
     ISpinBox *m_lcdTempInterval;
@@ -37,6 +40,9 @@ private:
     QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
+
+    QTime *m_currentTime;
+    QVector<QVector<double> > m_timeAxises;
 
     void setupGUI();
     void setupConnections();

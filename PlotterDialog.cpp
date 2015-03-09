@@ -3,7 +3,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGroupBox>
-//#include <QFrame>
 #include <QStringList>
 #include <qwt_plot_canvas.h>
 #include <qwt_legend.h>
@@ -12,7 +11,7 @@
 //#include <qwt_panner.h>
 #include <qwt_plot_picker.h>
 #include <qwt_picker_machine.h>
-#include <qwt_plot_marker.h>
+//#include <qwt_plot_marker.h>
 //#include <qwt_symbol.h>
 
 #define XDIVISION 10
@@ -32,13 +31,14 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_TimeAccurateFactor(1.0),
     m_TempAccurateFactor(1.0),
     m_sbarInfo(new QStatusBar(this)),
-    m_plot(new QwtPlot(this))
+    m_plot(new QwtPlot(this)),
+    m_currentTime( new QTime())
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
 
     QVector<double> tempSamples;
-    tempSamples << 0.5 << 1 << 2 << 5 << 10;
+    tempSamples << 0.5 << 1 << 2 << 3 << 5 << 10;
 
     m_lcdTimeInterval = new LCDSampleSpinBox(timeSamples,
                                              QIcon(":/Resources/down.png"),
@@ -121,26 +121,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
-    m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
-
-//    m_plot->enableAxis(QwtPlot::xBottom, false);
-//    m_plot->enableAxis(QwtPlot::yLeft, false);
-
-    // curves
-    QMultiMap<QString, QVector<double> > curves;
-    QVector<double> x;
-    QVector<double> y;
-
-    for(int i = 0; i < 3; ++i) {
-        for(double j = 0; j < 600.0; j += 0.1) {
-            x.append(j);
-            y.append(2*(2*i + 1)*qSin(j + 10*i));
-        }
-        curves.insertMulti(QString("Sensor ") + QString::number(i + 1), y);
-        curves.insertMulti(QString("Sensor ") + QString::number(i + 1), x);
-        x.clear();
-        y.clear();
-    }
+    m_plot->setAxisAutoScale( QwtPlot::yLeft, false);    
 
     QwtPlotPicker *d_picker = new QwtPlotPicker(QwtPlot::xBottom,
                                                 QwtPlot::yLeft,
@@ -151,24 +132,17 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     d_picker->setRubberBandPen(QColor(Qt::black));
     d_picker->setTrackerPen(QColor(Qt::black));
 
-    /*QwtPlotMarker *d_marker1 = new QwtPlotMarker();
-    d_marker1->setValue( 0.0, 0.0 );
-    d_marker1->setLineStyle( QwtPlotMarker::VLine );
-    d_marker1->setLabelAlignment( Qt::AlignRight | Qt::AlignBottom );
-    d_marker1->setLinePen( Qt::green, 0, Qt::DashDotLine );
-    d_marker1->attach( m_plot );
+//    QwtPlotMarker *marker1 = new QwtPlotMarker();
+//    marker1->setValue( dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION / 2, 0.0 );
+//    marker1->setLineStyle( QwtPlotMarker::VLine );
+//    marker1->setLinePen( Qt::black, 2, Qt::SolidLine );
+//    marker1->attach( m_plot );
 
-    QwtPlotMarker *d_marker2 = new QwtPlotMarker();
-    d_marker2->setLineStyle( QwtPlotMarker::HLine );
-    d_marker2->setLabelAlignment( Qt::AlignRight | Qt::AlignBottom );
-    d_marker2->setLinePen( QColor( 200, 150, 0 ), 0, Qt::DashDotLine );
-    d_marker2->setSymbol( new QwtSymbol( QwtSymbol::Diamond,
-                                         QColor( Qt::yellow ),
-                                         QColor( Qt::green ),
-                                         QSize( 8, 8 ) ) );
-    d_marker2->attach( m_plot );*/
-
-    setCurves(curves);
+//    QwtPlotMarker *marker2 = new QwtPlotMarker();
+//    marker2->setValue( 0.0, 0.0 );
+//    marker2->setLineStyle( QwtPlotMarker::HLine );
+//    marker2->setLinePen(  Qt::black, 2, Qt::SolidLine );
+//    marker2->attach( m_plot );
 
     m_plot->setAutoReplot( true );
 
@@ -177,10 +151,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     setupConnections();
 }
 
-void PlotterDialog::setCurves(const QMultiMap<QString, QVector<double> > &curves)
+void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
 {
     QStringList listKeys = curves.keys();
-    listKeys.removeDuplicates();
 
     for(int i = 0; i < listKeys.size(); ++i) {
         m_Curves.append(new QwtPlotCurve);
@@ -189,12 +162,46 @@ void PlotterDialog::setCurves(const QMultiMap<QString, QVector<double> > &curves
         m_Curves[i]->setYAxis( QwtPlot::yLeft );
         m_Curves[i]->setXAxis( QwtPlot::xBottom );
         m_Curves[i]->setTitle( listKeys.at(i) );
-        m_Curves[i]->setPen(static_cast<Qt::GlobalColor>(i + 9));
-//        m_Curves[i]->setPen(Qt::green);
-        m_Curves[i]->setSamples( curves.lowerBound( listKeys.at(i) ).value(),
-                                 ( ++curves.lowerBound( listKeys.at(i) ) ).value() );
-        m_Curves[i]->attach(m_plot);
+        m_Curves[i]->setPen( curves.value( listKeys.at(i) ) );
+        m_Curves[i]->attach(m_plot);        
     }
+}
+
+void PlotterDialog::appendData(const QMap<QString, QVector<double> > &curvesData)
+{
+    QStringList listKeys = curvesData.keys();
+
+    if( m_currentTime->isNull() ) {
+        m_currentTime->start();
+        if( !m_timeAxises.isEmpty() ) {
+            m_timeAxises.clear();
+        }
+        for(int i = 0; i < listKeys.size(); ++i) {
+            m_timeAxises.append(QVector<double>());
+        }
+    }
+
+    double elapsedTime = static_cast<double>( m_currentTime->elapsed() ) / 1000; // sec
+
+    /*if( elapsedTime > XDIVISION + m_offset ) {
+        m_offset += XSCALESTEP;
+        m_plot->setAxisScale( QwtPlot::xBottom,
+                              m_offset,
+                              XDIVISION + m_offset,
+                              XSCALESTEP );
+    }*/
+
+    for(int i = 0; i < listKeys.size(); ++i) {
+        if( m_Curves.at(i)->title().text() == listKeys.at(i)) { // protection from errored inputing data
+            m_timeAxises[i].append(elapsedTime);
+            m_Curves[i]->setSamples( curvesData.value( listKeys.at(i) ), m_timeAxises.at(i) );
+        }
+    }
+}
+
+void PlotterDialog::updatePlot()
+{
+    m_plot->replot();
 }
 
 void PlotterDialog::setupGUI()
