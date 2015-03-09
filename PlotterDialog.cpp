@@ -106,22 +106,22 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     // axes
     m_plot->setAxisTitle( QwtPlot::xBottom, "Time, sec" );
-    m_plot->setAxisScale(QwtPlot::xBottom,
-                         0,
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
+    m_plot->setAxisScale( QwtPlot::xBottom,
+                          0,
+                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
+                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::xBottom, false);
 
     m_plot->setAxisTitle( QwtPlot::yLeft, "Temperature, °C" );
-    m_plot->setAxisScale(QwtPlot::yLeft,
-                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
+    m_plot->setAxisScale( QwtPlot::yLeft,
+                          -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
-    m_plot->setAxisAutoScale( QwtPlot::yLeft, false);    
+    m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
 
     QwtPlotPicker *d_picker = new QwtPlotPicker(QwtPlot::xBottom,
                                                 QwtPlot::yLeft,
@@ -167,17 +167,19 @@ void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
     }
 }
 
-void PlotterDialog::appendData(const QMap<QString, QVector<double> > &curvesData)
+void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 {
     QStringList listKeys = curvesData.keys();
 
     if( m_currentTime->isNull() ) {
         m_currentTime->start();
-        if( !m_timeAxises.isEmpty() ) {
-            m_timeAxises.clear();
-        }
-        for(int i = 0; i < listKeys.size(); ++i) {
-            m_timeAxises.append(QVector<double>());
+        if( !m_timeAxis.isEmpty() && !m_timeAxis.isEmpty()) {
+            m_timeAxis.clear();
+            m_dataAxises.clear();
+
+            for(int i = 0; i < listKeys.size(); ++i) {
+                m_dataAxises.append(QVector<double>());
+            }
         }
     }
 
@@ -193,8 +195,8 @@ void PlotterDialog::appendData(const QMap<QString, QVector<double> > &curvesData
 
     for(int i = 0; i < listKeys.size(); ++i) {
         if( m_Curves.at(i)->title().text() == listKeys.at(i)) { // protection from errored inputing data
-            m_timeAxises[i].append(elapsedTime);
-            m_Curves[i]->setSamples( curvesData.value( listKeys.at(i) ), m_timeAxises.at(i) );
+            m_timeAxis.append(elapsedTime);
+            m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.at(i) );
         }
     }
 }

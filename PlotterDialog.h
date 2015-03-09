@@ -23,7 +23,7 @@ public:
 signals:
 
 public slots:
-    void appendData(const QMap<QString, QVector<double> > &curvesData);
+    void appendData(const QMap<QString, double> &curvesData);
     void updatePlot();
 private:
     ISpinBox *m_lcdTimeInterval;
@@ -42,7 +42,8 @@ private:
     QVector<QwtPlotCurve*> m_Curves;
 
     QTime *m_currentTime;
-    QVector<QVector<double> > m_timeAxises;
+    QVector<QVector<double> > m_dataAxises;
+    QVector<double> m_timeAxis;
 
     void setupGUI();
     void setupConnections();

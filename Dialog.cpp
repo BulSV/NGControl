@@ -167,6 +167,12 @@ Dialog::Dialog(QWidget *parent) :
         lcd->setFrameStyle(QFrame::NoFrame);
     }
 
+    QMap<QString, Qt::GlobalColor> curves;
+    curves.insert("TEMP", Qt::red);
+    curves.insert("SENS1", Qt::blue);
+    curves.insert("SENS2", Qt::green);
+    plotterDialog->setCurves(curves);
+
     connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
     connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
@@ -266,9 +272,12 @@ void Dialog::received(bool isReceived)
         }
 
         QList<QString> strKeysList = itsProtocol->getReadedData().keys();
+        QMap<QString, double> curvesData;
         for(int i = 0; i < itsProtocol->getReadedData().size(); ++i) {
-            itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
+            itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));            
+            curvesData.insert(strKeysList.at(i), itsSensorsList.at(i).toDouble());
         }
+        plotterDialog->appendData(curvesData);
     }
 }
 
@@ -385,6 +394,7 @@ void Dialog::display()
     }
 
     itsSensorsList.clear();
+    plotterDialog->updatePlot();
 }
 
 void Dialog::colorSetTempLCD()
