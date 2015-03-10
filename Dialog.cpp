@@ -271,13 +271,13 @@ void Dialog::received(bool isReceived)
             itsTimeToDisplay->start();
         }
 
-        QList<QString> strKeysList = itsProtocol->getReadedData().keys();
+        QList<QString> strKeysList = itsProtocol->getReadedData().keys();        
         QMap<QString, double> curvesData;
         for(int i = 0; i < itsProtocol->getReadedData().size(); ++i) {
             itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
             curvesData.insert(strKeysList.at(i), itsSensorsList.at(i).toDouble());
-        }
-        plotterDialog->appendData(curvesData);
+        }        
+        plotterDialog->appendData(curvesData);        
     }
 }
 
