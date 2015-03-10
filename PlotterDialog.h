@@ -48,8 +48,6 @@ private:
     void setupGUI();
     void setupConnections();
     void lcdStyling(QList<QLCDNumber *> &lcdList);
-    void setColorLCD(QLCDNumber *lcd, bool isHeat);
-    QString &addTrailingZeros(QString &str, int prec);
 private slots:
     void changeTimeInterval();
     void changeTempInterval();

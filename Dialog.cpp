@@ -277,7 +277,7 @@ void Dialog::received(bool isReceived)
             itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
             curvesData.insert(strKeysList.at(i), itsSensorsList.at(i).toDouble());
         }
-//        plotterDialog->appendData(curvesData);
+        plotterDialog->appendData(curvesData);
     }
 }
 
@@ -394,7 +394,7 @@ void Dialog::display()
     }
 
     itsSensorsList.clear();
-//    plotterDialog->updatePlot();
+    plotterDialog->updatePlot();
 }
 
 void Dialog::colorSetTempLCD()

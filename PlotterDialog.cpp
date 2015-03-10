@@ -178,16 +178,17 @@ void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
 void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 {
     QStringList listKeys = curvesData.keys();
-
     if( m_currentTime->isNull() ) {
         m_currentTime->start();
+
         if( !m_timeAxis.isEmpty() && !m_timeAxis.isEmpty()) {
             m_timeAxis.clear();
             m_dataAxises.clear();
+        }
 
-            for(int i = 0; i < listKeys.size(); ++i) {
-                m_dataAxises.append(QVector<double>());
-            }
+        for(int i = 0; i < listKeys.size(); ++i) {
+            QVector<double> data;
+            m_dataAxises.push_back(data);
         }
     }
 
@@ -203,7 +204,8 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 
     for(int i = 0; i < listKeys.size(); ++i) {
         if( m_Curves.at(i)->title().text() == listKeys.at(i)) { // protection from errored inputing data
-            m_timeAxis.append(elapsedTime);
+            m_timeAxis.push_back( elapsedTime );
+            m_dataAxises[i].push_back( curvesData.value( listKeys.at(i) ) );
             m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.at(i) );
         }
     }
@@ -331,50 +333,4 @@ void PlotterDialog::setupConnections()
 
     connect(m_cbTimeAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTimeAccurateFactor(bool)));
     connect(m_cbTempAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactor(bool)));
-}
-
-void PlotterDialog::setColorLCD(QLCDNumber *lcd, bool isHeat)
-{
-    QPalette palette;
-    // get the palette
-    palette = lcd->palette();
-    if(isHeat) {
-        // foreground color
-        palette.setColor(palette.WindowText, QColor(100, 0, 0));
-        // "light" border
-        palette.setColor(palette.Light, QColor(100, 0, 0));
-        // "dark" border
-        palette.setColor(palette.Dark, QColor(100, 0, 0));
-    } else {
-        // foreground color
-        palette.setColor(palette.WindowText, QColor(0, 0, 100));
-        // "light" border
-        palette.setColor(palette.Light, QColor(0, 0, 100));
-        // "dark" border
-        palette.setColor(palette.Dark, QColor(0, 0, 100));
-    }
-    // set the palette
-    lcd->setPalette(palette);
-}
-
-QString &PlotterDialog::addTrailingZeros(QString &str, int prec)
-{
-    if(str.isEmpty() || prec < 1) { // if prec == 0 then it's no sense
-        return str;
-    }
-
-    int pointIndex = str.indexOf(".");
-    if(pointIndex == -1) {
-        str.append(".");
-        pointIndex = str.size() - 1;
-    }
-
-    if(str.size() - 1 - pointIndex < prec) {
-        int size = str.size();
-        for(int i = 0; i < prec - (size - 1 - pointIndex); ++i) {
-            str.append("0");
-        }
-    }
-
-    return str;
 }
