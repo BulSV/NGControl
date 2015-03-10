@@ -24,6 +24,14 @@
 #define YMINORDIVISION 5
 #define YSCALESTEP 1
 
+#define LOWTIME 0
+#define UPTIME 1200
+#define STEPTIME 1
+
+#define LOWTEMP -140
+#define UPTEMP 140
+#define STEPTEMP 1
+
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent),
     m_cbTimeAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
@@ -67,7 +75,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                         QString::fromUtf8(""),
                                         MoveSpinBox::BOTTOM,
                                         this);
-    m_msbTimeInterval->setRange(0, 600, 1);
+    m_msbTimeInterval->setRange(LOWTIME, UPTIME, STEPTIME);
 
     m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.png' height='48' width='48'/>",
                                         QIcon(":/Resources/down.png"),
@@ -76,7 +84,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                         QString::fromUtf8(""),
                                         MoveSpinBox::RIGHT,
                                         this);
-    m_msbTempInterval->setRange(-50, 50, 1);
+    m_msbTempInterval->setRange(LOWTEMP, UPTEMP, STEPTEMP);
 
     setWindowTitle(title);
 
@@ -163,7 +171,7 @@ void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
         m_Curves[i]->setXAxis( QwtPlot::xBottom );
         m_Curves[i]->setTitle( listKeys.at(i) );
         m_Curves[i]->setPen( curves.value( listKeys.at(i) ) );
-        m_Curves[i]->attach(m_plot);        
+        m_Curves[i]->attach(m_plot);
     }
 }
 
@@ -257,32 +265,36 @@ void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
 void PlotterDialog::changeTimeInterval()
 {
     m_plot->setAxisScale(QwtPlot::xBottom,
-                         m_msbTimeInterval->value() * m_TimeAccurateFactor,
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value() * m_TimeAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * m_msbTimeInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() ),
                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
 }
 
 void PlotterDialog::changeTempInterval()
 {
     m_plot->setAxisScale(QwtPlot::yLeft,
-                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() - YDIVISION/2 ),
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() + YDIVISION/2 ),
                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
 }
 
 void PlotterDialog::moveTimeInterval()
 {
     m_plot->setAxisScale(QwtPlot::xBottom,
-                         m_msbTimeInterval->value() * m_TimeAccurateFactor,
-                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION + m_msbTimeInterval->value() * m_TimeAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * m_msbTimeInterval->value(),
+                         dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() ),
                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
 }
 
 void PlotterDialog::moveTempInterval()
 {
+//    m_plot->setAxisScale(QwtPlot::yLeft,
+//                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+//                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value(),
+//                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisScale(QwtPlot::yLeft,
-                         -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
-                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2 + m_msbTempInterval->value() * m_TempAccurateFactor,
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() - YDIVISION/2 ),
+                         dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() + YDIVISION/2 ),
                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
 }
 
@@ -293,6 +305,9 @@ void PlotterDialog::changeTimeAccurateFactor(bool isChecked)
     } else {
         m_TimeAccurateFactor *= 10;
     }
+    m_msbTimeInterval->setRange(LOWTIME,
+                                UPTIME,
+                                m_TimeAccurateFactor * STEPTIME);
 }
 
 void PlotterDialog::changeTempAccurateFactor(bool isChecked)
@@ -302,6 +317,9 @@ void PlotterDialog::changeTempAccurateFactor(bool isChecked)
     } else {
         m_TempAccurateFactor *= 10;
     }
+    m_msbTempInterval->setRange(LOWTEMP,
+                                UPTEMP,
+                                m_TempAccurateFactor * STEPTEMP);
 }
 
 void PlotterDialog::setupConnections()

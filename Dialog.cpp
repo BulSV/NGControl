@@ -34,8 +34,8 @@
 
 #define REWINDTIME 50 // ms
 
-#define TEMPRANGE_MIN -50 // degrees Celsius
-#define TEMPRANGE_MAX 50 // degrees Celsius
+#define TEMPRANGE_MIN -70 // degrees Celsius
+#define TEMPRANGE_MAX 70 // degrees Celsius
 #define TEMPSTEP 1 // degrees Celsius
 #define NORMAL_TEMP 35 // degrees Celsius
 
@@ -274,10 +274,10 @@ void Dialog::received(bool isReceived)
         QList<QString> strKeysList = itsProtocol->getReadedData().keys();
         QMap<QString, double> curvesData;
         for(int i = 0; i < itsProtocol->getReadedData().size(); ++i) {
-            itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));            
+            itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
             curvesData.insert(strKeysList.at(i), itsSensorsList.at(i).toDouble());
         }
-        plotterDialog->appendData(curvesData);
+//        plotterDialog->appendData(curvesData);
     }
 }
 
@@ -394,7 +394,7 @@ void Dialog::display()
     }
 
     itsSensorsList.clear();
-    plotterDialog->updatePlot();
+//    plotterDialog->updatePlot();
 }
 
 void Dialog::colorSetTempLCD()
