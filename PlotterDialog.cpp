@@ -171,7 +171,7 @@ void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
         m_Curves[i]->setXAxis( QwtPlot::xBottom );
         m_Curves[i]->setTitle( listKeys.at(i) );
         m_Curves[i]->setPen( curves.value( listKeys.at(i) ) );
-        m_Curves[i]->attach(m_plot);        
+        m_Curves[i]->attach(m_plot);
     }
 }
 
@@ -203,15 +203,9 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
                               XSCALESTEP );
     }*/
 
+    m_timeAxis.push_back( elapsedTime );
     for(int i = 0; i < listKeys.size(); ++i) {
-//        if( m_Curves.at(i)->title().text() == listKeys.at(i)) { // protection from errored inputing data
-//            m_timeAxis.push_back( elapsedTime );
-//            m_dataAxises[i].push_back( curvesData.value( listKeys.at(i) ) );
-//            m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.at(i) );
-//        }
-
         if( listKeys.contains( m_Curves.at(i)->title().text() ) ) { // protection from errored inputing data
-            m_timeAxis.push_back( elapsedTime );
             m_dataAxises[i].push_back( curvesData.value( m_Curves.at(i)->title().text() ) );
             m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.at(i) );
         }
