@@ -31,7 +31,7 @@
 #define STEPTEMP 1
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
     m_cbTimeAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
     m_cbTempAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
     m_TimeAccurateFactor(1.0),
@@ -236,6 +236,7 @@ void PlotterDialog::setupGUI()
     QVBoxLayout *knobsLayout = new QVBoxLayout;
     knobsLayout->addWidget(gbTime);
     knobsLayout->addWidget(gbTemp);
+    knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     QHBoxLayout *plotLayout = new QHBoxLayout;
     plotLayout->addWidget(m_plot, 1);
