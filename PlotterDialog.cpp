@@ -41,7 +41,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this)),
     m_currentTime( new QTime()),
-    m_offset( 0.0 )
+    m_offset( 0.0 ),
+    m_isStoped( false ),
+    m_isRessumed( false )
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
@@ -165,6 +167,15 @@ void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
 
 void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 {
+    if(m_isStoped) {
+        return;
+    }
+
+    if(m_isRessumed) {
+        m_currentTime->restart();
+        m_isRessumed = false;
+    }
+
     QStringList listKeys = curvesData.keys();
     if( m_currentTime->isNull() ) {
         m_currentTime->start();
@@ -333,6 +344,25 @@ void PlotterDialog::changeTempAccurateFactor(bool isChecked)
                                 m_TempAccurateFactor * STEPTEMP);
 }
 
+void PlotterDialog::stop()
+{
+    m_isStoped = true;
+
+    m_timeAxis.clear();
+    m_dataAxises.clear();
+
+    for(int i = 0; i < m_Curves.size(); ++i) {
+        QVector<double> data;
+        m_dataAxises.push_back(data);
+    }
+}
+
+void PlotterDialog::ressume()
+{
+    m_isStoped = false;
+    m_isRessumed = true;
+}
+
 void PlotterDialog::setupConnections()
 {
     connect(m_lcdTimeInterval, SIGNAL(valueChanged()), this, SLOT(changeTimeInterval()));
@@ -342,4 +372,7 @@ void PlotterDialog::setupConnections()
 
     connect(m_cbTimeAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTimeAccurateFactor(bool)));
     connect(m_cbTempAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactor(bool)));
+
+    connect(m_bStop, SIGNAL(clicked()), this, SLOT(stop()));
+    connect(m_bRessume, SIGNAL(clicked()), this, SLOT(ressume()));
 }

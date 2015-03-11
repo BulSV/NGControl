@@ -51,6 +51,9 @@ private:
 
     double m_offset;
 
+    bool m_isStoped;
+    bool m_isRessumed;
+
     void setupGUI();
     void setupConnections();
     void lcdStyling(QList<QLCDNumber *> &lcdList);
@@ -62,6 +65,9 @@ private slots:
 
     void changeTimeAccurateFactor(bool isChecked);
     void changeTempAccurateFactor(bool isChecked);
+
+    void stop();
+    void ressume();
 };
 
 #endif // PLOTTERDIALOG_H
