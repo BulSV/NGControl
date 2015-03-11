@@ -34,6 +34,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
     m_cbTimeAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
     m_cbTempAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
+    m_bStop(new QPushButton(QString::fromUtf8("Stop"), this)),
+    m_bRessume(new QPushButton(QString::fromUtf8("Ressume"), this)),
     m_TimeAccurateFactor(1.0),
     m_TempAccurateFactor(1.0),
     m_sbarInfo(new QStatusBar(this)),
@@ -227,16 +229,22 @@ void PlotterDialog::setupGUI()
     tempLayout->addWidget(m_lcdTempInterval);
     tempLayout->addWidget(m_cbTempAccurate);
     tempLayout->addWidget(m_msbTempInterval);
-
     tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);
     gbTemp->setLayout(tempLayout);
 
+    QHBoxLayout *buttonsLayout = new QHBoxLayout;
+    buttonsLayout->addWidget(m_bStop);
+    buttonsLayout->addWidget(m_bRessume);
+    buttonsLayout->setSpacing(5);
+
     QVBoxLayout *knobsLayout = new QVBoxLayout;
     knobsLayout->addWidget(gbTime);
     knobsLayout->addWidget(gbTemp);
+    knobsLayout->addItem(buttonsLayout);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    knobsLayout->setSpacing(5);
 
     QHBoxLayout *plotLayout = new QHBoxLayout;
     plotLayout->addWidget(m_plot, 1);

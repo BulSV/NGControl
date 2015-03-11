@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QLabel>
+#include <QPushButton>
 #include <QStatusBar>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
@@ -33,6 +34,9 @@ private:
 
     QCheckBox *m_cbTimeAccurate;
     QCheckBox *m_cbTempAccurate;
+
+    QPushButton *m_bStop;
+    QPushButton *m_bRessume;
 
     double m_TimeAccurateFactor;
     double m_TempAccurateFactor;
