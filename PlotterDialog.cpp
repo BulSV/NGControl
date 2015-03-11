@@ -11,8 +11,6 @@
 //#include <qwt_panner.h>
 #include <qwt_plot_picker.h>
 #include <qwt_picker_machine.h>
-//#include <qwt_plot_marker.h>
-//#include <qwt_symbol.h>
 
 #define XDIVISION 10
 #define XMAJORDIVISION 10
@@ -40,7 +38,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_TempAccurateFactor(1.0),
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this)),
-    m_currentTime( new QTime())
+    m_currentTime( new QTime()),
+    m_offset( 0.0 )
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
@@ -131,6 +130,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
 
+    m_plot->setAutoReplot( false );
+
     QwtPlotPicker *d_picker = new QwtPlotPicker(QwtPlot::xBottom,
                                                 QwtPlot::yLeft,
                                                 QwtPlotPicker::CrossRubberBand,
@@ -140,22 +141,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     d_picker->setRubberBandPen(QColor(Qt::black));
     d_picker->setTrackerPen(QColor(Qt::black));
 
-//    QwtPlotMarker *marker1 = new QwtPlotMarker();
-//    marker1->setValue( dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION / 2, 0.0 );
-//    marker1->setLineStyle( QwtPlotMarker::VLine );
-//    marker1->setLinePen( Qt::black, 2, Qt::SolidLine );
-//    marker1->attach( m_plot );
-
-//    QwtPlotMarker *marker2 = new QwtPlotMarker();
-//    marker2->setValue( 0.0, 0.0 );
-//    marker2->setLineStyle( QwtPlotMarker::HLine );
-//    marker2->setLinePen(  Qt::black, 2, Qt::SolidLine );
-//    marker2->attach( m_plot );
-
-    m_plot->setAutoReplot( false );
-
     setupGUI();
-
     setupConnections();
 }
 
@@ -193,7 +179,8 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     }
 
     double elapsedTime = static_cast<double>( m_currentTime->elapsed() ) / 1000; // sec
-    qDebug() << elapsedTime;
+    qDebug() << "elapsedTime:" << elapsedTime;
+    qDebug() << "terminal side:" << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset );
 
     /*if( elapsedTime > XDIVISION + m_offset ) {
         m_offset += XSCALESTEP;
@@ -202,6 +189,14 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
                               XDIVISION + m_offset,
                               XSCALESTEP );
     }*/
+    if( elapsedTime > dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset ) ) {
+        m_offset += dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP;
+        m_plot->setAxisScale( QwtPlot::xBottom,
+                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( m_msbTimeInterval->value() + m_offset ),
+                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset ),
+                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
+        m_plot->replot();
+    }
 
     m_timeAxis.push_back( elapsedTime );
     for(int i = 0; i < listKeys.size(); ++i) {

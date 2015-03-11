@@ -45,6 +45,8 @@ private:
     QVector<QVector<double> > m_dataAxises;
     QVector<double> m_timeAxis;
 
+    double m_offset;
+
     void setupGUI();
     void setupConnections();
     void lcdStyling(QList<QLCDNumber *> &lcdList);
