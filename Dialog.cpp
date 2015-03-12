@@ -297,6 +297,9 @@ void Dialog::writeTemp()
         dataTemp.insert("TEMP", QString::number(static_cast<int>(sbSetTemp->value())));
         itsProtocol->setDataToWrite(dataTemp);
         itsProtocol->writeData();
+        if(chbSynchronize->isChecked()) {
+            plotterDialog->resetTime();
+        }
     }
 }
 
