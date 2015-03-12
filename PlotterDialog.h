@@ -7,6 +7,7 @@
 #include <QStatusBar>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
+#include <qwt_plot_picker.h>
 #include <qwt_knob.h>
 #include <QVector>
 #include <QMap>
@@ -42,9 +43,11 @@ private:
     double m_TimeAccurateFactor;
     double m_TempAccurateFactor;
 
+    QLabel *m_lStatusBar;
     QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
+    QwtPlotPicker *m_picker;
 
     QTime *m_currentTime;
     QVector<QVector<double> > m_dataAxises;
@@ -71,6 +74,8 @@ private slots:
     void resetTime();
     void pauseRessume();
     void toCurrentTime();
+
+    void currentPos();
 };
 
 #endif // PLOTTERDIALOG_H

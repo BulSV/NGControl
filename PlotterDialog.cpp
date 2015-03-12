@@ -9,7 +9,6 @@
 #include <qwt_plot_grid.h>
 #include <qwt_scale_div.h>
 //#include <qwt_panner.h>
-#include <qwt_plot_picker.h>
 #include <qwt_picker_machine.h>
 
 #define XDIVISION 10
@@ -22,12 +21,15 @@
 #define YMINORDIVISION 5
 #define YSCALESTEP 1
 
+#define MIN_INT -32767
+#define MAX_INT 32767
+
 #define LOWTIME 0
-#define UPTIME 1200
+#define UPTIME MAX_INT
 #define STEPTIME 1
 
-#define LOWTEMP -140
-#define UPTEMP 140
+#define LOWTEMP MIN_INT
+#define UPTEMP MAX_INT
 #define STEPTEMP 1
 
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
@@ -39,6 +41,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bCurrent(new QPushButton(QString::fromUtf8("Current"), this)),
     m_TimeAccurateFactor(1.0),
     m_TempAccurateFactor(1.0),
+    m_lStatusBar(new QLabel("<b>Time, sec: nan<br/>Temp, °C: nan</b>", this)),
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this)),
     m_currentTime( new QTime()),
@@ -137,14 +140,16 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     m_plot->setAutoReplot( false );
 
-    QwtPlotPicker *d_picker = new QwtPlotPicker(QwtPlot::xBottom,
-                                                QwtPlot::yLeft,
-                                                QwtPlotPicker::CrossRubberBand,
-                                                QwtPicker::ActiveOnly,
-                                                m_plot->canvas());
-    d_picker->setStateMachine(new QwtPickerDragPointMachine());
-    d_picker->setRubberBandPen(QColor(Qt::black));
-    d_picker->setTrackerPen(QColor(Qt::black));
+    m_picker = new QwtPlotPicker(QwtPlot::xBottom,
+                                 QwtPlot::yLeft,
+                                 QwtPlotPicker::CrossRubberBand,
+                                 QwtPicker::ActiveOnly,
+                                 m_plot->canvas());
+    m_picker->setStateMachine(new QwtPickerDragPointMachine());
+    m_picker->setRubberBandPen(QColor(Qt::black));
+    m_picker->setTrackerPen(QColor(Qt::black));
+
+    m_sbarInfo->addWidget(m_lStatusBar);
 
     setupGUI();
     setupConnections();
@@ -378,6 +383,14 @@ void PlotterDialog::toCurrentTime()
     updatePlot();
 }
 
+void PlotterDialog::currentPos()
+{
+    QString str = dynamic_cast<QwtPicker *>(m_picker)->trackerText(m_picker->trackerPosition()).text();
+    QStringList list = str.split(", ");
+
+    m_lStatusBar->setText(QString("<b>Time, sec: %1<br/>Temp, °C: %2</b>").arg(list.at(0)).arg(list.at(1)));
+}
+
 void PlotterDialog::setupConnections()
 {
     connect(m_lcdTimeInterval, SIGNAL(valueChanged()), this, SLOT(changeTimeInterval()));
@@ -391,4 +404,7 @@ void PlotterDialog::setupConnections()
     connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
     connect(m_bCurrent, SIGNAL(clicked()), this, SLOT(toCurrentTime()));
+
+    connect(m_picker, SIGNAL(moved(QPointF)), this, SLOT(currentPos()));
+    connect(m_picker, SIGNAL(appended(QPointF)), this, SLOT(currentPos()));
 }
