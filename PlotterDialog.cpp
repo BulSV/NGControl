@@ -376,10 +376,17 @@ void PlotterDialog::pauseRessume()
 
 void PlotterDialog::toCurrentTime()
 {
-    m_plot->setAxisScale( QwtPlot::xBottom,
-                          m_timeAxis.last() - dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
-                          m_timeAxis.last(),
-                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
+    if(m_timeAxis.last() - dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION > 0) {
+        m_plot->setAxisScale( QwtPlot::xBottom,
+                              m_timeAxis.last() - dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
+                              m_timeAxis.last(),
+                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
+    } else {
+        m_plot->setAxisScale( QwtPlot::xBottom,
+                              0,
+                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
+                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
+    }
     updatePlot();
 }
 
