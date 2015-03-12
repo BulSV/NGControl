@@ -27,6 +27,9 @@ signals:
 public slots:
     void appendData(const QMap<QString, double> &curvesData);
     void updatePlot();
+    void resetTime();
+    void pauseRessume();
+    void toCurrentTime();
 private:
     ISpinBox *m_lcdTimeInterval;
     ISpinBox *m_lcdTempInterval;
@@ -70,10 +73,6 @@ private slots:
 
     void changeTimeAccurateFactor(bool isChecked);
     void changeTempAccurateFactor(bool isChecked);
-
-    void resetTime();
-    void pauseRessume();
-    void toCurrentTime();
 
     void currentPos();
 };

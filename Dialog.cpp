@@ -47,6 +47,7 @@ Dialog::Dialog(QWidget *parent) :
         cbBaud(new QComboBox(this)),
         bPortStart(new QPushButton(QString::fromUtf8("Start"), this)),
         bPortStop(new QPushButton(QString::fromUtf8("Stop"), this)),
+        chbSynchronize(new QCheckBox(QString::fromUtf8("Enable synchronization"), this)),
         lTx(new QLabel("  Tx  ", this)),
         lRx(new QLabel("  Rx  ", this)),
         sbSetTemp(new LCDSpinBox(QIcon(":/Resources/left.png"),
@@ -114,8 +115,9 @@ Dialog::Dialog(QWidget *parent) :
     grid->addWidget(bPortStop, 2, 2);
     grid->addWidget(lTx, 2, 3);
     grid->addWidget(lRx, 2, 4);
-    grid->addWidget(gbSetTemp, 3, 0, 3, 2);
-    grid->addWidget(gbSensors, 3, 2, 3, 3);
+    grid->addWidget(chbSynchronize, 3, 0, 1, 2);
+    grid->addWidget(gbSetTemp, 4, 0, 3, 2);
+    grid->addWidget(gbSensors, 4, 2, 3, 3);
     grid->setSpacing(5);
 
     layout()->addItem(grid);
@@ -271,13 +273,13 @@ void Dialog::received(bool isReceived)
             itsTimeToDisplay->start();
         }
 
-        QList<QString> strKeysList = itsProtocol->getReadedData().keys();        
+        QList<QString> strKeysList = itsProtocol->getReadedData().keys();
         QMap<QString, double> curvesData;
         for(int i = 0; i < itsProtocol->getReadedData().size(); ++i) {
             itsSensorsList.append(itsProtocol->getReadedData().value(strKeysList.at(i)));
             curvesData.insert(strKeysList.at(i), itsSensorsList.at(i).toDouble());
-        }        
-        plotterDialog->appendData(curvesData);        
+        }
+        plotterDialog->appendData(curvesData);
     }
 }
 

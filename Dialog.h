@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QLCDNumber>
 #include <QSpinBox>
+#include <QCheckBox>
 #include "ComPort.h"
 #include "IProtocol.h"
 #include "NGProtocol.h"
@@ -32,6 +33,7 @@ class Dialog : public QDialog
     QComboBox *cbBaud;
     QPushButton *bPortStart;
     QPushButton *bPortStop;
+    QCheckBox *chbSynchronize;
     QLabel *lTx;
     QLabel *lRx;
 
