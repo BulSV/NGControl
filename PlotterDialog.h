@@ -35,8 +35,9 @@ private:
     QCheckBox *m_cbTimeAccurate;
     QCheckBox *m_cbTempAccurate;
 
-    QPushButton *m_bStop;
-    QPushButton *m_bRessume;
+    QPushButton *m_bReset;
+    QPushButton *m_bPauseRessume;
+    QPushButton *m_bCurrent;
 
     double m_TimeAccurateFactor;
     double m_TempAccurateFactor;
@@ -51,7 +52,7 @@ private:
 
     double m_offset;
 
-    bool m_isStoped;
+    bool m_isReseted;
     bool m_isRessumed;
 
     void setupGUI();
@@ -66,8 +67,9 @@ private slots:
     void changeTimeAccurateFactor(bool isChecked);
     void changeTempAccurateFactor(bool isChecked);
 
-    void stop();
-    void ressume();
+    void resetTime();
+    void pauseRessume();
+    void toCurrentTime();
 };
 
 #endif // PLOTTERDIALOG_H

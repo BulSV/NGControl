@@ -34,16 +34,17 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
     m_cbTimeAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
     m_cbTempAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
-    m_bStop(new QPushButton(QString::fromUtf8("Stop"), this)),
-    m_bRessume(new QPushButton(QString::fromUtf8("Ressume"), this)),
+    m_bReset(new QPushButton(QString::fromUtf8("Reset"), this)),
+    m_bPauseRessume(new QPushButton(QString::fromUtf8("Pause"), this)),
+    m_bCurrent(new QPushButton(QString::fromUtf8("Current"), this)),
     m_TimeAccurateFactor(1.0),
     m_TempAccurateFactor(1.0),
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this)),
     m_currentTime( new QTime()),
     m_offset( 0.0 ),
-    m_isStoped( false ),
-    m_isRessumed( false )
+    m_isReseted( false ),
+    m_isRessumed( true )
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
@@ -167,23 +168,14 @@ void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
 
 void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 {
-    if(m_isStoped) {
-        return;
-    }
-
-    if(m_isRessumed) {
+    if(m_isReseted) {
         m_currentTime->restart();
-        m_isRessumed = false;
+        m_isReseted = false;
     }
 
     QStringList listKeys = curvesData.keys();
     if( m_currentTime->isNull() ) {
         m_currentTime->start();
-
-        if( !m_timeAxis.isEmpty() && !m_timeAxis.isEmpty()) {
-            m_timeAxis.clear();
-            m_dataAxises.clear();
-        }
 
         for(int i = 0; i < listKeys.size(); ++i) {
             QVector<double> data;
@@ -195,27 +187,23 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     qDebug() << "elapsedTime:" << elapsedTime;
     qDebug() << "terminal side:" << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset );
 
-    /*if( elapsedTime > XDIVISION + m_offset ) {
-        m_offset += XSCALESTEP;
-        m_plot->setAxisScale( QwtPlot::xBottom,
-                              m_offset,
-                              XDIVISION + m_offset,
-                              XSCALESTEP );
-    }*/
     if( elapsedTime > dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset ) ) {
         m_offset += dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP;
         m_plot->setAxisScale( QwtPlot::xBottom,
                               dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( m_msbTimeInterval->value() + m_offset ),
                               dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset ),
                               dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
-        m_plot->replot();
+        updatePlot();
     }
 
     m_timeAxis.push_back( elapsedTime );
     for(int i = 0; i < listKeys.size(); ++i) {
         if( listKeys.contains( m_Curves.at(i)->title().text() ) ) { // protection from errored inputing data
             m_dataAxises[i].push_back( curvesData.value( m_Curves.at(i)->title().text() ) );
-            m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.at(i) );
+
+            if(m_isRessumed) {
+                m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.at(i) );
+            }
         }
     }
 }
@@ -246,14 +234,15 @@ void PlotterDialog::setupGUI()
     gbTemp->setLayout(tempLayout);
 
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
-    buttonsLayout->addWidget(m_bStop);
-    buttonsLayout->addWidget(m_bRessume);
+    buttonsLayout->addWidget(m_bReset);
+    buttonsLayout->addWidget(m_bPauseRessume);
     buttonsLayout->setSpacing(5);
 
     QVBoxLayout *knobsLayout = new QVBoxLayout;
     knobsLayout->addWidget(gbTime);
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
+    knobsLayout->addWidget(m_bCurrent);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 
@@ -286,7 +275,7 @@ void PlotterDialog::changeTimeInterval()
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * m_msbTimeInterval->value(),
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() ),
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
-    m_plot->replot();
+    updatePlot();
 }
 
 void PlotterDialog::changeTempInterval()
@@ -295,7 +284,7 @@ void PlotterDialog::changeTempInterval()
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() - YDIVISION/2 ),
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() + YDIVISION/2 ),
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
-    m_plot->replot();
+    updatePlot();
 }
 
 void PlotterDialog::moveTimeInterval()
@@ -304,7 +293,7 @@ void PlotterDialog::moveTimeInterval()
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * m_msbTimeInterval->value(),
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() ),
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
-    m_plot->replot();
+    updatePlot();
 }
 
 void PlotterDialog::moveTempInterval()
@@ -317,7 +306,7 @@ void PlotterDialog::moveTempInterval()
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() - YDIVISION/2 ),
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() + YDIVISION/2 ),
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
-    m_plot->replot();
+    updatePlot();
 }
 
 void PlotterDialog::changeTimeAccurateFactor(bool isChecked)
@@ -344,9 +333,9 @@ void PlotterDialog::changeTempAccurateFactor(bool isChecked)
                                 m_TempAccurateFactor * STEPTEMP);
 }
 
-void PlotterDialog::stop()
+void PlotterDialog::resetTime()
 {
-    m_isStoped = true;
+    m_isReseted = true;
 
     m_timeAxis.clear();
     m_dataAxises.clear();
@@ -355,12 +344,30 @@ void PlotterDialog::stop()
         QVector<double> data;
         m_dataAxises.push_back(data);
     }
+
+    updatePlot();
 }
 
-void PlotterDialog::ressume()
+void PlotterDialog::pauseRessume()
 {
-    m_isStoped = false;
-    m_isRessumed = true;
+    m_isReseted = false;
+
+    if(m_bPauseRessume->text() == QString::fromUtf8("Pause")) {
+        m_bPauseRessume->setText("Ressume");
+        m_isRessumed = false;
+    } else {
+        m_bPauseRessume->setText("Pause");
+        m_isRessumed = true;
+    }
+}
+
+void PlotterDialog::toCurrentTime()
+{
+    m_plot->setAxisScale( QwtPlot::xBottom,
+                          m_timeAxis.last() - dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
+                          m_timeAxis.last(),
+                          dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
+    updatePlot();
 }
 
 void PlotterDialog::setupConnections()
@@ -373,6 +380,7 @@ void PlotterDialog::setupConnections()
     connect(m_cbTimeAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTimeAccurateFactor(bool)));
     connect(m_cbTempAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactor(bool)));
 
-    connect(m_bStop, SIGNAL(clicked()), this, SLOT(stop()));
-    connect(m_bRessume, SIGNAL(clicked()), this, SLOT(ressume()));
+    connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
+    connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
+    connect(m_bCurrent, SIGNAL(clicked()), this, SLOT(toCurrentTime()));
 }
