@@ -166,6 +166,21 @@ void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
     }
 }
 
+void PlotterDialog::autoScroll(const double &elapsedTime)
+{
+    if( elapsedTime > dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() ) + m_offset ) {
+        m_offset += dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP;
+
+        if(m_isRessumed) {
+            m_plot->setAxisScale( QwtPlot::xBottom,
+                                  dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * m_msbTimeInterval->value() + m_offset,
+                                  dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() ) + m_offset,
+                                  dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
+        }
+        updatePlot();
+    }
+}
+
 void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 {
     if(m_isReseted) {
@@ -187,14 +202,7 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     qDebug() << "elapsedTime:" << elapsedTime;
     qDebug() << "terminal side:" << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset );
 
-    if( elapsedTime > dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset ) ) {
-        m_offset += dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP;
-        m_plot->setAxisScale( QwtPlot::xBottom,
-                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( m_msbTimeInterval->value() + m_offset ),
-                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * ( XDIVISION + m_msbTimeInterval->value() + m_offset ),
-                              dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
-        updatePlot();
-    }
+    autoScroll(elapsedTime);
 
     m_timeAxis.push_back( elapsedTime );
     for(int i = 0; i < listKeys.size(); ++i) {

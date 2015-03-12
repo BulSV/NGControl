@@ -58,6 +58,7 @@ private:
     void setupGUI();
     void setupConnections();
     void lcdStyling(QList<QLCDNumber *> &lcdList);
+    void autoScroll(const double &elapsedTime);
 private slots:
     void changeTimeInterval();
     void changeTempInterval();
