@@ -186,6 +186,17 @@ void PlotterDialog::autoScroll(const double &elapsedTime)
     }
 }
 
+double PlotterDialog::roundToStep(const double &value, const double &step)
+{
+    int tempValue = static_cast<int>( value / step );
+
+    if( value > static_cast<double>( tempValue ) * step ) {
+        return step * static_cast<double>( ( tempValue + 1 ) );
+    } else {
+        return step * static_cast<double>( tempValue );
+    }
+}
+
 void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 {
     if(m_isReseted) {
@@ -378,8 +389,8 @@ void PlotterDialog::toCurrentTime()
 {
     if(m_timeAxis.last() - dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION > 0) {
         m_plot->setAxisScale( QwtPlot::xBottom,
-                              m_timeAxis.last() - dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
-                              m_timeAxis.last(),
+                              roundToStep(m_timeAxis.last(), dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP ) - dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
+                              roundToStep(m_timeAxis.last(), dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP ),
                               dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
     } else {
         m_plot->setAxisScale( QwtPlot::xBottom,
@@ -390,7 +401,7 @@ void PlotterDialog::toCurrentTime()
     updatePlot();
 }
 
-void PlotterDialog::currentPos()
+void PlotterDialog::currentPosText()
 {
     QString str = dynamic_cast<QwtPicker *>(m_picker)->trackerText(m_picker->trackerPosition()).text();
     QStringList list = str.split(", ");
@@ -412,6 +423,6 @@ void PlotterDialog::setupConnections()
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
     connect(m_bCurrent, SIGNAL(clicked()), this, SLOT(toCurrentTime()));
 
-    connect(m_picker, SIGNAL(moved(QPointF)), this, SLOT(currentPos()));
-    connect(m_picker, SIGNAL(appended(QPointF)), this, SLOT(currentPos()));
+    connect(m_picker, SIGNAL(moved(QPointF)), this, SLOT(currentPosText()));
+    connect(m_picker, SIGNAL(appended(QPointF)), this, SLOT(currentPosText()));
 }

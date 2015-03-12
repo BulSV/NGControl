@@ -65,6 +65,7 @@ private:
     void setupConnections();
     void lcdStyling(QList<QLCDNumber *> &lcdList);
     void autoScroll(const double &elapsedTime);
+    double roundToStep(const double &value, const double &step);
 private slots:
     void changeTimeInterval();
     void changeTempInterval();
@@ -74,7 +75,7 @@ private slots:
     void changeTimeAccurateFactor(bool isChecked);
     void changeTempAccurateFactor(bool isChecked);
 
-    void currentPos();
+    void currentPosText();
 };
 
 #endif // PLOTTERDIALOG_H
