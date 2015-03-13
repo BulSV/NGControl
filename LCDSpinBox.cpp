@@ -56,6 +56,21 @@ double LCDSpinBox::value() const
     return m_LCDNumber->value();
 }
 
+double LCDSpinBox::step() const
+{
+    return m_step;
+}
+
+double LCDSpinBox::min() const
+{
+    return m_min;
+}
+
+double LCDSpinBox::max() const
+{
+    return m_max;
+}
+
 QWidget *LCDSpinBox::spinWidget() const
 {
     return m_LCDNumber;

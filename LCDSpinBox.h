@@ -33,6 +33,9 @@ public:
 
     virtual void setRange(const double &min, const double &max, const double &step);
     virtual double value() const;
+    virtual double step() const;
+    virtual double min() const;
+    virtual double max() const;
 
     virtual QWidget *spinWidget() const;
     virtual QWidget *buttunDownWidget() const;

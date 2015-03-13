@@ -51,6 +51,21 @@ double MoveSpinBox::value() const
     return m_current;
 }
 
+double MoveSpinBox::step() const
+{
+    return m_step;
+}
+
+double MoveSpinBox::min() const
+{
+    return m_min;
+}
+
+double MoveSpinBox::max() const
+{
+    return m_max;
+}
+
 QWidget *MoveSpinBox::spinWidget() const
 {
     return m_Label;

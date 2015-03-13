@@ -11,6 +11,9 @@ public:
     virtual ~ISpinBox();
     virtual void setRange(const double &min, const double& max, const double &step) = 0;
     virtual double value() const = 0;
+    virtual double step() const = 0;
+    virtual double min() const = 0;
+    virtual double max() const = 0;
     virtual QWidget *spinWidget() const = 0;
     virtual QWidget *buttunDownWidget() const = 0;
     virtual QWidget *buttonUpWidget() const = 0;

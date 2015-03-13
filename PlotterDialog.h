@@ -56,10 +56,10 @@ private:
     QVector<QVector<double> > m_dataAxises;
     QVector<double> m_timeAxis;
 
-    double m_offset;
-
     bool m_isReseted;
     bool m_isRessumed;
+
+    double m_prevCurrentTime;
 
     void setupGUI();
     void setupConnections();
