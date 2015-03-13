@@ -380,9 +380,13 @@ void PlotterDialog::pauseRessume()
     if(m_bPauseRessume->text() == QString::fromUtf8("Pause")) {
         m_bPauseRessume->setText("Ressume");
         m_isRessumed = false;
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( false );
     } else {
         m_bPauseRessume->setText("Pause");
         m_isRessumed = true;
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( true );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( true );
     }
 }
 
