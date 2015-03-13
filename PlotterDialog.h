@@ -60,6 +60,7 @@ private:
     bool m_isRessumed;
 
     double m_prevCurrentTime;
+    double m_prevCentralTemp;
 
     void setupGUI();
     void setupConnections();
