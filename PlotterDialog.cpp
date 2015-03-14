@@ -214,8 +214,14 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     }
 
     double elapsedTime = static_cast<double>( m_currentTime->elapsed() ) / 1000; // sec
-//    qDebug() << "elapsedTime:" << elapsedTime;
-//    qDebug() << "terminal side:" << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION;
+
+    // keeping vectors sizes constant
+    if( elapsedTime > 2 * 60 * XDIVISION ) {
+        m_timeAxis.pop_front();
+        for( int i = 0; i < m_dataAxises.size(); ++i ) {
+            m_dataAxises[i].pop_front();
+        }
+    }
 
     autoScroll(elapsedTime);
 
@@ -230,6 +236,8 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
             }
         }
     }
+    qDebug() << "m_timeAxis.size() =" << m_timeAxis.size();
+    qDebug() << "m_dataAxises.at(i) =" << m_dataAxises.at(0).size();
 }
 
 void PlotterDialog::updatePlot()

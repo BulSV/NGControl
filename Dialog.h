@@ -56,6 +56,9 @@ class Dialog : public QDialog
 
     QStringList itsSensorsList;
 
+    void setupGUI();
+    void setupConnections();
+
     // цвет индикации температуры >0 & <=0
     void setColorLCD(QLCDNumber *lcd, bool isHeat);
     // добавляет завершающие нули
@@ -85,7 +88,7 @@ private slots:
     void colorSetTempLCD();
 public:
     explicit Dialog(QWidget *parent = 0);
-    ~Dialog();
+    ~Dialog();        
 };
 
 #endif // DIALOG_H

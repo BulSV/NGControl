@@ -39,42 +39,30 @@
 #define TEMPSTEP 1 // degrees Celsius
 #define NORMAL_TEMP 35 // degrees Celsius
 
-Dialog::Dialog(QWidget *parent) :
-        QDialog(parent),
-        lPort(new QLabel(QString::fromUtf8("Port"), this)),
-        cbPort(new QComboBox(this)),
-        lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
-        cbBaud(new QComboBox(this)),
-        bPortStart(new QPushButton(QString::fromUtf8("Start"), this)),
-        bPortStop(new QPushButton(QString::fromUtf8("Stop"), this)),
-        chbSynchronize(new QCheckBox(QString::fromUtf8("Enable synchronization"), this)),
-        lTx(new QLabel("  Tx  ", this)),
-        lRx(new QLabel("  Rx  ", this)),
-        sbSetTemp(new LCDSpinBox(QIcon(":/Resources/left.png"),
-                                 QIcon(":/Resources/right.png"),
-                                 QString::fromUtf8(""),
-                                 QString::fromUtf8(""),
-                                 QLCDNumber::Dec,
-                                 LCDSpinBox::BOTTOM,
-                                 this)),
-        lcdInstalledTemp(new QLCDNumber(this)),
-        lcdSensor1Termo(new QLCDNumber(this)),
-        lcdSensor2Termo(new QLCDNumber(this)),
-        lSensor1(new QLabel(QString::fromUtf8("Sensor 1, °C:"), this)),
-        lSensor2(new QLabel(QString::fromUtf8("Sensor 2, °C:"), this)),
-        bSetTemp(new QPushButton(QString::fromUtf8("Set"), this)),
-        gbSetTemp(new QGroupBox(QString::fromUtf8("Temperature, °C"), this)),
-        gbSensors(new QGroupBox(QString::fromUtf8("Information"), this)),
-        itsPort(new QSerialPort(this)),
-        itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
-        itsProtocol(new NGProtocol(itsComPort, this)),
-        itsStatusBar (new QStatusBar(this)),
-        itsBlinkTimeTxNone(new QTimer(this)),
-        itsBlinkTimeRxNone(new QTimer(this)),
-        itsBlinkTimeTxColor(new QTimer(this)),
-        itsBlinkTimeRxColor(new QTimer(this)),
-        itsTimeToDisplay(new QTimer(this)),
-        plotterDialog(new PlotterDialog("NG Control: Plotter", this))
+void Dialog::setupConnections()
+{
+    connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
+    connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
+    connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
+    connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
+    connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
+    connect(bSetTemp, SIGNAL(clicked()), this, SLOT(writeTemp()));
+    connect(itsBlinkTimeTxColor, SIGNAL(timeout()), this, SLOT(colorIsTx()));
+    connect(itsBlinkTimeRxColor, SIGNAL(timeout()), this, SLOT(colorIsRx()));
+    connect(itsBlinkTimeTxNone, SIGNAL(timeout()), this, SLOT(colorTxNone()));
+    connect(itsBlinkTimeRxNone, SIGNAL(timeout()), this, SLOT(colorRxNone()));
+    connect(itsTimeToDisplay, SIGNAL(timeout()), this, SLOT(display()));
+
+    connect(sbSetTemp, SIGNAL(valueChanged()), this, SLOT(colorSetTempLCD()));
+
+    QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
+    connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
+
+    QShortcut *plotterShortcut = new QShortcut(QKeySequence("F2"), this);
+    connect(plotterShortcut, SIGNAL(activated()), plotterDialog, SLOT(show()));
+}
+
+void Dialog::setupGUI()
 {
     setLayout(new QVBoxLayout(this));
 
@@ -126,6 +114,46 @@ Dialog::Dialog(QWidget *parent) :
 
     // делает окно фиксированного размера
     this->layout()->setSizeConstraint(QLayout::SetFixedSize);
+}
+
+Dialog::Dialog(QWidget *parent) :
+        QDialog(parent),
+        lPort(new QLabel(QString::fromUtf8("Port"), this)),
+        cbPort(new QComboBox(this)),
+        lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
+        cbBaud(new QComboBox(this)),
+        bPortStart(new QPushButton(QString::fromUtf8("Start"), this)),
+        bPortStop(new QPushButton(QString::fromUtf8("Stop"), this)),
+        chbSynchronize(new QCheckBox(QString::fromUtf8("Enable synchronization"), this)),
+        lTx(new QLabel("  Tx  ", this)),
+        lRx(new QLabel("  Rx  ", this)),
+        sbSetTemp(new LCDSpinBox(QIcon(":/Resources/left.png"),
+                                 QIcon(":/Resources/right.png"),
+                                 QString::fromUtf8(""),
+                                 QString::fromUtf8(""),
+                                 QLCDNumber::Dec,
+                                 LCDSpinBox::BOTTOM,
+                                 this)),
+        lcdInstalledTemp(new QLCDNumber(this)),
+        lcdSensor1Termo(new QLCDNumber(this)),
+        lcdSensor2Termo(new QLCDNumber(this)),
+        lSensor1(new QLabel(QString::fromUtf8("Sensor 1, °C:"), this)),
+        lSensor2(new QLabel(QString::fromUtf8("Sensor 2, °C:"), this)),
+        bSetTemp(new QPushButton(QString::fromUtf8("Set"), this)),
+        gbSetTemp(new QGroupBox(QString::fromUtf8("Temperature, °C"), this)),
+        gbSensors(new QGroupBox(QString::fromUtf8("Information"), this)),
+        itsPort(new QSerialPort(this)),
+        itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
+        itsProtocol(new NGProtocol(itsComPort, this)),
+        itsStatusBar (new QStatusBar(this)),
+        itsBlinkTimeTxNone(new QTimer(this)),
+        itsBlinkTimeRxNone(new QTimer(this)),
+        itsBlinkTimeTxColor(new QTimer(this)),
+        itsBlinkTimeRxColor(new QTimer(this)),
+        itsTimeToDisplay(new QTimer(this)),
+        plotterDialog(new PlotterDialog("NG Control: Plotter", this))
+{
+    setupGUI();
 
     QStringList portsNames;
 
@@ -175,25 +203,7 @@ Dialog::Dialog(QWidget *parent) :
     curves.insert("SENS2", Qt::green);
     plotterDialog->setCurves(curves);
 
-    connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
-    connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
-    connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
-    connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
-    connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
-    connect(bSetTemp, SIGNAL(clicked()), this, SLOT(writeTemp()));
-    connect(itsBlinkTimeTxColor, SIGNAL(timeout()), this, SLOT(colorIsTx()));
-    connect(itsBlinkTimeRxColor, SIGNAL(timeout()), this, SLOT(colorIsRx()));
-    connect(itsBlinkTimeTxNone, SIGNAL(timeout()), this, SLOT(colorTxNone()));
-    connect(itsBlinkTimeRxNone, SIGNAL(timeout()), this, SLOT(colorRxNone()));
-    connect(itsTimeToDisplay, SIGNAL(timeout()), this, SLOT(display()));
-
-    connect(sbSetTemp, SIGNAL(valueChanged()), this, SLOT(colorSetTempLCD()));
-
-    QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
-    connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
-
-    QShortcut *plotterShortcut = new QShortcut(QKeySequence("F2"), this);
-    connect(plotterShortcut, SIGNAL(activated()), plotterDialog, SLOT(show()));
+    setupConnections();
 }
 
 Dialog::~Dialog()
