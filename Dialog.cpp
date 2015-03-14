@@ -115,7 +115,7 @@ Dialog::Dialog(QWidget *parent) :
     grid->addWidget(bPortStop, 2, 2);
     grid->addWidget(lTx, 2, 3);
     grid->addWidget(lRx, 2, 4);
-    grid->addWidget(chbSynchronize, 3, 0, 1, 2);
+    grid->addWidget(chbSynchronize, 3, 0, 1, 5);
     grid->addWidget(gbSetTemp, 4, 0, 3, 2);
     grid->addWidget(gbSensors, 4, 2, 3, 3);
     grid->setSpacing(5);

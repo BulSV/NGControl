@@ -152,6 +152,10 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     m_sbarInfo->addWidget(m_lStatusBar);
 
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( false );
+    m_cbTimeAccurate->setEnabled( false );
+
     setupGUI();
     setupConnections();
 }
@@ -382,13 +386,15 @@ void PlotterDialog::pauseRessume()
     if(m_bPauseRessume->text() == QString::fromUtf8("Pause")) {
         m_bPauseRessume->setText("Ressume");
         m_isRessumed = false;
-        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
-        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( false );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( true );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( true );
+        m_cbTimeAccurate->setEnabled( true );
     } else {
         m_bPauseRessume->setText("Pause");
         m_isRessumed = true;
-        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( true );
-        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( true );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( false );
+        m_cbTimeAccurate->setEnabled( false );
     }
 }
 
