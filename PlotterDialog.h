@@ -21,7 +21,7 @@ class PlotterDialog : public QDialog
     Q_OBJECT
 public:
     explicit PlotterDialog(const QString &title, QWidget *parent = 0);
-    void setCurves(const QMap<QString, Qt::GlobalColor> &curves);
+    void setCurves(const QMap<QString, QPen> &curves);
 signals:
 
 public slots:

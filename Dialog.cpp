@@ -197,10 +197,10 @@ Dialog::Dialog(QWidget *parent) :
         lcd->setFrameStyle(QFrame::NoFrame);
     }
 
-    QMap<QString, Qt::GlobalColor> curves;
-    curves.insert("TEMP", Qt::red);
-    curves.insert("SENS1", Qt::blue);
-    curves.insert("SENS2", Qt::green);
+    QMap<QString, QPen> curves;
+    curves.insert("TEMP", QPen(QBrush("#0000FF"), 1.5));
+    curves.insert("SENS1", QPen(QBrush("#FF0000"), 1.5));
+    curves.insert("SENS2", QPen(QBrush("#00FF00"), 1.5));
     plotterDialog->setCurves(curves);
 
     setupConnections();

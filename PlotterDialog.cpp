@@ -41,7 +41,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bCurrent(new QPushButton(QString::fromUtf8("Current"), this)),
     m_TimeAccurateFactor(1.0),
     m_TempAccurateFactor(1.0),
-    m_lStatusBar(new QLabel("<b>Time, sec: nan<br/>Temp, °C: nan</b>", this)),
+//    m_lStatusBar(new QLabel("<b>Time, sec: nan<br/>Temp, °C: nan</b>", this)),
     m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this)),
     m_currentTime( new QTime()),
@@ -117,7 +117,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     grid->enableXMin( true );
     grid->enableYMin( true );
     grid->setMajorPen( Qt::black, 0 );
-    grid->setMinorPen( Qt::black, 0, Qt::DotLine );
+    grid->setMinorPen( Qt::gray, 0, Qt::DotLine );
     grid->attach( m_plot );
 
     // axes
@@ -147,8 +147,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                  QwtPicker::ActiveOnly,
                                  m_plot->canvas());
     m_picker->setStateMachine(new QwtPickerDragPointMachine());
-    m_picker->setRubberBandPen(QColor(Qt::black));
-    m_picker->setTrackerPen(QColor(Qt::black));
+    m_picker->setRubberBandPen(QColor(Qt::magenta));
+    m_picker->setTrackerPen(QColor(Qt::magenta));
+    m_picker->setTrackerFont(QFont(m_picker->trackerFont().family(), 12));
 
     m_sbarInfo->addWidget(m_lStatusBar);
 
@@ -160,7 +161,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     setupConnections();
 }
 
-void PlotterDialog::setCurves(const QMap<QString, Qt::GlobalColor > &curves)
+void PlotterDialog::setCurves(const QMap<QString, QPen > &curves)
 {
     QStringList listKeys = curves.keys();
 
@@ -236,8 +237,6 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
             }
         }
     }
-    qDebug() << "m_timeAxis.size() =" << m_timeAxis.size();
-    qDebug() << "m_dataAxises.at(i) =" << m_dataAxises.at(0).size();
 }
 
 void PlotterDialog::updatePlot()
@@ -310,9 +309,9 @@ void PlotterDialog::changeTimeInterval()
 void PlotterDialog::changeTempInterval()
 {
     m_plot->setAxisScale( QwtPlot::yLeft,
-                          m_prevCentralTemp - dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( YDIVISION/2 ),
-                          m_prevCentralTemp + dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( YDIVISION/2 ),
-                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );    
+                          m_prevCentralTemp - dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                          m_prevCentralTemp + dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
     updatePlot();
 }
 
@@ -334,7 +333,6 @@ void PlotterDialog::moveTimeInterval()
     }
 
     updatePlot();
-    qDebug() << m_msbTimeInterval->value();
 }
 
 void PlotterDialog::moveTempInterval()
@@ -344,7 +342,9 @@ void PlotterDialog::moveTempInterval()
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * ( m_msbTempInterval->value() + YDIVISION/2 ),
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
     m_prevCentralTemp = dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * m_msbTempInterval->value();
+
     qDebug() << m_prevCentralTemp;
+    qDebug() << m_msbTempInterval->value() << "\n";
     updatePlot();
 }
 
@@ -449,6 +449,6 @@ void PlotterDialog::setupConnections()
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
     connect(m_bCurrent, SIGNAL(clicked()), this, SLOT(toCurrentTime()));
 
-    connect(m_picker, SIGNAL(moved(QPointF)), this, SLOT(currentPosText()));
-    connect(m_picker, SIGNAL(appended(QPointF)), this, SLOT(currentPosText()));
+//    connect(m_picker, SIGNAL(moved(QPointF)), this, SLOT(currentPosText()));
+//    connect(m_picker, SIGNAL(appended(QPointF)), this, SLOT(currentPosText()));
 }
