@@ -46,7 +46,7 @@ private:
     double m_TimeAccurateFactor;
     double m_TempAccurateFactor;
 
-    QLabel *m_lStatusBar;
+//    QLabel *m_lStatusBar;
     QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;

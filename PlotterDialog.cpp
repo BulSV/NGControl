@@ -151,7 +151,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_picker->setTrackerPen(QColor(Qt::magenta));
     m_picker->setTrackerFont(QFont(m_picker->trackerFont().family(), 12));
 
-    m_sbarInfo->addWidget(m_lStatusBar);
+//    m_sbarInfo->addWidget(m_lStatusBar);
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( false );
@@ -432,7 +432,7 @@ void PlotterDialog::currentPosText()
     QString str = dynamic_cast<QwtPicker *>(m_picker)->trackerText(m_picker->trackerPosition()).text();
     QStringList list = str.split(", ");
 
-    m_lStatusBar->setText(QString("<b>Time, sec: %1<br/>Temp, °C: %2</b>").arg(list.at(0)).arg(list.at(1)));
+//    m_lStatusBar->setText(QString("<b>Time, sec: %1<br/>Temp, °C: %2</b>").arg(list.at(0)).arg(list.at(1)));
 }
 
 void PlotterDialog::setupConnections()
