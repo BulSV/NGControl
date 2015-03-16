@@ -309,6 +309,7 @@ void Dialog::writeTemp()
         itsProtocol->writeData();
         if(chbSynchronize->isChecked()) {
             plotterDialog->resetTime();
+            plotterDialog->toCurrentTime();
         }
     }
 }
