@@ -48,7 +48,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_isReseted( false ),
     m_isRessumed( true ),
     m_prevCurrentTime( 0.0 ),
-    m_prevCentralTemp( 0.0 )
+    m_prevCentralTemp( 0.0 ),
+    m_prevTempOffset( 0.0 )
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
@@ -340,11 +341,20 @@ void PlotterDialog::moveTimeInterval()
 void PlotterDialog::moveTempInterval()
 {
     double factor = dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value();
+    double offset = 0.0;
+    if( m_prevTempOffset - m_msbTempInterval->value() > 0 ) {
+        offset = -m_msbTempInterval->step();
+    } else {
+        offset = m_msbTempInterval->step();
+    }
+    m_prevTempOffset = m_msbTempInterval->value();
+
     m_plot->setAxisScale( QwtPlot::yLeft,
-                          factor * ( m_msbTempInterval->value() - YDIVISION/2 ),
-                          factor * ( m_msbTempInterval->value() + YDIVISION/2 ),
+                          m_prevCentralTemp + factor * ( offset - YDIVISION/2 ) ,
+                          m_prevCentralTemp + factor * ( offset + YDIVISION/2 ),
                           factor * YSCALESTEP );
-    m_prevCentralTemp = factor * m_msbTempInterval->value();
+
+    m_prevCentralTemp += factor * offset;
 
     qDebug() << m_prevCentralTemp;
     qDebug() << m_msbTempInterval->value() << "\n";

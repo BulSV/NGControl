@@ -61,6 +61,7 @@ private:
 
     double m_prevCurrentTime;
     double m_prevCentralTemp;
+    double m_prevTempOffset;
 
     void setupGUI();
     void setupConnections();
