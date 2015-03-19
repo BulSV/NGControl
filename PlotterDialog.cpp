@@ -52,7 +52,7 @@
 #define XMINORDIVISION 5
 #define XSCALESTEP 1
 
-#define YDIVISION 10
+#define YDIVISION 8
 #define YMAJORDIVISION 10
 #define YMINORDIVISION 5
 #define YSCALESTEP 1
@@ -94,8 +94,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     chbSynchronize(new QCheckBox(QString::fromUtf8("Enable synchronization"), this)),
     lTx(new QLabel("  Tx  ", this)),
     lRx(new QLabel("  Rx  ", this)),
-    sbSetTemp(new LCDSpinBox(QIcon(":/Resources/down.png"),
-                             QIcon(":/Resources/up.png"),
+    sbSetTemp(new LCDSpinBox(QIcon(":/Resources/down.svg"),
+                             QIcon(":/Resources/up.svg"),
                              QString::fromUtf8(""),
                              QString::fromUtf8(""),
                              QLCDNumber::Dec,
@@ -123,8 +123,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     tempSamples << 0.5 << 1 << 2 << 3 << 5 << 10;
 
     m_lcdTimeInterval = new LCDSampleSpinBox(timeSamples,
-                                             QIcon(":/Resources/down.png"),
-                                             QIcon(":/Resources/up.png"),
+                                             QIcon(":/Resources/down.svg"),
+                                             QIcon(":/Resources/up.svg"),
                                              QString::fromUtf8(""),
                                              QString::fromUtf8(""),
                                              QLCDNumber::Dec,
@@ -133,8 +133,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_lcdTimeInterval->setValue(timeSamples.size());
 
     m_lcdTempInterval = new LCDSampleSpinBox(tempSamples,
-                                                      QIcon(":/Resources/down.png"),
-                                                      QIcon(":/Resources/up.png"),
+                                                      QIcon(":/Resources/down.svg"),
+                                                      QIcon(":/Resources/up.svg"),
                                                       QString::fromUtf8(""),
                                                       QString::fromUtf8(""),
                                                       QLCDNumber::Dec,
@@ -142,18 +142,18 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                       this);
     m_lcdTempInterval->setValue(tempSamples.size());
 
-    m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
-                                        QIcon(":/Resources/left.png"),
-                                        QIcon(":/Resources/right.png"),
+    m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.svg' height='20' width='45'/>",
+                                        QIcon(":/Resources/left.svg"),
+                                        QIcon(":/Resources/right.svg"),
                                         QString::fromUtf8(""),
                                         QString::fromUtf8(""),
                                         MoveSpinBox::BOTTOM,
                                         this);
     m_msbTimeInterval->setRange(LOWTIME, UPTIME, STEPTIME);
 
-    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.png' height='45' width='20'/>",
-                                        QIcon(":/Resources/down.png"),
-                                        QIcon(":/Resources/up.png"),
+    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.svg' height='45' width='20'/>",
+                                        QIcon(":/Resources/down.svg"),
+                                        QIcon(":/Resources/up.svg"),
                                         QString::fromUtf8(""),
                                         QString::fromUtf8(""),
                                         MoveSpinBox::RIGHT,
@@ -176,6 +176,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     list << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo;
     foreach(QLCDNumber *lcd, list) {
         lcd->setDigitCount(6);
+        lcd->setFixedSize(120, 40);
     }
     colorSetTempLCD();
 
@@ -386,10 +387,16 @@ void PlotterDialog::setupGUI()
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
 
+    QHBoxLayout *setTempLayout0 = new QHBoxLayout;
+    setTempLayout0->addWidget(sbSetTemp);
+    setTempLayout0->addWidget(bSetTemp);
+    setTempLayout0->setSpacing(5);
+
     QVBoxLayout *setTempLayout = new QVBoxLayout;
-    setTempLayout->addWidget(sbSetTemp);
-    setTempLayout->addWidget(bSetTemp);
+    setTempLayout->addItem(setTempLayout0);
     setTempLayout->addWidget(chbSynchronize);
+    setTempLayout->setSpacing(5);
+
 
     QGridLayout *gridInfo = new QGridLayout;
     gridInfo->addWidget(new QLabel("Installed, °C:", this), 0, 0);
@@ -398,6 +405,7 @@ void PlotterDialog::setupGUI()
     gridInfo->addWidget(lcdSensor1Termo, 1, 1);
     gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 2, °C:")), 2, 0);
     gridInfo->addWidget(lcdSensor2Termo, 2, 1);
+    gridInfo->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 3, 0);
     gridInfo->setSpacing(5);
 
     gbSetTemp->setLayout(setTempLayout);
@@ -415,22 +423,30 @@ void PlotterDialog::setupGUI()
     grid->setSpacing(5);
 
     QGroupBox *gbPort = new QGroupBox;
-    gbPort->setTitle(QString::fromUtf8("Port config"));
+    gbPort->setTitle(QString::fromUtf8("Port configure"));
     gbPort->setLayout(grid);
 
+    QHBoxLayout *timeLayout0 = new QHBoxLayout;
+    timeLayout0->addWidget(m_lcdTimeInterval);
+    timeLayout0->addWidget(m_msbTimeInterval);
+    timeLayout0->setSpacing(5);
+
     QVBoxLayout *timeLayout = new QVBoxLayout;
-    timeLayout->addWidget(m_lcdTimeInterval);
-    timeLayout->addWidget(m_cbTimeAccurate);
-    timeLayout->addWidget(m_msbTimeInterval);
+    timeLayout->addItem(timeLayout0);
+    timeLayout->addWidget(m_cbTimeAccurate);    
     timeLayout->setSpacing(5);
 
     QGroupBox *gbTime = new QGroupBox("sec/div", this);
     gbTime->setLayout(timeLayout);
 
+    QHBoxLayout *tempLayout0 = new QHBoxLayout;
+    tempLayout0->addWidget(m_lcdTempInterval);
+    tempLayout0->addWidget(m_msbTempInterval);
+    tempLayout0->setSpacing(5);
+
     QVBoxLayout *tempLayout = new QVBoxLayout;
-    tempLayout->addWidget(m_lcdTempInterval);
-    tempLayout->addWidget(m_cbTempAccurate);
-    tempLayout->addWidget(m_msbTempInterval);
+    tempLayout->addItem(tempLayout0);
+    tempLayout->addWidget(m_cbTempAccurate);    
     tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);
@@ -446,7 +462,7 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
-    knobsLayout->addWidget(gbPort);
+    knobsLayout->addWidget(gbPort);   
     knobsLayout->addWidget(gbSensors);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
@@ -461,7 +477,7 @@ void PlotterDialog::setupGUI()
     m_sbarInfo->addWidget(m_lStatusBar);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addItem(plotLayout);
+    mainLayout->addItem(plotLayout);   
     mainLayout->addWidget(m_sbarInfo);
     mainLayout->setSpacing(5);
 
@@ -471,8 +487,8 @@ void PlotterDialog::setupGUI()
 void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
 {
     foreach(QLCDNumber *lcd, lcdList) {
-//        lcd->setMinimumSize(80, 40);
-//        lcd->setMaximumSize(80, 40);
+//        lcd->setMinimumSize(25, 25);
+//        lcd->setMaximumSize(25, 25);
         lcd->setSegmentStyle(QLCDNumber::Flat);
         lcd->setFrameStyle(QFrame::NoFrame);
     }
@@ -664,6 +680,8 @@ void PlotterDialog::openPort()
 {
     itsPort->close();
     itsPort->setPortName(cbPort->currentText());
+
+    m_lStatusBar->setStyleSheet("background: none; font: bold; font-size: 12pt");
 
     if(itsPort->open(QSerialPort::ReadWrite))
     {

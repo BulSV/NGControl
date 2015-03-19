@@ -8,5 +8,11 @@
         <file>Resources/up.png</file>
         <file>Resources/LeftRight.png</file>
         <file>Resources/UpDown.png</file>
+        <file>Resources/LeftRight.svg</file>
+        <file>Resources/UpDown.svg</file>
+        <file>Resources/down.svg</file>
+        <file>Resources/left.svg</file>
+        <file>Resources/right.svg</file>
+        <file>Resources/up.svg</file>
     </qresource>
 </RCC>

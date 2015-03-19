@@ -120,29 +120,29 @@ void LCDSpinBox::setupGui(LAYOUT layout)
     case TOP:
         mainLayout->addWidget(m_bDown, 0, 0);
         mainLayout->addWidget(m_bUp, 0, 1);
-        mainLayout->addWidget(m_LCDNumber, 1, 0, 1, 2);
+        mainLayout->addWidget(m_LCDNumber, 1, 0, 1, 2, Qt::AlignCenter);
         mainLayout->setSpacing(5);
         break;
     case BOTTOM:
-        mainLayout->addWidget(m_LCDNumber, 0, 0, 1, 2);
+        mainLayout->addWidget(m_LCDNumber, 0, 0, 1, 2, Qt::AlignCenter);
         mainLayout->addWidget(m_bDown, 1, 0);
         mainLayout->addWidget(m_bUp, 1, 1);
         mainLayout->setSpacing(5);
         break;
     case LEFT:
         mainLayout->addWidget(m_bUp, 0, 0);
-        mainLayout->addWidget(m_LCDNumber, 0, 1, 2, 1);
+        mainLayout->addWidget(m_LCDNumber, 0, 1, 2, 1, Qt::AlignLeft);
         mainLayout->addWidget(m_bDown, 1, 0);
         mainLayout->setSpacing(5);
         break;
     case RIGHT:
-        mainLayout->addWidget(m_LCDNumber, 0, 0, 2, 1);
+        mainLayout->addWidget(m_LCDNumber, 0, 0, 2, 1, Qt::AlignRight);
         mainLayout->addWidget(m_bUp, 0, 1);
         mainLayout->addWidget(m_bDown, 1, 1);
         mainLayout->setSpacing(5);
         break;
     default: // BOTTOM
-        mainLayout->addWidget(m_LCDNumber, 0, 0, 1, 2);
+        mainLayout->addWidget(m_LCDNumber, 0, 0, 1, 2, Qt::AlignCenter);
         mainLayout->addWidget(m_bDown, 1, 0);
         mainLayout->addWidget(m_bUp, 1, 1);
         mainLayout->setSpacing(5);
