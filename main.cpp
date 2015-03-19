@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     app.setWindowIcon(QIcon(":/Resources/NGControl.png"));
 #endif
     PlotterDialog plotterDialog(QString::fromUtf8("NG Control"));
-    plotterDialog.show();
+    plotterDialog.showMaximized();
 
     return app.exec();
 }

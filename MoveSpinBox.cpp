@@ -71,7 +71,7 @@ QWidget *MoveSpinBox::spinWidget() const
     return m_Label;
 }
 
-QWidget *MoveSpinBox::buttunDownWidget() const
+QWidget *MoveSpinBox::buttonDownWidget() const
 {
     return m_bDown;
 }

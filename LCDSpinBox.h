@@ -38,7 +38,7 @@ public:
     virtual double max() const;
 
     virtual QWidget *spinWidget() const;
-    virtual QWidget *buttunDownWidget() const;
+    virtual QWidget *buttonDownWidget() const;
     virtual QWidget *buttonUpWidget() const;
 public slots:
     virtual void setIconDownButton(const QIcon &icon);

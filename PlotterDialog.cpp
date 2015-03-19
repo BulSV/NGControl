@@ -52,7 +52,7 @@
 #define XMINORDIVISION 5
 #define XSCALESTEP 1
 
-#define YDIVISION 8
+#define YDIVISION 10
 #define YMAJORDIVISION 10
 #define YMINORDIVISION 5
 #define YSCALESTEP 1
@@ -94,12 +94,12 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     chbSynchronize(new QCheckBox(QString::fromUtf8("Enable synchronization"), this)),
     lTx(new QLabel("  Tx  ", this)),
     lRx(new QLabel("  Rx  ", this)),
-    sbSetTemp(new LCDSpinBox(QIcon(":/Resources/left.png"),
-                             QIcon(":/Resources/right.png"),
+    sbSetTemp(new LCDSpinBox(QIcon(":/Resources/down.png"),
+                             QIcon(":/Resources/up.png"),
                              QString::fromUtf8(""),
                              QString::fromUtf8(""),
                              QLCDNumber::Dec,
-                             LCDSpinBox::BOTTOM,
+                             LCDSpinBox::RIGHT,
                              this)),
     lcdInstalledTemp(new QLCDNumber(this)),
     lcdSensor1Termo(new QLCDNumber(this)),
@@ -142,7 +142,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                       this);
     m_lcdTempInterval->setValue(tempSamples.size());
 
-    m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='48' width='48'/>",
+    m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
                                         QIcon(":/Resources/left.png"),
                                         QIcon(":/Resources/right.png"),
                                         QString::fromUtf8(""),
@@ -151,7 +151,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                         this);
     m_msbTimeInterval->setRange(LOWTIME, UPTIME, STEPTIME);
 
-    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.png' height='48' width='48'/>",
+    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.png' height='45' width='20'/>",
                                         QIcon(":/Resources/down.png"),
                                         QIcon(":/Resources/up.png"),
                                         QString::fromUtf8(""),
@@ -164,8 +164,20 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     QList<QLCDNumber*> lcdList;
     lcdList << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())
-            << dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget());
+            << dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())
+            << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo
+            << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
     lcdStyling(lcdList);
+
+    sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX, TEMPSTEP);
+    sbSetTemp->setValue(NORMAL_TEMP);
+
+    QList<QLCDNumber*> list;
+    list << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo;
+    foreach(QLCDNumber *lcd, list) {
+        lcd->setDigitCount(6);
+    }
+    colorSetTempLCD();
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius(5);
@@ -218,7 +230,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_picker->setTrackerFont(QFont(m_picker->trackerFont().family(), 12));
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
-    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( false );
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
     m_cbTimeAccurate->setEnabled( false );
 
     QStringList portsNames;
@@ -259,20 +271,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     itsBlinkTimeRxColor->setInterval(BLINKTIMERX);
     itsTimeToDisplay->setInterval(DISPLAYTIME);
 
-    sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX, TEMPSTEP);
-    sbSetTemp->setValue(NORMAL_TEMP);
-    colorSetTempLCD();
-
-    QList<QLCDNumber*> list;
-    list << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
-    foreach(QLCDNumber *lcd, list) {
-        lcd->setMinimumSize(80, 40);
-        lcd->setMaximumSize(80, 40);
-        lcd->setDigitCount(6);
-        lcd->setSegmentStyle(QLCDNumber::Flat);
-        lcd->setFrameStyle(QFrame::NoFrame);
-    }
-
     QMap<QString, QPen> curves;
     curves.insert("TEMP", QPen(QBrush(QColor("#0000FF")), 1.5));
     curves.insert("SENS1", QPen(QBrush(QColor("#FF0000")), 1.5));
@@ -286,16 +284,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 PlotterDialog::~PlotterDialog()
 {
     itsPort->close();
-
-//    delete m_plot;
-
-//    for( int i = 0; i < m_Curves.size(); ++i ){
-//        QwtPlotCurve *curve = m_Curves[i];
-//        m_Curves.remove(i);
-//        delete curve;
-//    }
-
-//    delete m_picker;
 }
 
 void PlotterDialog::setCurves(const QMap<QString, QPen > &curves)
@@ -383,33 +371,52 @@ void PlotterDialog::updatePlot()
 
 void PlotterDialog::setupGUI()
 {
-    QGridLayout *gridTemp = new QGridLayout;
-    gridTemp->addWidget(sbSetTemp, 0, 0, 1, 3);
-    gridTemp->addWidget(bSetTemp, 1, 1);
-    gridTemp->addWidget(chbSynchronize, 2, 0, 1, 3);
+    dynamic_cast<QPushButton *>( sbSetTemp->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( sbSetTemp->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    dynamic_cast<QPushButton *>( m_lcdTempInterval->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_lcdTempInterval->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    dynamic_cast<QPushButton *>( m_msbTempInterval->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_msbTempInterval->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    QVBoxLayout *setTempLayout = new QVBoxLayout;
+    setTempLayout->addWidget(sbSetTemp);
+    setTempLayout->addWidget(bSetTemp);
+    setTempLayout->addWidget(chbSynchronize);
 
     QGridLayout *gridInfo = new QGridLayout;
     gridInfo->addWidget(new QLabel("Installed, °C:", this), 0, 0);
-    gridInfo->addWidget(lcdInstalledTemp, 1, 0);
-    gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 1, °C:")), 0, 1);
+    gridInfo->addWidget(lcdInstalledTemp, 0, 1);
+    gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 1, °C:")), 1, 0);
     gridInfo->addWidget(lcdSensor1Termo, 1, 1);
-    gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 2, °C:")), 0, 2);
-    gridInfo->addWidget(lcdSensor2Termo, 1, 2);
+    gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 2, °C:")), 2, 0);
+    gridInfo->addWidget(lcdSensor2Termo, 2, 1);
     gridInfo->setSpacing(5);
 
-    gbSetTemp->setLayout(gridTemp);
+    gbSetTemp->setLayout(setTempLayout);
     gbSensors->setLayout(gridInfo);
 
     QGridLayout *grid = new QGridLayout;
     grid->addWidget(lPort, 0, 0);
-    grid->addWidget(cbPort, 1, 0);
-    grid->addWidget(lBaud, 0, 1);
+    grid->addWidget(cbPort, 0, 1);
+    grid->addWidget(lBaud, 1, 0);
     grid->addWidget(cbBaud, 1, 1);
     // пещаю логотип фирмы
-    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 4, 2, 5);
-    grid->addWidget(bPortStart, 1, 2);
-    grid->addWidget(bPortStop, 1, 3);
+//    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 7, 2, 5, Qt::AlignRight);
+    grid->addWidget(bPortStart, 2, 0);
+    grid->addWidget(bPortStop, 2, 1);
     grid->setSpacing(5);
+
+    QGroupBox *gbPort = new QGroupBox;
+    gbPort->setTitle(QString::fromUtf8("Port config"));
+    gbPort->setLayout(grid);
 
     QVBoxLayout *timeLayout = new QVBoxLayout;
     timeLayout->addWidget(m_lcdTimeInterval);
@@ -439,6 +446,8 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
+    knobsLayout->addWidget(gbPort);
+    knobsLayout->addWidget(gbSensors);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 
@@ -452,9 +461,7 @@ void PlotterDialog::setupGUI()
     m_sbarInfo->addWidget(m_lStatusBar);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addItem(grid);
     mainLayout->addItem(plotLayout);
-    mainLayout->addWidget(gbSensors);
     mainLayout->addWidget(m_sbarInfo);
     mainLayout->setSpacing(5);
 
@@ -464,8 +471,8 @@ void PlotterDialog::setupGUI()
 void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
 {
     foreach(QLCDNumber *lcd, lcdList) {
-        lcd->setMinimumSize(80, 40);
-        lcd->setMaximumSize(80, 40);
+//        lcd->setMinimumSize(80, 40);
+//        lcd->setMaximumSize(80, 40);
         lcd->setSegmentStyle(QLCDNumber::Flat);
         lcd->setFrameStyle(QFrame::NoFrame);
     }
@@ -578,13 +585,13 @@ void PlotterDialog::pauseRessume()
         m_bPauseRessume->setText("Ressume");
         m_isRessumed = false;
         dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( true );
-        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( true );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( true );
         m_cbTimeAccurate->setEnabled( true );
     } else {
         m_bPauseRessume->setText("Pause");
         m_isRessumed = true;
         dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
-        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttunDownWidget() )->setEnabled( false );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
         m_cbTimeAccurate->setEnabled( false );
     }
 }

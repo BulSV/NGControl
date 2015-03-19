@@ -76,7 +76,7 @@ QWidget *LCDSpinBox::spinWidget() const
     return m_LCDNumber;
 }
 
-QWidget *LCDSpinBox::buttunDownWidget() const
+QWidget *LCDSpinBox::buttonDownWidget() const
 {
     return m_bDown;
 }
