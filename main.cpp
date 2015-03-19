@@ -3,7 +3,7 @@
 #endif
 
 #include <QApplication>
-#include "Dialog.h"
+#include "PlotterDialog.h"
 
 int main(int argc, char **argv)
 {
@@ -12,9 +12,8 @@ int main(int argc, char **argv)
 #if defined (Q_OS_UNIX)
     app.setWindowIcon(QIcon(":/Resources/NGControl.png"));
 #endif
-    Dialog fDialog;
-    fDialog.setWindowTitle(QString::fromUtf8("NG Control"));
-    fDialog.show();
+    PlotterDialog plotterDialog(QString::fromUtf8("NG Control"));
+    plotterDialog.show();
 
     return app.exec();
 }
