@@ -47,7 +47,6 @@ else {
 HEADERS += \
     ComPort.h \
     IProtocol.h \
-    Dialog.h \
     NGProtocol.h \
     RewindButton.h \
     SpinBox.h \
@@ -60,7 +59,6 @@ HEADERS += \
 
 SOURCES += \
     ComPort.cpp \
-    Dialog.cpp \
     main.cpp \
     NGProtocol.cpp \
     RewindButton.cpp \
