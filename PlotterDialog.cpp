@@ -94,8 +94,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     chbSynchronize(new QCheckBox(QString::fromUtf8("Enable synchronization"), this)),
     lTx(new QLabel("  Tx  ", this)),
     lRx(new QLabel("  Rx  ", this)),
-    sbSetTemp(new LCDSpinBox(QIcon(":/Resources/down.svg"),
-                             QIcon(":/Resources/up.svg"),
+    sbSetTemp(new LCDSpinBox(QIcon(":/Resources/down.png"),
+                             QIcon(":/Resources/up.png"),
                              QString::fromUtf8(""),
                              QString::fromUtf8(""),
                              QLCDNumber::Dec,
@@ -123,8 +123,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     tempSamples << 0.5 << 1 << 2 << 3 << 5 << 10;
 
     m_lcdTimeInterval = new LCDSampleSpinBox(timeSamples,
-                                             QIcon(":/Resources/down.svg"),
-                                             QIcon(":/Resources/up.svg"),
+                                             QIcon(":/Resources/down.png"),
+                                             QIcon(":/Resources/up.png"),
                                              QString::fromUtf8(""),
                                              QString::fromUtf8(""),
                                              QLCDNumber::Dec,
@@ -133,8 +133,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_lcdTimeInterval->setValue(timeSamples.size());
 
     m_lcdTempInterval = new LCDSampleSpinBox(tempSamples,
-                                                      QIcon(":/Resources/down.svg"),
-                                                      QIcon(":/Resources/up.svg"),
+                                                      QIcon(":/Resources/down.png"),
+                                                      QIcon(":/Resources/up.png"),
                                                       QString::fromUtf8(""),
                                                       QString::fromUtf8(""),
                                                       QLCDNumber::Dec,
@@ -142,18 +142,18 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                       this);
     m_lcdTempInterval->setValue(tempSamples.size());
 
-    m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.svg' height='20' width='45'/>",
-                                        QIcon(":/Resources/left.svg"),
-                                        QIcon(":/Resources/right.svg"),
+    m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
+                                        QIcon(":/Resources/left.png"),
+                                        QIcon(":/Resources/right.png"),
                                         QString::fromUtf8(""),
                                         QString::fromUtf8(""),
                                         MoveSpinBox::BOTTOM,
                                         this);
     m_msbTimeInterval->setRange(LOWTIME, UPTIME, STEPTIME);
 
-    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.svg' height='45' width='20'/>",
-                                        QIcon(":/Resources/down.svg"),
-                                        QIcon(":/Resources/up.svg"),
+    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.png' height='45' width='20'/>",
+                                        QIcon(":/Resources/down.png"),
+                                        QIcon(":/Resources/up.png"),
                                         QString::fromUtf8(""),
                                         QString::fromUtf8(""),
                                         MoveSpinBox::RIGHT,
@@ -405,7 +405,7 @@ void PlotterDialog::setupGUI()
     gridInfo->addWidget(lcdSensor1Termo, 1, 1);
     gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 2, °C:")), 2, 0);
     gridInfo->addWidget(lcdSensor2Termo, 2, 1);
-    gridInfo->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 3, 0);
+//    gridInfo->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 3, 0);
     gridInfo->setSpacing(5);
 
     gbSetTemp->setLayout(setTempLayout);
@@ -433,7 +433,7 @@ void PlotterDialog::setupGUI()
 
     QVBoxLayout *timeLayout = new QVBoxLayout;
     timeLayout->addItem(timeLayout0);
-    timeLayout->addWidget(m_cbTimeAccurate);    
+    timeLayout->addWidget(m_cbTimeAccurate);
     timeLayout->setSpacing(5);
 
     QGroupBox *gbTime = new QGroupBox("sec/div", this);
@@ -446,7 +446,7 @@ void PlotterDialog::setupGUI()
 
     QVBoxLayout *tempLayout = new QVBoxLayout;
     tempLayout->addItem(tempLayout0);
-    tempLayout->addWidget(m_cbTempAccurate);    
+    tempLayout->addWidget(m_cbTempAccurate);
     tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);
@@ -462,7 +462,7 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
-    knobsLayout->addWidget(gbPort);   
+    knobsLayout->addWidget(gbPort);
     knobsLayout->addWidget(gbSensors);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
@@ -477,7 +477,7 @@ void PlotterDialog::setupGUI()
     m_sbarInfo->addWidget(m_lStatusBar);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addItem(plotLayout);   
+    mainLayout->addItem(plotLayout);
     mainLayout->addWidget(m_sbarInfo);
     mainLayout->setSpacing(5);
 
