@@ -21,7 +21,7 @@
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
-#define BYTESLENTH 8
+#define BYTESLENGTH 8
 
 #define NEGATIVE 32768 // 2^15
 #define OFFSET 65536 // 2^16
@@ -104,15 +104,20 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     lcdSensor2Termo(new QLCDNumber(this)),
     bSetTemp(new QPushButton(QString::fromUtf8("Set"), this)),
     gbSetTemp(new QGroupBox(QString::fromUtf8("Temperature, °C"), this)),
-    gbSensors(new QGroupBox(QString::fromUtf8("Information"), this)),
+//    gbSensors(new QGroupBox(QString::fromUtf8("Information, °C"), this)),
     itsPort(new QSerialPort(this)),
-    itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENTH, this)),
+    itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENGTH, this)),
     itsProtocol(new NGProtocol(itsComPort, this)),
     itsBlinkTimeTxNone(new QTimer(this)),
     itsBlinkTimeRxNone(new QTimer(this)),
     itsBlinkTimeTxColor(new QTimer(this)),
     itsBlinkTimeRxColor(new QTimer(this)),
-    itsTimeToDisplay(new QTimer(this))
+    itsTimeToDisplay(new QTimer(this)),
+    m_gbTrackCurve(new QGroupBox(QString::fromUtf8("Track curve"), this)),
+    m_rbTrackInstalledTemp(new QRadioButton(QString::fromUtf8("Installed"), this)),
+    m_rbTrackSensor1Termo(new QRadioButton(QString::fromUtf8("Sensor1"), this)),
+    m_rbTrackSensor2Termo(new QRadioButton(QString::fromUtf8("Sensor2"), this))
+//    m_bgTrackCurve(new QButtonGroup(this))
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
@@ -131,13 +136,13 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_lcdTimeInterval->setValue(4);
 
     m_lcdTempInterval = new LCDSampleSpinBox(tempSamples,
-                                                      QIcon(":/Resources/down.png"),
-                                                      QIcon(":/Resources/up.png"),
-                                                      QString::fromUtf8(""),
-                                                      QString::fromUtf8(""),
-                                                      QLCDNumber::Dec,
-                                                      LCDSpinBox::RIGHT,
-                                                      this);
+                                             QIcon(":/Resources/down.png"),
+                                             QIcon(":/Resources/up.png"),
+                                             QString::fromUtf8(""),
+                                             QString::fromUtf8(""),
+                                             QLCDNumber::Dec,
+                                             LCDSpinBox::RIGHT,
+                                             this);
     m_lcdTempInterval->setValue(5);
 
     m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
@@ -271,7 +276,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QMap<QString, QPen> curves;
     curves.insert("TEMP", QPen(QBrush(QColor("#0000FF")), 1.5));
     curves.insert("SENS1", QPen(QBrush(QColor("#FF0000")), 1.5));
-    curves.insert("SENS2", QPen(QBrush(QColor("#00FF00")), 1.5));
+    curves.insert("SENS2", QPen(QBrush(QColor("green")), 1.5));
     setCurves(curves);
 
     setupGUI();
@@ -383,6 +388,21 @@ void PlotterDialog::setupGUI()
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
 
+    QGridLayout *gridInfo = new QGridLayout;
+    QLabel *lInstalled = new QLabel("Installed:", this);
+    lInstalled->setStyleSheet("color: #0000FF; font: bold; font-size: 12pt");
+    gridInfo->addWidget(lInstalled, 0, 0);
+    gridInfo->addWidget(lcdInstalledTemp, 0, 1);
+    QLabel *lSensor1 = new QLabel(QString::fromUtf8("Sensor 1:"));
+    lSensor1->setStyleSheet("color: #FF0000; font: bold; font-size: 12pt");
+    gridInfo->addWidget(lSensor1, 1, 0);
+    gridInfo->addWidget(lcdSensor1Termo, 1, 1);
+    QLabel *lSensor2 = new QLabel(QString::fromUtf8("Sensor 2:"));
+    lSensor2->setStyleSheet("color: green; font: bold; font-size: 12pt");
+    gridInfo->addWidget(lSensor2, 2, 0);
+    gridInfo->addWidget(lcdSensor2Termo, 2, 1);
+    gridInfo->setSpacing(5);
+
     bSetTemp->setFixedHeight(45);
     QHBoxLayout *setTempLayout0 = new QHBoxLayout;
     setTempLayout0->addWidget(sbSetTemp);
@@ -392,37 +412,22 @@ void PlotterDialog::setupGUI()
     QVBoxLayout *setTempLayout = new QVBoxLayout;
     setTempLayout->addItem(setTempLayout0);
     setTempLayout->addWidget(chbSynchronize);
+    setTempLayout->addItem(gridInfo);
     setTempLayout->setSpacing(5);
 
-
-    QGridLayout *gridInfo = new QGridLayout;
-    QLabel *lInstalled = new QLabel("Installed, °C:", this);
-    lInstalled->setStyleSheet("color: #0000FF; font: bold; font-size: 12pt");
-    gridInfo->addWidget(lInstalled, 0, 0);
-    gridInfo->addWidget(lcdInstalledTemp, 0, 1);
-    QLabel *lSensor1 = new QLabel(QString::fromUtf8("Sensor 1, °C:"));
-    lSensor1->setStyleSheet("color: #FF0000; font: bold; font-size: 12pt");
-    gridInfo->addWidget(lSensor1, 1, 0);
-    gridInfo->addWidget(lcdSensor1Termo, 1, 1);
-    QLabel *lSensor2 = new QLabel(QString::fromUtf8("Sensor 2, °C:"));
-    lSensor2->setStyleSheet("color: #00FF00; font: bold; font-size: 12pt");
-    gridInfo->addWidget(lSensor2, 2, 0);
-    gridInfo->addWidget(lcdSensor2Termo, 2, 1);
-    gridInfo->setSpacing(5);
-
     gbSetTemp->setLayout(setTempLayout);
-    gbSensors->setLayout(gridInfo);
+//    gbSensors->setLayout(gridInfo);
 
     QGridLayout *grid = new QGridLayout;
-    grid->addWidget(lPort, 0, 0);
-    grid->addWidget(cbPort, 0, 1);
-    grid->addWidget(lBaud, 0, 2);
-    grid->addWidget(cbBaud, 0, 3);
+    grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 0);
+    grid->addWidget(lPort, 0, 1);
+    grid->addWidget(cbPort, 0, 2);
+    grid->addWidget(lBaud, 0, 3);
+    grid->addWidget(cbBaud, 0, 4);
     // пещаю логотип фирмы
 //    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 7, 2, 5, Qt::AlignRight);
-    grid->addWidget(bPortStart, 0, 4);
-    grid->addWidget(bPortStop, 0, 5);
-    grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 6);
+    grid->addWidget(bPortStart, 0, 5);
+    grid->addWidget(bPortStop, 0, 6);
     grid->addWidget(lTx, 0, 7);
     grid->addWidget(lRx, 0, 8);
     grid->setSpacing(5);
@@ -458,12 +463,30 @@ void PlotterDialog::setupGUI()
     buttonsLayout->addWidget(m_bPauseRessume);
     buttonsLayout->setSpacing(5);
 
+    QVBoxLayout *tracLayout = new QVBoxLayout;
+    tracLayout->addWidget(m_rbTrackInstalledTemp);
+    tracLayout->addWidget(m_rbTrackSensor1Termo);
+    tracLayout->addWidget(m_rbTrackSensor2Termo);
+    tracLayout->setSpacing(5);
+
+    m_gbTrackCurve->setCheckable(true);
+    m_gbTrackCurve->setChecked(true);
+    m_gbTrackCurve->setLayout(tracLayout);
+
+    m_rbTrackSensor1Termo->setChecked(true);
+
+    m_bgTrackCurve = new QButtonGroup(m_gbTrackCurve);
+    m_bgTrackCurve->addButton(m_rbTrackInstalledTemp);
+    m_bgTrackCurve->addButton(m_rbTrackSensor1Termo);
+    m_bgTrackCurve->addButton(m_rbTrackSensor2Termo);
+
     QVBoxLayout *knobsLayout = new QVBoxLayout;
     knobsLayout->addWidget(gbTime);
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
-    knobsLayout->addWidget(gbSensors);
+//    knobsLayout->addWidget(gbSensors);
+    knobsLayout->addWidget(m_gbTrackCurve);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 

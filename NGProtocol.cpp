@@ -6,7 +6,7 @@
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
-#define BYTESLENTH 8
+#define BYTESLENGTH 8
 
 #define NEGATIVE 32768 // 2^15
 #define OFFSET 65536 // 2^16
