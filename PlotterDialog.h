@@ -8,7 +8,6 @@
 #include <QDialog>
 #include <QLabel>
 #include <QPushButton>
-#include <QStatusBar>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_picker.h>
@@ -61,8 +60,6 @@ private:
     double m_TimeAccurateFactor;
     double m_TempAccurateFactor;
 
-    QLabel *m_lStatusBar;
-    QStatusBar *m_sbarInfo;
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
     QwtPlotPicker *m_picker;
@@ -129,8 +126,6 @@ private slots:
 
     void changeTimeAccurateFactor(bool isChecked);
     void changeTempAccurateFactor(bool isChecked);
-
-    void currentPosText();
 
     void openPort();
     void closePort();

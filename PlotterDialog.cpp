@@ -76,8 +76,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bPauseRessume(new QPushButton(QString::fromUtf8("Pause"), this)),
     m_TimeAccurateFactor(1.0),
     m_TempAccurateFactor(1.0),
-    m_lStatusBar(new QLabel(this)),
-    m_sbarInfo(new QStatusBar(this)),
     m_plot(new QwtPlot(this)),
     m_currentTime( new QTime()),
     m_isReseted( false ),
@@ -254,8 +252,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     cbBaud->setEditable(false);
     bPortStop->setEnabled(false);
 
-    m_sbarInfo->show();
-
     lTx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
     lTx->setFrameStyle(QFrame::Box);
     lTx->setAlignment(Qt::AlignCenter);
@@ -405,7 +401,6 @@ void PlotterDialog::setupGUI()
     gridInfo->addWidget(lcdSensor1Termo, 1, 1);
     gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 2, °C:")), 2, 0);
     gridInfo->addWidget(lcdSensor2Termo, 2, 1);
-//    gridInfo->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding), 3, 0);
     gridInfo->setSpacing(5);
 
     gbSetTemp->setLayout(setTempLayout);
@@ -414,17 +409,16 @@ void PlotterDialog::setupGUI()
     QGridLayout *grid = new QGridLayout;
     grid->addWidget(lPort, 0, 0);
     grid->addWidget(cbPort, 0, 1);
-    grid->addWidget(lBaud, 1, 0);
-    grid->addWidget(cbBaud, 1, 1);
+    grid->addWidget(lBaud, 0, 2);
+    grid->addWidget(cbBaud, 0, 3);
     // пещаю логотип фирмы
 //    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 7, 2, 5, Qt::AlignRight);
-    grid->addWidget(bPortStart, 2, 0);
-    grid->addWidget(bPortStop, 2, 1);
+    grid->addWidget(bPortStart, 0, 4);
+    grid->addWidget(bPortStop, 0, 5);
+    grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 6);
+    grid->addWidget(lTx, 0, 7);
+    grid->addWidget(lRx, 0, 8);
     grid->setSpacing(5);
-
-    QGroupBox *gbPort = new QGroupBox;
-    gbPort->setTitle(QString::fromUtf8("Port configure"));
-    gbPort->setLayout(grid);
 
     QHBoxLayout *timeLayout0 = new QHBoxLayout;
     timeLayout0->addWidget(m_lcdTimeInterval);
@@ -462,7 +456,6 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
-    knobsLayout->addWidget(gbPort);
     knobsLayout->addWidget(gbSensors);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
@@ -472,13 +465,9 @@ void PlotterDialog::setupGUI()
     plotLayout->addItem(knobsLayout);
     plotLayout->setSpacing(5);
 
-    m_sbarInfo->addWidget(lTx);
-    m_sbarInfo->addWidget(lRx);
-    m_sbarInfo->addWidget(m_lStatusBar);
-
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addItem(plotLayout);
-    mainLayout->addWidget(m_sbarInfo);
+    mainLayout->addItem(grid);
     mainLayout->setSpacing(5);
 
     setLayout(mainLayout);
@@ -487,8 +476,6 @@ void PlotterDialog::setupGUI()
 void PlotterDialog::lcdStyling(QList<QLCDNumber *> &lcdList)
 {
     foreach(QLCDNumber *lcd, lcdList) {
-//        lcd->setMinimumSize(25, 25);
-//        lcd->setMaximumSize(25, 25);
         lcd->setSegmentStyle(QLCDNumber::Flat);
         lcd->setFrameStyle(QFrame::NoFrame);
     }
@@ -634,14 +621,6 @@ void PlotterDialog::toCurrentTime()
     updatePlot();
 }
 
-void PlotterDialog::currentPosText()
-{
-    QString str = dynamic_cast<QwtPicker *>(m_picker)->trackerText(m_picker->trackerPosition()).text();
-    QStringList list = str.split(", ");
-
-//    m_lStatusBar->setText(QString("<b>Time, sec: %1<br/>Temp, °C: %2</b>").arg(list.at(0)).arg(list.at(1)));
-}
-
 void PlotterDialog::setupConnections()
 {
     connect(m_lcdTimeInterval, SIGNAL(valueChanged()), this, SLOT(changeTimeInterval()));
@@ -654,9 +633,6 @@ void PlotterDialog::setupConnections()
 
     connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
-
-//    connect(m_picker, SIGNAL(moved(QPointF)), this, SLOT(currentPosText()));
-//    connect(m_picker, SIGNAL(appended(QPointF)), this, SLOT(currentPosText()));
 
     connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
@@ -681,8 +657,6 @@ void PlotterDialog::openPort()
     itsPort->close();
     itsPort->setPortName(cbPort->currentText());
 
-    m_lStatusBar->setStyleSheet("background: none; font: bold; font-size: 12pt");
-
     if(itsPort->open(QSerialPort::ReadWrite))
     {
         switch (cbBaud->currentIndex()) {
@@ -704,12 +678,6 @@ void PlotterDialog::openPort()
         itsPort->setParity(QSerialPort::NoParity);
         itsPort->setFlowControl(QSerialPort::NoFlowControl);
 
-        m_lStatusBar->setText(QString::fromUtf8("Port: ") +
-                              QString(itsPort->portName()) +
-                              QString::fromUtf8(" | Baud: ") +
-                              QString(QString::number(itsPort->baudRate())) +
-                              QString::fromUtf8(" | Data bits: ") +
-                              QString(QString::number(itsPort->dataBits())));
         bPortStart->setEnabled(false);
         bPortStop->setEnabled(true);
         lTx->setStyleSheet("background: none; font: bold; font-size: 10pt");
@@ -717,8 +685,6 @@ void PlotterDialog::openPort()
     }
     else
     {
-        m_lStatusBar->setText(QString::fromUtf8("Error opening port: ") +
-                              QString(itsPort->portName()));
         lTx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
         lRx->setStyleSheet("background: yellow; font: bold; font-size: 10pt");
     }
