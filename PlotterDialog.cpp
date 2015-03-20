@@ -138,7 +138,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                       QLCDNumber::Dec,
                                                       LCDSpinBox::RIGHT,
                                                       this);
-    m_lcdTempInterval->setValue(tempSamples.size());
+    m_lcdTempInterval->setValue(5);
 
     m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
                                         QIcon(":/Resources/left.png"),
@@ -186,8 +186,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setCanvasBackground(QBrush(QColor("#FFFFFF")));
 
     // legend
-    QwtLegend *legend = new QwtLegend;
-    m_plot->insertLegend( legend, QwtPlot::TopLegend );
+//    QwtLegend *legend = new QwtLegend;
+//    m_plot->insertLegend( legend, QwtPlot::TopLegend );
 
     // grid
     QwtPlotGrid *grid = new QwtPlotGrid;
@@ -396,11 +396,17 @@ void PlotterDialog::setupGUI()
 
 
     QGridLayout *gridInfo = new QGridLayout;
-    gridInfo->addWidget(new QLabel("Installed, °C:", this), 0, 0);
+    QLabel *lInstalled = new QLabel("Installed, °C:", this);
+    lInstalled->setStyleSheet("color: #0000FF; font: bold; font-size: 12pt");
+    gridInfo->addWidget(lInstalled, 0, 0);
     gridInfo->addWidget(lcdInstalledTemp, 0, 1);
-    gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 1, °C:")), 1, 0);
+    QLabel *lSensor1 = new QLabel(QString::fromUtf8("Sensor 1, °C:"));
+    lSensor1->setStyleSheet("color: #FF0000; font: bold; font-size: 12pt");
+    gridInfo->addWidget(lSensor1, 1, 0);
     gridInfo->addWidget(lcdSensor1Termo, 1, 1);
-    gridInfo->addWidget(new QLabel(QString::fromUtf8("Sensor 2, °C:")), 2, 0);
+    QLabel *lSensor2 = new QLabel(QString::fromUtf8("Sensor 2, °C:"));
+    lSensor2->setStyleSheet("color: #00FF00; font: bold; font-size: 12pt");
+    gridInfo->addWidget(lSensor2, 2, 0);
     gridInfo->addWidget(lcdSensor2Termo, 2, 1);
     gridInfo->setSpacing(5);
 
