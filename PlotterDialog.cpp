@@ -128,7 +128,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                              QLCDNumber::Dec,
                                              LCDSpinBox::RIGHT,
                                              this);
-    m_lcdTimeInterval->setValue(timeSamples.size());
+    m_lcdTimeInterval->setValue(4);
 
     m_lcdTempInterval = new LCDSampleSpinBox(tempSamples,
                                                       QIcon(":/Resources/down.png"),
@@ -174,7 +174,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     list << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo;
     foreach(QLCDNumber *lcd, list) {
         lcd->setDigitCount(6);
-        lcd->setFixedSize(120, 40);
+        lcd->setFixedSize(100, 40);
     }
     colorSetTempLCD();
 
@@ -209,7 +209,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     m_plot->setAxisTitle( QwtPlot::yLeft, "Temperature, °C" );
     m_plot->setAxisScale( QwtPlot::yLeft,
-                          -dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                          - dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
@@ -383,6 +383,7 @@ void PlotterDialog::setupGUI()
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
 
+    bSetTemp->setFixedHeight(45);
     QHBoxLayout *setTempLayout0 = new QHBoxLayout;
     setTempLayout0->addWidget(sbSetTemp);
     setTempLayout0->addWidget(bSetTemp);
@@ -457,7 +458,7 @@ void PlotterDialog::setupGUI()
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
     knobsLayout->addWidget(gbSensors);
-    knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 
     QHBoxLayout *plotLayout = new QHBoxLayout;
