@@ -324,10 +324,36 @@ void PlotterDialog::setCurves(const QMap<QString, QPen > &curves)
 
 void PlotterDialog::autoScroll(const double &elapsedTime)
 {
-    if( elapsedTime > dynamic_cast<QLCDNumber *>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION
-            && m_isRessumed ) {
+    double timeFactor = dynamic_cast<QLCDNumber *>(m_lcdTimeInterval->spinWidget())->value();
+    if( elapsedTime > timeFactor * XDIVISION && m_isRessumed ) {
         toCurrentTime();
         updatePlot();
+    }
+
+    double tempFactor = dynamic_cast<QLCDNumber *>( m_lcdTempInterval->spinWidget() )->value();
+    double tempOffset = m_msbTempInterval->value();
+    qDebug() << "m_dataAxises.at(1).last() =" << m_dataAxises.at(1).last();
+    qDebug() << "tempFactor * YDIVISION / 2 =" << tempFactor * YDIVISION / 2;
+    if( m_dataAxises.at(1).last() > tempFactor * ( tempOffset + YDIVISION / 2 ) ) {
+        m_plot->setAxisScale(QwtPlot::yLeft,
+                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION,
+                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP ) );
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION ="
+                 << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION;
+        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) ="
+                    << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP);
+    }
+
+    if( m_dataAxises.at(1).last() < - tempFactor * ( tempOffset + YDIVISION / 2 )) {
+        m_plot->setAxisScale(QwtPlot::yLeft,
+                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION,
+                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP ) );
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION ="
+                 << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION;
+        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) ="
+                    << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP);
     }
 }
 
