@@ -95,7 +95,6 @@ private:
     QPushButton *bSetTemp;
 
     QGroupBox *gbSetTemp;
-//    QGroupBox *gbSensors;
 
     QSerialPort *itsPort;
     ComPort *itsComPort;

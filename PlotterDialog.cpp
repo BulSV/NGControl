@@ -8,7 +8,6 @@
 #include <qwt_legend.h>
 #include <qwt_plot_grid.h>
 #include <qwt_scale_div.h>
-//#include <qwt_panner.h>
 #include <qwt_picker_machine.h>
 
 #include <QApplication>
@@ -18,6 +17,7 @@
 #include <QSerialPortInfo>
 #include <QPalette>
 #include <QIcon>
+#include <qwt_scale_widget.h>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -104,7 +104,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     lcdSensor2Termo(new QLCDNumber(this)),
     bSetTemp(new QPushButton(QString::fromUtf8("Set"), this)),
     gbSetTemp(new QGroupBox(QString::fromUtf8("Temperature, °C"), this)),
-//    gbSensors(new QGroupBox(QString::fromUtf8("Information, °C"), this)),
     itsPort(new QSerialPort(this)),
     itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENGTH, this)),
     itsProtocol(new NGProtocol(itsComPort, this)),
@@ -117,7 +116,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_rbTrackInstalledTemp(new QRadioButton(QString::fromUtf8("Installed"), this)),
     m_rbTrackSensor1Termo(new QRadioButton(QString::fromUtf8("Sensor1"), this)),
     m_rbTrackSensor2Termo(new QRadioButton(QString::fromUtf8("Sensor2"), this))
-//    m_bgTrackCurve(new QButtonGroup(this))
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
@@ -190,10 +188,6 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setCanvas(canvas);
     m_plot->setCanvasBackground(QBrush(QColor("#FFFFFF")));
 
-    // legend
-//    QwtLegend *legend = new QwtLegend;
-//    m_plot->insertLegend( legend, QwtPlot::TopLegend );
-
     // grid
     QwtPlotGrid *grid = new QwtPlotGrid;
     grid->enableXMin( true );
@@ -203,6 +197,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     grid->attach( m_plot );
 
     // axes
+    // Time
     m_plot->setAxisTitle( QwtPlot::xBottom, "Time, sec" );
     m_plot->setAxisScale( QwtPlot::xBottom,
                           0,
@@ -212,7 +207,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::xBottom, false);
 
-    m_plot->setAxisTitle( QwtPlot::yLeft, "Temperature, °C" );
+    // Temperature Left
+    m_plot->setAxisTitle( QwtPlot::yLeft, "Sensor 1, °C" );
     m_plot->setAxisScale( QwtPlot::yLeft,
                           - dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
                           dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
@@ -220,6 +216,28 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
+
+    // Temperature Right
+    m_plot->enableAxis(QwtPlot::yRight);
+    m_plot->setAxisTitle( QwtPlot::yRight, "Sensor 2, °C" );
+    m_plot->setAxisScale( QwtPlot::yRight,
+                          - dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
+    m_plot->setAxisMaxMajor( QwtPlot::yRight, YMAJORDIVISION );
+    m_plot->setAxisMaxMinor( QwtPlot::yRight, YMINORDIVISION );
+    m_plot->setAxisAutoScale( QwtPlot::yRight, false);
+
+    // Colored Temperature Axis
+    QPalette yLeftPalette = m_plot->axisWidget(QwtPlot::yLeft)->palette();
+    yLeftPalette.setColor( QPalette::WindowText, QColor("#FF0000")); // for ticks
+    yLeftPalette.setColor( QPalette::Text, QColor("#FF0000")); // for ticks' labels
+    m_plot->axisWidget(QwtPlot::yLeft)->setPalette( yLeftPalette );
+
+    QPalette yRightPalette = m_plot->axisWidget(QwtPlot::yRight)->palette();
+    yRightPalette.setColor( QPalette::WindowText, QColor("green")); // for ticks
+    yRightPalette.setColor( QPalette::Text, QColor("green")); // for ticks' labels
+    m_plot->axisWidget(QwtPlot::yRight)->setPalette( yRightPalette );
 
     m_plot->setAutoReplot( false );
 
@@ -416,7 +434,6 @@ void PlotterDialog::setupGUI()
     setTempLayout->setSpacing(5);
 
     gbSetTemp->setLayout(setTempLayout);
-//    gbSensors->setLayout(gridInfo);
 
     QGridLayout *grid = new QGridLayout;
     grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 0);
@@ -485,7 +502,6 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
-//    knobsLayout->addWidget(gbSensors);
     knobsLayout->addWidget(m_gbTrackCurve);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
