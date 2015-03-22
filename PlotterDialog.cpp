@@ -326,45 +326,49 @@ void PlotterDialog::autoScroll(const double &elapsedTime)
 {
     double timeFactor = dynamic_cast<QLCDNumber *>(m_lcdTimeInterval->spinWidget())->value();
     if( elapsedTime > timeFactor * XDIVISION && m_isRessumed ) {
-        toCurrentTime();
-        updatePlot();
+        toCurrentTime();        
     }
 
     double tempFactor = dynamic_cast<QLCDNumber *>( m_lcdTempInterval->spinWidget() )->value();
     double tempOffset = m_msbTempInterval->value();
-    qDebug() << "m_dataAxises.at(1).last() =" << m_dataAxises.at(1).last();
-    qDebug() << "tempFactor * YDIVISION / 2 =" << tempFactor * YDIVISION / 2;
+
     if( m_dataAxises.at(1).last() > tempFactor * ( tempOffset + YDIVISION / 2 ) ) {
-        m_plot->setAxisScale(QwtPlot::yLeft,
-                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION,
-                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP ) );
-        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION ="
-                 << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION;
-        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) ="
-                    << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP);
+        m_plot->setAxisScale( QwtPlot::yLeft,
+                              roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION,
+                              roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP ),
+                              tempFactor * YSCALESTEP );
+        m_msbTempInterval->setValue(m_msbTempInterval->value() + 1);
+        qDebug() << "UP";
     }
 
-    if( m_dataAxises.at(1).last() < - tempFactor * ( tempOffset + YDIVISION / 2 )) {
-        m_plot->setAxisScale(QwtPlot::yLeft,
-                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION,
-                             roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP ) );
-        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION ="
-                 << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION;
-        qDebug() << "roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP) ="
-                    << roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP);
+    if( m_dataAxises.at(1).last() < tempFactor * ( tempOffset - YDIVISION / 2 )) {
+        m_plot->setAxisScale( QwtPlot::yLeft,
+                              roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP),
+                              roundToStep( m_dataAxises.at(1).last(), tempFactor * YSCALESTEP ) + tempFactor * YDIVISION,
+                              tempFactor * YSCALESTEP);
+        m_msbTempInterval->setValue(m_msbTempInterval->value() - 1);
+        qDebug() << "DOWN";
     }
+
+    updatePlot();
 }
 
+// FIXME value < 0 & step <= 0 !!!
 double PlotterDialog::roundToStep(const double &value, const double &step)
 {
-    int tempValue = static_cast<int>( value / step );
+    int sign = 0;
+    value >= 0 ? sign = 1 : sign = -1;
 
-    if( value > static_cast<double>( tempValue ) * step ) {
-        return step * static_cast<double>( ( tempValue + 1 ) );
+    if( step <= 0 ) {
+        return 0;
+    }
+
+    int tempValue = static_cast<int>( qAbs(value) / step );
+
+    if( qAbs(value) > static_cast<double>( tempValue ) * step ) {
+        return step * static_cast<double>( sign * ( tempValue + 1 ) );
     } else {
-        return step * static_cast<double>( tempValue );
+        return step * static_cast<double>( sign * tempValue );
     }
 }
 
