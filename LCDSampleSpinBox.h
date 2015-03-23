@@ -25,14 +25,13 @@ public:
     virtual void setRange(const double &min, const double& max, const double &step);
 public slots:
     virtual void setValue(const double &value);
+    virtual void downStep();
+    virtual void upStep();
 private:
     QVector<double> m_SamplesValues;
     int m_CurrentSampleIndex;
 
     void setDigitCount();
-protected slots:
-    virtual void downStep();
-    virtual void upStep();
 };
 
 #endif // LCDSELECTSPINBOX_H

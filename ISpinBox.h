@@ -24,6 +24,9 @@ public slots:
     virtual void setTextUpButton(const QString &text) = 0;
 
     virtual void setValue(const double &value) = 0;
+
+    virtual void downStep() = 0;
+    virtual void upStep() = 0;
 signals:
     void downButtonPressed();
     void downButtonReleased();

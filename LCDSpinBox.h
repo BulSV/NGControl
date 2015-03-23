@@ -47,6 +47,9 @@ public slots:
     virtual void setTextUpButton(const QString &text);
 
     virtual void setValue(const double &value);
+
+    virtual void downStep();
+    virtual void upStep();
 private:
     QLCDNumber *m_LCDNumber;
     QPushButton *m_bDown;
@@ -61,9 +64,6 @@ private:
     void setupConnect();
     void digitsBase(QLCDNumber::Mode mode);
     int digitCount(const int &value);
-protected slots:
-    virtual void downStep();
-    virtual void upStep();
 };
 
 #endif // LCDSPINBOX_H

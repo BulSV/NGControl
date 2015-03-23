@@ -45,6 +45,9 @@ public slots:
     virtual void setTextUpButton(const QString &text);
 
     virtual void setValue(const double &value);
+
+    virtual void downStep();
+    virtual void upStep();
 private:
     QLabel *m_Label;
     QPushButton *m_bDown;
@@ -57,9 +60,6 @@ private:
 
     void setupGui(LAYOUT layout);
     void setupConnect();
-protected slots:
-    virtual void downStep();
-    virtual void upStep();
 };
 
 #endif // MOVESPINBOX_H
