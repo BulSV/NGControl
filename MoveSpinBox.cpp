@@ -150,8 +150,8 @@ void MoveSpinBox::setupConnect()
     connect(m_bDown, SIGNAL(nextValue()), this, SLOT(downStep()));
     connect(m_bUp, SIGNAL(nextValue()), this, SLOT(upStep()));
 
-    connect(m_bDown, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
-    connect(m_bUp, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
+//    connect(m_bDown, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
+//    connect(m_bUp, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
 
     connect(m_bDown, SIGNAL(mousePressed()), this, SIGNAL(downButtonPressed()));
     connect(m_bDown, SIGNAL(mouseReleased()), this, SIGNAL(downButtonReleased()));
@@ -164,6 +164,7 @@ void MoveSpinBox::downStep()
 {
     if(m_current - m_step >= m_min) {
         m_current -= m_step;
+        emit valueChanged();
     }
 }
 
@@ -171,5 +172,6 @@ void MoveSpinBox::upStep()
 {
     if(m_current + m_step <= m_max) {
         m_current += m_step;
+        emit valueChanged();
     }
 }

@@ -57,6 +57,7 @@ void LCDSampleSpinBox::downStep()
 {
     if(m_CurrentSampleIndex > 0) {
         dynamic_cast<QLCDNumber*>(spinWidget())->display(m_SamplesValues.at(--m_CurrentSampleIndex));
+        emit valueChanged();
     }
 }
 
@@ -64,5 +65,6 @@ void LCDSampleSpinBox::upStep()
 {
     if(m_CurrentSampleIndex < m_SamplesValues.size() - 1) {
         dynamic_cast<QLCDNumber*>(spinWidget())->display(m_SamplesValues.at(++m_CurrentSampleIndex));
+        emit valueChanged();
     }
 }

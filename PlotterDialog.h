@@ -23,8 +23,7 @@
 #include <QTimer>
 #include <QLCDNumber>
 #include <QSpinBox>
-#include <QRadioButton>
-#include <QButtonGroup>
+
 #include "ComPort.h"
 #include "IProtocol.h"
 #include "NGProtocol.h"
@@ -115,12 +114,6 @@ private:
     QTimer *itsBlinkTimeTxColor;
     QTimer *itsBlinkTimeRxColor;
     QTimer *itsTimeToDisplay;
-
-    QGroupBox *m_gbTrackCurve;
-    QRadioButton *m_rbTrackInstalledTemp;
-    QRadioButton *m_rbTrackSensor1Termo;
-    QRadioButton *m_rbTrackSensor2Termo;
-    QButtonGroup *m_bgTrackCurve;
 
     void lcdStyling(QList<QLCDNumber *> &lcdList);
     void autoScroll(const double &elapsedTime);

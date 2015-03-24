@@ -156,8 +156,8 @@ void LCDSpinBox::setupConnect()
     connect(m_bDown, SIGNAL(nextValue()), this, SLOT(downStep()));
     connect(m_bUp, SIGNAL(nextValue()), this, SLOT(upStep()));
 
-    connect(m_bDown, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
-    connect(m_bUp, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
+//    connect(m_bDown, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
+//    connect(m_bUp, SIGNAL(nextValue()), this, SIGNAL(valueChanged()));
 
     connect(m_bDown, SIGNAL(mousePressed()), this, SIGNAL(downButtonPressed()));
     connect(m_bDown, SIGNAL(mouseReleased()), this, SIGNAL(downButtonReleased()));
@@ -214,6 +214,7 @@ void LCDSpinBox::downStep()
 {
     if(static_cast<int>(m_LCDNumber->value()) - m_step >= m_min) {
         m_LCDNumber->display(static_cast<int>(m_LCDNumber->value()) - m_step);
+        emit valueChanged();
     }
 }
 
@@ -221,5 +222,6 @@ void LCDSpinBox::upStep()
 {
     if(static_cast<int>(m_LCDNumber->value()) + m_step <= m_max) {
         m_LCDNumber->display(static_cast<int>(m_LCDNumber->value()) + m_step);
+        emit valueChanged();
     }
 }

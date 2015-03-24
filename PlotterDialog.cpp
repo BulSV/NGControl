@@ -111,11 +111,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     itsBlinkTimeRxNone(new QTimer(this)),
     itsBlinkTimeTxColor(new QTimer(this)),
     itsBlinkTimeRxColor(new QTimer(this)),
-    itsTimeToDisplay(new QTimer(this)),
-    m_gbTrackCurve(new QGroupBox(QString::fromUtf8("Track curve"), this)),
-    m_rbTrackInstalledTemp(new QRadioButton(QString::fromUtf8("Installed"), this)),
-    m_rbTrackSensor1Termo(new QRadioButton(QString::fromUtf8("Sensor1"), this)),
-    m_rbTrackSensor2Termo(new QRadioButton(QString::fromUtf8("Sensor2"), this))
+    itsTimeToDisplay(new QTimer(this))
 {
     QVector<double> timeSamples;
     timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
@@ -327,34 +323,19 @@ void PlotterDialog::autoScroll(const double &elapsedTime)
     double timeFactor = dynamic_cast<QLCDNumber *>(m_lcdTimeInterval->spinWidget())->value();
     if( elapsedTime > timeFactor * XDIVISION && m_isRessumed ) {
         toCurrentTime();
+        updatePlot();
     }
 
     double tempFactor = dynamic_cast<QLCDNumber *>( m_lcdTempInterval->spinWidget() )->value();
-    double tempOffset = m_msbTempInterval->value();
+//    double tempOffset = m_msbTempInterval->value();
 
-    if( m_dataAxises.at(0).last() > tempFactor * ( tempOffset + YDIVISION / 2 ) ) {
-        m_plot->setAxisScale( QwtPlot::yLeft,
-                              roundToStep( m_dataAxises.at(0).last(), tempFactor * YSCALESTEP) - tempFactor * YDIVISION,
-                              roundToStep( m_dataAxises.at(0).last(), tempFactor * YSCALESTEP ),
-                              tempFactor * YSCALESTEP );
+    if( m_dataAxises.at(0).last() > tempFactor * ( m_prevTempOffset + YDIVISION / 2 ) ) {
         m_msbTempInterval->upStep();
-        moveTempInterval();
-        qDebug() << "UP" << tempFactor * ( tempOffset + YDIVISION / 2 ) << m_dataAxises.at(0).last();
     }
 
-    if( m_dataAxises.at(0).last() < tempFactor * ( tempOffset - YDIVISION / 2 )) {
-        m_plot->setAxisScale( QwtPlot::yLeft,
-                              roundToStep( m_dataAxises.at(0).last(), tempFactor * YSCALESTEP),
-                              roundToStep( m_dataAxises.at(0).last(), tempFactor * YSCALESTEP ) + tempFactor * YDIVISION,
-                              tempFactor * YSCALESTEP);
+    if( m_dataAxises.at(0).last() < tempFactor * ( m_prevTempOffset - YDIVISION / 2 )) {
         m_msbTempInterval->downStep();
-        moveTempInterval();
-        qDebug() << "DOWN" << tempFactor * ( tempOffset - YDIVISION / 2 ) << m_dataAxises.at(0).last();
     }
-
-    qDebug() << "DATA" << tempFactor * tempOffset << m_dataAxises.at(0).last();
-
-    updatePlot();
 }
 
 double PlotterDialog::roundToStep(const double &value, const double &step)
@@ -509,29 +490,11 @@ void PlotterDialog::setupGUI()
     buttonsLayout->addWidget(m_bPauseRessume);
     buttonsLayout->setSpacing(5);
 
-    QVBoxLayout *tracLayout = new QVBoxLayout;
-    tracLayout->addWidget(m_rbTrackInstalledTemp);
-    tracLayout->addWidget(m_rbTrackSensor1Termo);
-    tracLayout->addWidget(m_rbTrackSensor2Termo);
-    tracLayout->setSpacing(5);
-
-    m_gbTrackCurve->setCheckable(true);
-    m_gbTrackCurve->setChecked(true);
-    m_gbTrackCurve->setLayout(tracLayout);
-
-    m_rbTrackSensor1Termo->setChecked(true);
-
-    m_bgTrackCurve = new QButtonGroup(m_gbTrackCurve);
-    m_bgTrackCurve->addButton(m_rbTrackInstalledTemp);
-    m_bgTrackCurve->addButton(m_rbTrackSensor1Termo);
-    m_bgTrackCurve->addButton(m_rbTrackSensor2Termo);
-
     QVBoxLayout *knobsLayout = new QVBoxLayout;
     knobsLayout->addWidget(gbTime);
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
-    knobsLayout->addWidget(m_gbTrackCurve);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 
@@ -597,12 +560,12 @@ void PlotterDialog::moveTempInterval()
 {
     double factor = dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value();
     double offset = 0.0;
-    if( m_prevTempOffset - m_msbTempInterval->value() > 0 ) {
+    if( m_prevTempOffset - factor * m_msbTempInterval->value() > 0 ) {
         offset = -m_msbTempInterval->step();
     } else {
         offset = m_msbTempInterval->step();
     }
-    m_prevTempOffset = m_msbTempInterval->value();
+    m_prevTempOffset = factor * m_msbTempInterval->value();
 
     m_plot->setAxisScale( QwtPlot::yLeft,
                           m_prevCentralTemp + factor * ( offset - YDIVISION/2 ) ,
@@ -611,8 +574,6 @@ void PlotterDialog::moveTempInterval()
 
     m_prevCentralTemp += factor * offset;
 
-    qDebug() << m_prevCentralTemp;
-    qDebug() << m_msbTempInterval->value() << "\n";
     updatePlot();
 }
 
