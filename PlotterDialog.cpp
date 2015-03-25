@@ -612,6 +612,8 @@ void PlotterDialog::resetTime()
         m_dataAxises.push_back(data);
     }
 
+    toCurrentTime();
+
     updatePlot();
 }
 
@@ -777,7 +779,6 @@ void PlotterDialog::writeTemp()
         itsProtocol->writeData();
         if(chbSynchronize->isChecked()) {
             resetTime();
-            toCurrentTime();
         }
     }
 }
