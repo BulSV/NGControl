@@ -288,10 +288,14 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     itsTimeToDisplay->setInterval(DISPLAYTIME);
 
     QMap<QString, QPen> curves;
+    QMap<QString, QwtPlot::Axis> axis;
     curves.insert("TEMP", QPen(QBrush(QColor("#0000FF")), 1.5));
+    axis.insert("TEMP", QwtPlot::yLeft);
     curves.insert("SENS1", QPen(QBrush(QColor("#FF0000")), 1.5));
+    axis.insert("SENS1", QwtPlot::yLeft);
     curves.insert("SENS2", QPen(QBrush(QColor("green")), 1.5));
-    setCurves(curves);
+    axis.insert("SENS2", QwtPlot::yRight);
+    setCurves(curves, axis);
 
     setupGUI();
     setupConnections();
@@ -302,18 +306,22 @@ PlotterDialog::~PlotterDialog()
     itsPort->close();
 }
 
-void PlotterDialog::setCurves(const QMap<QString, QPen > &curves)
+void PlotterDialog::setCurves(const QMap<QString, QPen > &curves,
+                              const QMap<QString, QwtPlot::Axis> &axis)
 {
-    QStringList listKeys = curves.keys();
+    int size = qMin(curves.size(), axis.size());
 
-    for(int i = 0; i < listKeys.size(); ++i) {
+    QStringList curvesListKeys = curves.keys();
+    QStringList axisListKeys = axis.keys();
+
+    for(int i = 0; i < size; ++i) {
         m_Curves.append(new QwtPlotCurve);
         m_Curves[i]->setRenderHint( QwtPlotItem::RenderAntialiased );
         m_Curves[i]->setLegendAttribute( QwtPlotCurve::LegendShowLine );
-        m_Curves[i]->setYAxis( QwtPlot::yLeft );
+        m_Curves[i]->setYAxis( axis.value( axisListKeys.at(i) ) );
         m_Curves[i]->setXAxis( QwtPlot::xBottom );
-        m_Curves[i]->setTitle( listKeys.at(i) );
-        m_Curves[i]->setPen( curves.value( listKeys.at(i) ) );
+        m_Curves[i]->setTitle( curvesListKeys.at(i) );
+        m_Curves[i]->setPen( curves.value( curvesListKeys.at(i) ) );
         m_Curves[i]->attach(m_plot);
     }
 }

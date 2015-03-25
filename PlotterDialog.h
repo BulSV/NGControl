@@ -37,7 +37,8 @@ class PlotterDialog : public QDialog
 public:
     explicit PlotterDialog(const QString &title, QWidget *parent = 0);
     ~PlotterDialog();
-    void setCurves(const QMap<QString, QPen> &curves);
+    void setCurves(const QMap<QString, QPen> &curves,
+                   const QMap<QString, QwtPlot::Axis> &axis);
 signals:
 
 public slots:
