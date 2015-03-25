@@ -87,6 +87,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_prevTempOffsetLeft( 0.0 ),
     m_prevCentralTempRight( 0.0 ),
     m_prevTempOffsetRight( 0.0 ),
+    m_rbRelateLeft(new QRadioButton(this)),
+    m_rbRelateRight(new QRadioButton(this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -486,16 +488,18 @@ void PlotterDialog::setupGUI()
     QGridLayout *gridInfo = new QGridLayout;
     QLabel *lInstalled = new QLabel("Installed:", this);
     lInstalled->setStyleSheet("color: #0000FF; font: bold; font-size: 12pt");
-    gridInfo->addWidget(lInstalled, 0, 0);
-    gridInfo->addWidget(lcdInstalledTemp, 0, 1);
+    gridInfo->addWidget(lInstalled, 0, 0, 1, 2);
+    gridInfo->addWidget(lcdInstalledTemp, 0, 2);
+    gridInfo->addWidget(m_rbRelateLeft, 1, 0, 1, 1, Qt::AlignLeft);
     QLabel *lSensor1 = new QLabel(QString::fromUtf8("Sensor 1:"));
     lSensor1->setStyleSheet("color: #FF0000; font: bold; font-size: 12pt");
-    gridInfo->addWidget(lSensor1, 1, 0);
-    gridInfo->addWidget(lcdSensor1Termo, 1, 1);
+    gridInfo->addWidget(lSensor1, 1, 1);
+    gridInfo->addWidget(lcdSensor1Termo, 1, 2);
+    gridInfo->addWidget(m_rbRelateRight, 2, 0, 1, 1, Qt::AlignLeft);
     QLabel *lSensor2 = new QLabel(QString::fromUtf8("Sensor 2:"));
     lSensor2->setStyleSheet("color: green; font: bold; font-size: 12pt");
-    gridInfo->addWidget(lSensor2, 2, 0);
-    gridInfo->addWidget(lcdSensor2Termo, 2, 1);
+    gridInfo->addWidget(lSensor2, 2, 1);
+    gridInfo->addWidget(lcdSensor2Termo, 2, 2);
     gridInfo->setSpacing(5);
 
     bSetTemp->setFixedHeight(45);

@@ -23,6 +23,7 @@
 #include <QTimer>
 #include <QLCDNumber>
 #include <QSpinBox>
+#include <QRadioButton>
 
 #include "ComPort.h"
 #include "IProtocol.h"
@@ -83,6 +84,9 @@ private:
     double m_prevTempOffsetLeft;
     double m_prevCentralTempRight;
     double m_prevTempOffsetRight;
+
+    QRadioButton *m_rbRelateLeft;
+    QRadioButton *m_rbRelateRight;
 
     QLabel *lPort;
     QComboBox *cbPort;
