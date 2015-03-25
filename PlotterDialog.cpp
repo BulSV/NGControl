@@ -189,6 +189,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
             << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo
             << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
     lcdStyling(lcdList);
+    setColorLCD(dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget()), QColor("#FF0000"));
+    setColorLCD(dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget()), QColor("green"));
 
     sbSetTemp->setRange(TEMPRANGE_MIN, TEMPRANGE_MAX, TEMPSTEP);
     sbSetTemp->setValue(NORMAL_TEMP);
@@ -855,26 +857,11 @@ void PlotterDialog::colorTxNone()
 
 void PlotterDialog::setColorLCD(QLCDNumber *lcd, bool isHeat)
 {
-    QPalette palette;
-    // get the palette
-    palette = lcd->palette();
     if(isHeat) {
-        // foreground color
-        palette.setColor(palette.WindowText, QColor(100, 0, 0));
-        // "light" border
-        palette.setColor(palette.Light, QColor(100, 0, 0));
-        // "dark" border
-        palette.setColor(palette.Dark, QColor(100, 0, 0));
+        setColorLCD(lcd, QColor(100, 0, 0));
     } else {
-        // foreground color
-        palette.setColor(palette.WindowText, QColor(0, 0, 100));
-        // "light" border
-        palette.setColor(palette.Light, QColor(0, 0, 100));
-        // "dark" border
-        palette.setColor(palette.Dark, QColor(0, 0, 100));
+        setColorLCD(lcd, QColor(0, 0, 100));
     }
-    // set the palette
-    lcd->setPalette(palette);
 }
 
 QString &PlotterDialog::addTrailingZeros(QString &str, int prec)
@@ -897,6 +884,23 @@ QString &PlotterDialog::addTrailingZeros(QString &str, int prec)
     }
 
     return str;
+}
+
+void PlotterDialog::setColorLCD(QLCDNumber *lcd, const QColor &color)
+{
+    QPalette palette;
+    // get the palette
+    palette = lcd->palette();
+
+    // foreground color
+    palette.setColor(palette.WindowText, color);
+    // "light" border
+    palette.setColor(palette.Light, color);
+    // "dark" border
+    palette.setColor(palette.Dark, color);
+
+    // set the palette
+    lcd->setPalette(palette);
 }
 
 void PlotterDialog::colorIsRx()

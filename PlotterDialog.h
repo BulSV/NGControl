@@ -117,6 +117,9 @@ private:
     // добавляет завершающие нули
     QString &addTrailingZeros(QString &str, int prec);
 
+    // setting color LCD
+    void setColorLCD(QLCDNumber *lcd, const QColor &color);
+
     QTimer *itsBlinkTimeTxNone;
     QTimer *itsBlinkTimeRxNone;
     QTimer *itsBlinkTimeTxColor;
