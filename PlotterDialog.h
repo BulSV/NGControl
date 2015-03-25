@@ -24,6 +24,7 @@
 #include <QLCDNumber>
 #include <QSpinBox>
 #include <QRadioButton>
+#include <QButtonGroup>
 
 #include "ComPort.h"
 #include "IProtocol.h"
@@ -87,6 +88,7 @@ private:
 
     QRadioButton *m_rbRelateLeft;
     QRadioButton *m_rbRelateRight;
+    QButtonGroup *m_bgRelate;
 
     QLabel *lPort;
     QComboBox *cbPort;
@@ -146,6 +148,8 @@ private slots:
     void changeTimeAccurateFactor(bool isChecked);
     void changeTempAccurateFactorLeft(bool isChecked);
     void changeTempAccurateFactorRight(bool isChecked);
+
+    void radioButtonClicked(int id);
 
     void openPort();
     void closePort();

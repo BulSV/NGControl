@@ -89,6 +89,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_prevTempOffsetRight( 0.0 ),
     m_rbRelateLeft(new QRadioButton(this)),
     m_rbRelateRight(new QRadioButton(this)),
+    m_bgRelate(new QButtonGroup(this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -291,6 +292,14 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
     m_cbTimeAccurate->setEnabled( false );
 
+    // Radiobuttons config
+    m_bgRelate->addButton(m_rbRelateLeft);
+    m_bgRelate->addButton(m_rbRelateRight);
+    m_bgRelate->setId(m_rbRelateLeft, 1);
+    m_bgRelate->setId(m_rbRelateRight, 2);
+    m_bgRelate->setExclusive(true);
+    m_rbRelateLeft->setChecked(true);
+
     QStringList portsNames;
 
     foreach(QSerialPortInfo portsAvailable, QSerialPortInfo::availablePorts())
@@ -338,7 +347,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     setCurves(curves, axis);
 
     setupGUI();
-    setupConnections();
+    setupConnections();    
 }
 
 PlotterDialog::~PlotterDialog()
@@ -500,7 +509,7 @@ void PlotterDialog::setupGUI()
     lSensor2->setStyleSheet("color: green; font: bold; font-size: 12pt");
     gridInfo->addWidget(lSensor2, 2, 1);
     gridInfo->addWidget(lcdSensor2Termo, 2, 2);
-    gridInfo->setSpacing(5);
+    gridInfo->setSpacing(5);    
 
     bSetTemp->setFixedHeight(45);
     QHBoxLayout *setTempLayout0 = new QHBoxLayout;
@@ -730,6 +739,17 @@ void PlotterDialog::changeTempAccurateFactorRight(bool isChecked)
                                      m_TempAccurateFactorRight * STEPTEMP);
 }
 
+void PlotterDialog::radioButtonClicked(int id)
+{
+    if( id == 1 ) {
+        m_Curves[2]->setYAxis( QwtPlot::yLeft );
+    } else {
+        m_Curves[2]->setYAxis( QwtPlot::yRight );
+    }
+
+    updatePlot();
+}
+
 void PlotterDialog::resetTime()
 {
     m_isReseted = true;
@@ -803,6 +823,8 @@ void PlotterDialog::setupConnections()
     connect(m_lcdTempIntervalRight, SIGNAL(valueChanged()), this, SLOT(changeTempIntervalRight()));
     connect(m_msbTempIntervalRight, SIGNAL(valueChanged()), this, SLOT(moveTempIntervalRight()));
     connect(m_cbTempAccurateRight, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactorRight(bool)));
+
+    connect(m_bgRelate, SIGNAL(buttonClicked(int)), this, SLOT(radioButtonClicked(int)));
 
     connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
