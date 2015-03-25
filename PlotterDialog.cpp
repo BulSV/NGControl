@@ -72,10 +72,12 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
     m_cbTimeAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
     m_cbTempAccurateLeft(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
+    m_cbTempAccurateRight(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
     m_bReset(new QPushButton(QString::fromUtf8("Reset"), this)),
     m_bPauseRessume(new QPushButton(QString::fromUtf8("Pause"), this)),
     m_TimeAccurateFactor(1.0),
     m_TempAccurateFactorLeft(1.0),
+    m_TempAccurateFactorRight(1.0),
     m_plot(new QwtPlot(this)),
     m_currentTime( new QTime()),
     m_isReseted( false ),
@@ -83,6 +85,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_prevCurrentTime( 0.0 ),
     m_prevCentralTempLeft( 0.0 ),
     m_prevTempOffsetLeft( 0.0 ),
+    m_prevCentralTempRight( 0.0 ),
+    m_prevTempOffsetRight( 0.0 ),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -139,6 +143,16 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                  this);
     m_lcdTempIntervalLeft->setValue(5);
 
+    m_lcdTempIntervalRight = new LCDSampleSpinBox(tempSamples,
+                                                  QIcon(":/Resources/down.png"),
+                                                  QIcon(":/Resources/up.png"),
+                                                  QString::fromUtf8(""),
+                                                  QString::fromUtf8(""),
+                                                  QLCDNumber::Dec,
+                                                  LCDSpinBox::RIGHT,
+                                                  this);
+    m_lcdTempIntervalRight->setValue(5);
+
     m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
                                         QIcon(":/Resources/left.png"),
                                         QIcon(":/Resources/right.png"),
@@ -157,11 +171,21 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                             this);
     m_msbTempIntervalLeft->setRange(LOWTEMP, UPTEMP, STEPTEMP);
 
+    m_msbTempIntervalRight = new MoveSpinBox("<img src=':Resources/UpDown.png' height='45' width='20'/>",
+                                             QIcon(":/Resources/down.png"),
+                                             QIcon(":/Resources/up.png"),
+                                             QString::fromUtf8(""),
+                                             QString::fromUtf8(""),
+                                             MoveSpinBox::RIGHT,
+                                             this);
+    m_msbTempIntervalRight->setRange(LOWTEMP, UPTEMP, STEPTEMP);
+
     setWindowTitle(title);
 
     QList<QLCDNumber*> lcdList;
     lcdList << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())
             << dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())
+            << dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget())
             << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo
             << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
     lcdStyling(lcdList);
@@ -217,9 +241,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->enableAxis(QwtPlot::yRight);
     m_plot->setAxisTitle( QwtPlot::yRight, "Sensor 2, °C" );
     m_plot->setAxisScale( QwtPlot::yRight,
-                          - dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YDIVISION/2,
-                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YDIVISION/2,
-                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YSCALESTEP );
+                          - dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yRight, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yRight, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yRight, false);
@@ -243,9 +267,21 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                      QwtPicker::ActiveOnly,
                                      m_plot->canvas());
     m_pickerLeft->setStateMachine(new QwtPickerDragPointMachine());
-    m_pickerLeft->setRubberBandPen(QColor(Qt::magenta));
-    m_pickerLeft->setTrackerPen(QColor(Qt::magenta));
+    m_pickerLeft->setRubberBandPen(QColor("#FF0000"));
+    m_pickerLeft->setTrackerPen(QColor(Qt::black));
     m_pickerLeft->setTrackerFont(QFont(m_pickerLeft->trackerFont().family(), 12));
+    m_pickerLeft->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
+
+    m_pickerRight = new QwtPlotPicker(QwtPlot::xBottom,
+                                      QwtPlot::yRight,
+                                      QwtPlotPicker::CrossRubberBand,
+                                      QwtPicker::ActiveOnly,
+                                      m_plot->canvas());
+    m_pickerRight->setStateMachine(new QwtPickerDragPointMachine());
+    m_pickerRight->setRubberBandPen(QColor(Qt::green));
+    m_pickerRight->setTrackerPen(QColor(Qt::black));
+    m_pickerRight->setTrackerFont(QFont(m_pickerRight->trackerFont().family(), 12));
+    m_pickerRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
@@ -414,11 +450,17 @@ void PlotterDialog::setupGUI()
     dynamic_cast<QPushButton *>( m_lcdTempIntervalLeft->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_lcdTempIntervalLeft->buttonDownWidget() )->setMaximumSize(20, 20);
 
-    dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
-    dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
-
     dynamic_cast<QPushButton *>( m_msbTempIntervalLeft->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_msbTempIntervalLeft->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    dynamic_cast<QPushButton *>( m_lcdTempIntervalRight->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_lcdTempIntervalRight->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    dynamic_cast<QPushButton *>( m_msbTempIntervalRight->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_msbTempIntervalRight->buttonDownWidget() )->setMaximumSize(20, 20);
+
+    dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
@@ -479,14 +521,29 @@ void PlotterDialog::setupGUI()
     QGroupBox *gbTime = new QGroupBox("sec/div", this);
     gbTime->setLayout(timeLayout);
 
-    QHBoxLayout *tempLayout0 = new QHBoxLayout;
-    tempLayout0->addWidget(m_lcdTempIntervalLeft);
-    tempLayout0->addWidget(m_msbTempIntervalLeft);
-    tempLayout0->setSpacing(5);
+    QHBoxLayout *tempLeftLayout0 = new QHBoxLayout;
+    tempLeftLayout0->addWidget(m_lcdTempIntervalLeft);
+    tempLeftLayout0->addWidget(m_msbTempIntervalLeft);
+    tempLeftLayout0->setSpacing(5);
+
+    QVBoxLayout *tempLeftLayout = new QVBoxLayout;
+    tempLeftLayout->addItem(tempLeftLayout0);
+    tempLeftLayout->addWidget(m_cbTempAccurateLeft);
+    tempLeftLayout->setSpacing(5);
+
+    QHBoxLayout *tempRightLayout0 = new QHBoxLayout;
+    tempRightLayout0->addWidget(m_lcdTempIntervalRight);
+    tempRightLayout0->addWidget(m_msbTempIntervalRight);
+    tempRightLayout0->setSpacing(5);
+
+    QVBoxLayout *tempRightLayout = new QVBoxLayout;
+    tempRightLayout->addItem(tempRightLayout0);
+    tempRightLayout->addWidget(m_cbTempAccurateRight);
+    tempRightLayout->setSpacing(5);
 
     QVBoxLayout *tempLayout = new QVBoxLayout;
-    tempLayout->addItem(tempLayout0);
-    tempLayout->addWidget(m_cbTempAccurateLeft);
+    tempLayout->addItem(tempLeftLayout);
+    tempLayout->addItem(tempRightLayout);
     tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);

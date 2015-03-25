@@ -50,21 +50,26 @@ public slots:
 private:
     ISpinBox *m_lcdTimeInterval;
     ISpinBox *m_lcdTempIntervalLeft;
+    ISpinBox *m_lcdTempIntervalRight;
     ISpinBox *m_msbTimeInterval;
     ISpinBox *m_msbTempIntervalLeft;
+    ISpinBox *m_msbTempIntervalRight;
 
     QCheckBox *m_cbTimeAccurate;
     QCheckBox *m_cbTempAccurateLeft;
+    QCheckBox *m_cbTempAccurateRight;
 
     QPushButton *m_bReset;
     QPushButton *m_bPauseRessume;
 
     double m_TimeAccurateFactor;
     double m_TempAccurateFactorLeft;
+    double m_TempAccurateFactorRight;
 
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
     QwtPlotPicker *m_pickerLeft;
+    QwtPlotPicker *m_pickerRight;
 
     QTime *m_currentTime;
     QVector<QVector<double> > m_dataAxises;
@@ -76,6 +81,8 @@ private:
     double m_prevCurrentTime;
     double m_prevCentralTempLeft;
     double m_prevTempOffsetLeft;
+    double m_prevCentralTempRight;
+    double m_prevTempOffsetRight;
 
     QLabel *lPort;
     QComboBox *cbPort;
