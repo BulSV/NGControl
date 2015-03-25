@@ -372,14 +372,24 @@ void PlotterDialog::autoScroll(const double &elapsedTime)
         updatePlot();
     }
 
-    double tempFactor = dynamic_cast<QLCDNumber *>( m_lcdTempIntervalLeft->spinWidget() )->value();
+    double tempFactorLeft = dynamic_cast<QLCDNumber *>( m_lcdTempIntervalLeft->spinWidget() )->value();
+    double tempFactorRight = dynamic_cast<QLCDNumber *>( m_lcdTempIntervalRight->spinWidget() )->value();
 
-    if( m_dataAxises.at(0).last() > m_prevCentralTempLeft + tempFactor * YDIVISION / 2 ) {
+    // TODO Make it universal
+    if( m_dataAxises.value(QString::fromUtf8("SENS1")).last() > m_prevCentralTempLeft + tempFactorLeft * YDIVISION / 2 ) {
         m_msbTempIntervalLeft->upStep();
     }
 
-    if( m_dataAxises.at(0).last() < m_prevCentralTempLeft - tempFactor * YDIVISION / 2 ) {
+    if( m_dataAxises.value(QString::fromUtf8("SENS1")).last() < m_prevCentralTempLeft - tempFactorLeft * YDIVISION / 2 ) {
         m_msbTempIntervalLeft->downStep();
+    }
+
+    if( m_dataAxises.value(QString::fromUtf8("SENS2")).last() > m_prevCentralTempRight + tempFactorRight * YDIVISION / 2 ) {
+        m_msbTempIntervalRight->upStep();
+    }
+
+    if( m_dataAxises.value(QString::fromUtf8("SENS2")).last() < m_prevCentralTempRight - tempFactorRight * YDIVISION / 2 ) {
+        m_msbTempIntervalRight->downStep();
     }
 }
 
@@ -410,7 +420,7 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 
         for(int i = 0; i < listKeys.size(); ++i) {
             QVector<double> data;
-            m_dataAxises.push_back(data);
+            m_dataAxises.insert(listKeys.at(i), data);
         }
     }
 
@@ -420,7 +430,10 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     if( elapsedTime > 2 * 60 * XDIVISION ) {
         m_timeAxis.pop_front();
         for( int i = 0; i < m_dataAxises.size(); ++i ) {
-            m_dataAxises[i].pop_front();
+            QVector<double> data = m_dataAxises.value( listKeys.at(i) );
+            data.pop_front();
+            m_dataAxises.remove( listKeys.at(i) );
+            m_dataAxises.insert( listKeys.at(i), data );
         }
     }
 
@@ -429,10 +442,13 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     m_timeAxis.push_back( elapsedTime );
     for(int i = 0; i < listKeys.size(); ++i) {
         if( listKeys.contains( m_Curves.at(i)->title().text() ) ) { // protection from errored inputing data
-            m_dataAxises[i].push_back( curvesData.value( m_Curves.at(i)->title().text() ) );
+            QVector<double> data = m_dataAxises.value( listKeys.at(i) );
+            data.push_back( curvesData.value( m_Curves.at(i)->title().text() ) );
+            m_dataAxises.remove( listKeys.at(i) );
+            m_dataAxises.insert( listKeys.at(i), data );
 
             if(m_isRessumed) {
-                m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.at(i) );
+                m_Curves[i]->setSamples( m_timeAxis, m_dataAxises.value( listKeys.at(i) ) );
                 m_prevCurrentTime = m_timeAxis.last();
             }
         }
@@ -714,12 +730,14 @@ void PlotterDialog::resetTime()
 {
     m_isReseted = true;
 
+    QStringList dataAxisKeysList = m_dataAxises.keys();
+
     m_timeAxis.clear();
     m_dataAxises.clear();
 
     for(int i = 0; i < m_Curves.size(); ++i) {
         QVector<double> data;
-        m_dataAxises.push_back(data);
+        m_dataAxises.insert( dataAxisKeysList.at(i), data );
     }
 
     toCurrentTime();

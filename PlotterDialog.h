@@ -72,7 +72,7 @@ private:
     QwtPlotPicker *m_pickerRight;
 
     QTime *m_currentTime;
-    QVector<QVector<double> > m_dataAxises;
+    QMap<QString, QVector<double> > m_dataAxises;
     QVector<double> m_timeAxis;
 
     bool m_isReseted;
