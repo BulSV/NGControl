@@ -118,10 +118,10 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     itsTimeToDisplay(new QTimer(this))
 {
     QVector<double> timeSamples;
-    timeSamples << 0.5 << 1 << 2 << 5 << 10 << 20 << 30 << 40 << 50 << 60;
+    timeSamples << 1 << 2 << 5 << 10 << 20 << 50 << 100;
 
     QVector<double> tempSamples;
-    tempSamples << 0.5 << 1 << 2 << 3 << 5 << 10;
+    tempSamples << 0.5 << 1 << 2 << 5 << 10 << 20;
 
     m_lcdTimeInterval = new LCDSampleSpinBox(timeSamples,
                                              QIcon(":/Resources/down.png"),
@@ -131,7 +131,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                              QLCDNumber::Dec,
                                              LCDSpinBox::RIGHT,
                                              this);
-    m_lcdTimeInterval->setValue(4);
+    m_lcdTimeInterval->setValue(5);
 
     m_lcdTempIntervalLeft = new LCDSampleSpinBox(tempSamples,
                                                  QIcon(":/Resources/down.png"),
@@ -141,7 +141,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                  QLCDNumber::Dec,
                                                  LCDSpinBox::RIGHT,
                                                  this);
-    m_lcdTempIntervalLeft->setValue(5);
+    m_lcdTempIntervalLeft->setValue(0);
 
     m_lcdTempIntervalRight = new LCDSampleSpinBox(tempSamples,
                                                   QIcon(":/Resources/down.png"),
@@ -151,7 +151,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                                   QLCDNumber::Dec,
                                                   LCDSpinBox::RIGHT,
                                                   this);
-    m_lcdTempIntervalRight->setValue(5);
+    m_lcdTempIntervalRight->setValue(0);
 
     m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
                                         QIcon(":/Resources/left.png"),
