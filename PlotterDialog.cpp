@@ -327,13 +327,12 @@ void PlotterDialog::autoScroll(const double &elapsedTime)
     }
 
     double tempFactor = dynamic_cast<QLCDNumber *>( m_lcdTempInterval->spinWidget() )->value();
-//    double tempOffset = m_msbTempInterval->value();
 
-    if( m_dataAxises.at(0).last() > tempFactor * ( m_prevTempOffset + YDIVISION / 2 ) ) {
+    if( m_dataAxises.at(0).last() > m_prevTempOffset + tempFactor * YDIVISION / 2 ) {
         m_msbTempInterval->upStep();
     }
 
-    if( m_dataAxises.at(0).last() < tempFactor * ( m_prevTempOffset - YDIVISION / 2 )) {
+    if( m_dataAxises.at(0).last() < m_prevTempOffset - tempFactor * YDIVISION / 2 ) {
         m_msbTempInterval->downStep();
     }
 }
