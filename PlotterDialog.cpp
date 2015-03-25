@@ -591,7 +591,7 @@ void PlotterDialog::changeTimeInterval()
     updatePlot();
 }
 
-void PlotterDialog::changeTempInterval()
+void PlotterDialog::changeTempIntervalLeft()
 {
     double factor = dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value();
     m_plot->setAxisScale( QwtPlot::yLeft,
@@ -622,7 +622,7 @@ void PlotterDialog::moveTimeInterval()
     updatePlot();
 }
 
-void PlotterDialog::moveTempInterval()
+void PlotterDialog::moveTempIntervalLeft()
 {
     double factor = dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value();
     double offset = 0.0;
@@ -643,6 +643,37 @@ void PlotterDialog::moveTempInterval()
     updatePlot();
 }
 
+void PlotterDialog::changeTempIntervalRight()
+{
+    double factor = dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget())->value();
+    m_plot->setAxisScale( QwtPlot::yRight,
+                          m_prevCentralTempRight - factor * YDIVISION/2,
+                          m_prevCentralTempRight + factor * YDIVISION/2,
+                          factor * YSCALESTEP );
+    updatePlot();
+}
+
+void PlotterDialog::moveTempIntervalRight()
+{
+    double factor = dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget())->value();
+    double offset = 0.0;
+    if( m_prevTempOffsetRight - factor * m_msbTempIntervalRight->value() > 0 ) {
+        offset = -m_msbTempIntervalRight->step();
+    } else {
+        offset = m_msbTempIntervalRight->step();
+    }
+    m_prevTempOffsetRight = factor * m_msbTempIntervalRight->value();
+
+    m_plot->setAxisScale( QwtPlot::yRight,
+                          m_prevCentralTempRight + factor * ( offset - YDIVISION/2 ) ,
+                          m_prevCentralTempRight + factor * ( offset + YDIVISION/2 ),
+                          factor * YSCALESTEP );
+
+    m_prevCentralTempRight += factor * offset;
+
+    updatePlot();
+}
+
 void PlotterDialog::changeTimeAccurateFactor(bool isChecked)
 {
     if(isChecked) {
@@ -655,7 +686,7 @@ void PlotterDialog::changeTimeAccurateFactor(bool isChecked)
                                 m_TimeAccurateFactor * STEPTIME);
 }
 
-void PlotterDialog::changeTempAccurateFactor(bool isChecked)
+void PlotterDialog::changeTempAccurateFactorLeft(bool isChecked)
 {
     if(isChecked) {
         m_TempAccurateFactorLeft *= 0.1;
@@ -663,8 +694,20 @@ void PlotterDialog::changeTempAccurateFactor(bool isChecked)
         m_TempAccurateFactorLeft *= 10;
     }
     m_msbTempIntervalLeft->setRange(LOWTEMP,
-                                UPTEMP,
-                                m_TempAccurateFactorLeft * STEPTEMP);
+                                    UPTEMP,
+                                    m_TempAccurateFactorLeft * STEPTEMP);
+}
+
+void PlotterDialog::changeTempAccurateFactorRight(bool isChecked)
+{
+    if(isChecked) {
+        m_TempAccurateFactorRight *= 0.1;
+    } else {
+        m_TempAccurateFactorRight *= 10;
+    }
+    m_msbTempIntervalRight->setRange(LOWTEMP,
+                                     UPTEMP,
+                                     m_TempAccurateFactorRight * STEPTEMP);
 }
 
 void PlotterDialog::resetTime()
@@ -728,12 +771,16 @@ void PlotterDialog::toCurrentTime()
 void PlotterDialog::setupConnections()
 {
     connect(m_lcdTimeInterval, SIGNAL(valueChanged()), this, SLOT(changeTimeInterval()));
-    connect(m_lcdTempIntervalLeft, SIGNAL(valueChanged()), this, SLOT(changeTempInterval()));
     connect(m_msbTimeInterval, SIGNAL(valueChanged()), this, SLOT(moveTimeInterval()));
-    connect(m_msbTempIntervalLeft, SIGNAL(valueChanged()), this, SLOT(moveTempInterval()));
-
     connect(m_cbTimeAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTimeAccurateFactor(bool)));
-    connect(m_cbTempAccurateLeft, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactor(bool)));
+
+    connect(m_lcdTempIntervalLeft, SIGNAL(valueChanged()), this, SLOT(changeTempIntervalLeft()));
+    connect(m_msbTempIntervalLeft, SIGNAL(valueChanged()), this, SLOT(moveTempIntervalLeft()));
+    connect(m_cbTempAccurateLeft, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactorLeft(bool)));
+
+    connect(m_lcdTempIntervalRight, SIGNAL(valueChanged()), this, SLOT(changeTempIntervalRight()));
+    connect(m_msbTempIntervalRight, SIGNAL(valueChanged()), this, SLOT(moveTempIntervalRight()));
+    connect(m_cbTempAccurateRight, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactorRight(bool)));
 
     connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));

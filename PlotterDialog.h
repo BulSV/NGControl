@@ -131,12 +131,17 @@ private:
     double roundToStep(const double &value, const double &step);
 private slots:
     void changeTimeInterval();
-    void changeTempInterval();
     void moveTimeInterval();
-    void moveTempInterval();
+
+    void changeTempIntervalLeft();
+    void moveTempIntervalLeft();
+
+    void changeTempIntervalRight();
+    void moveTempIntervalRight();
 
     void changeTimeAccurateFactor(bool isChecked);
-    void changeTempAccurateFactor(bool isChecked);
+    void changeTempAccurateFactorLeft(bool isChecked);
+    void changeTempAccurateFactorRight(bool isChecked);
 
     void openPort();
     void closePort();
