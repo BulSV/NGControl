@@ -71,18 +71,18 @@
 PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     QDialog(parent, Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint),
     m_cbTimeAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
-    m_cbTempAccurate(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
+    m_cbTempAccurateLeft(new QCheckBox(QString::fromUtf8("Accurate (x0.1)"), this)),
     m_bReset(new QPushButton(QString::fromUtf8("Reset"), this)),
     m_bPauseRessume(new QPushButton(QString::fromUtf8("Pause"), this)),
     m_TimeAccurateFactor(1.0),
-    m_TempAccurateFactor(1.0),
+    m_TempAccurateFactorLeft(1.0),
     m_plot(new QwtPlot(this)),
     m_currentTime( new QTime()),
     m_isReseted( false ),
     m_isRessumed( true ),
     m_prevCurrentTime( 0.0 ),
-    m_prevCentralTemp( 0.0 ),
-    m_prevTempOffset( 0.0 ),
+    m_prevCentralTempLeft( 0.0 ),
+    m_prevTempOffsetLeft( 0.0 ),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -129,15 +129,15 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                              this);
     m_lcdTimeInterval->setValue(4);
 
-    m_lcdTempInterval = new LCDSampleSpinBox(tempSamples,
-                                             QIcon(":/Resources/down.png"),
-                                             QIcon(":/Resources/up.png"),
-                                             QString::fromUtf8(""),
-                                             QString::fromUtf8(""),
-                                             QLCDNumber::Dec,
-                                             LCDSpinBox::RIGHT,
-                                             this);
-    m_lcdTempInterval->setValue(5);
+    m_lcdTempIntervalLeft = new LCDSampleSpinBox(tempSamples,
+                                                 QIcon(":/Resources/down.png"),
+                                                 QIcon(":/Resources/up.png"),
+                                                 QString::fromUtf8(""),
+                                                 QString::fromUtf8(""),
+                                                 QLCDNumber::Dec,
+                                                 LCDSpinBox::RIGHT,
+                                                 this);
+    m_lcdTempIntervalLeft->setValue(5);
 
     m_msbTimeInterval = new MoveSpinBox("<img src=':Resources/LeftRight.png' height='20' width='45'/>",
                                         QIcon(":/Resources/left.png"),
@@ -148,20 +148,20 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                                         this);
     m_msbTimeInterval->setRange(LOWTIME, UPTIME, STEPTIME);
 
-    m_msbTempInterval = new MoveSpinBox("<img src=':Resources/UpDown.png' height='45' width='20'/>",
-                                        QIcon(":/Resources/down.png"),
-                                        QIcon(":/Resources/up.png"),
-                                        QString::fromUtf8(""),
-                                        QString::fromUtf8(""),
-                                        MoveSpinBox::RIGHT,
-                                        this);
-    m_msbTempInterval->setRange(LOWTEMP, UPTEMP, STEPTEMP);
+    m_msbTempIntervalLeft = new MoveSpinBox("<img src=':Resources/UpDown.png' height='45' width='20'/>",
+                                            QIcon(":/Resources/down.png"),
+                                            QIcon(":/Resources/up.png"),
+                                            QString::fromUtf8(""),
+                                            QString::fromUtf8(""),
+                                            MoveSpinBox::RIGHT,
+                                            this);
+    m_msbTempIntervalLeft->setRange(LOWTEMP, UPTEMP, STEPTEMP);
 
     setWindowTitle(title);
 
     QList<QLCDNumber*> lcdList;
     lcdList << dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())
-            << dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())
+            << dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())
             << lcdInstalledTemp << lcdSensor1Termo << lcdSensor2Termo
             << dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget());
     lcdStyling(lcdList);
@@ -206,9 +206,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     // Temperature Left
     m_plot->setAxisTitle( QwtPlot::yLeft, "Sensor 1, °C" );
     m_plot->setAxisScale( QwtPlot::yLeft,
-                          - dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
+                          - dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
@@ -217,9 +217,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_plot->enableAxis(QwtPlot::yRight);
     m_plot->setAxisTitle( QwtPlot::yRight, "Sensor 2, °C" );
     m_plot->setAxisScale( QwtPlot::yRight,
-                          - dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YDIVISION/2,
-                          dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value() * YSCALESTEP );
+                          - dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YDIVISION/2,
+                          dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yRight, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yRight, YMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::yRight, false);
@@ -237,15 +237,15 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     m_plot->setAutoReplot( false );
 
-    m_picker = new QwtPlotPicker(QwtPlot::xBottom,
-                                 QwtPlot::yLeft,
-                                 QwtPlotPicker::CrossRubberBand,
-                                 QwtPicker::ActiveOnly,
-                                 m_plot->canvas());
-    m_picker->setStateMachine(new QwtPickerDragPointMachine());
-    m_picker->setRubberBandPen(QColor(Qt::magenta));
-    m_picker->setTrackerPen(QColor(Qt::magenta));
-    m_picker->setTrackerFont(QFont(m_picker->trackerFont().family(), 12));
+    m_pickerLeft = new QwtPlotPicker(QwtPlot::xBottom,
+                                     QwtPlot::yLeft,
+                                     QwtPlotPicker::CrossRubberBand,
+                                     QwtPicker::ActiveOnly,
+                                     m_plot->canvas());
+    m_pickerLeft->setStateMachine(new QwtPickerDragPointMachine());
+    m_pickerLeft->setRubberBandPen(QColor(Qt::magenta));
+    m_pickerLeft->setTrackerPen(QColor(Qt::magenta));
+    m_pickerLeft->setTrackerFont(QFont(m_pickerLeft->trackerFont().family(), 12));
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
@@ -334,14 +334,14 @@ void PlotterDialog::autoScroll(const double &elapsedTime)
         updatePlot();
     }
 
-    double tempFactor = dynamic_cast<QLCDNumber *>( m_lcdTempInterval->spinWidget() )->value();
+    double tempFactor = dynamic_cast<QLCDNumber *>( m_lcdTempIntervalLeft->spinWidget() )->value();
 
-    if( m_dataAxises.at(0).last() > m_prevCentralTemp + tempFactor * YDIVISION / 2 ) {
-        m_msbTempInterval->upStep();
+    if( m_dataAxises.at(0).last() > m_prevCentralTempLeft + tempFactor * YDIVISION / 2 ) {
+        m_msbTempIntervalLeft->upStep();
     }
 
-    if( m_dataAxises.at(0).last() < m_prevCentralTemp - tempFactor * YDIVISION / 2 ) {
-        m_msbTempInterval->downStep();
+    if( m_dataAxises.at(0).last() < m_prevCentralTempLeft - tempFactor * YDIVISION / 2 ) {
+        m_msbTempIntervalLeft->downStep();
     }
 }
 
@@ -411,14 +411,14 @@ void PlotterDialog::setupGUI()
     dynamic_cast<QPushButton *>( sbSetTemp->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( sbSetTemp->buttonDownWidget() )->setMaximumSize(20, 20);
 
-    dynamic_cast<QPushButton *>( m_lcdTempInterval->buttonUpWidget() )->setMaximumSize(20, 20);
-    dynamic_cast<QPushButton *>( m_lcdTempInterval->buttonDownWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_lcdTempIntervalLeft->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_lcdTempIntervalLeft->buttonDownWidget() )->setMaximumSize(20, 20);
 
     dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_lcdTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
 
-    dynamic_cast<QPushButton *>( m_msbTempInterval->buttonUpWidget() )->setMaximumSize(20, 20);
-    dynamic_cast<QPushButton *>( m_msbTempInterval->buttonDownWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_msbTempIntervalLeft->buttonUpWidget() )->setMaximumSize(20, 20);
+    dynamic_cast<QPushButton *>( m_msbTempIntervalLeft->buttonDownWidget() )->setMaximumSize(20, 20);
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setMaximumSize(20, 20);
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setMaximumSize(20, 20);
@@ -480,13 +480,13 @@ void PlotterDialog::setupGUI()
     gbTime->setLayout(timeLayout);
 
     QHBoxLayout *tempLayout0 = new QHBoxLayout;
-    tempLayout0->addWidget(m_lcdTempInterval);
-    tempLayout0->addWidget(m_msbTempInterval);
+    tempLayout0->addWidget(m_lcdTempIntervalLeft);
+    tempLayout0->addWidget(m_msbTempIntervalLeft);
     tempLayout0->setSpacing(5);
 
     QVBoxLayout *tempLayout = new QVBoxLayout;
     tempLayout->addItem(tempLayout0);
-    tempLayout->addWidget(m_cbTempAccurate);
+    tempLayout->addWidget(m_cbTempAccurateLeft);
     tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);
@@ -534,10 +534,10 @@ void PlotterDialog::changeTimeInterval()
 
 void PlotterDialog::changeTempInterval()
 {
-    double factor = dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value();
+    double factor = dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value();
     m_plot->setAxisScale( QwtPlot::yLeft,
-                          m_prevCentralTemp - factor * YDIVISION/2,
-                          m_prevCentralTemp + factor * YDIVISION/2,
+                          m_prevCentralTempLeft - factor * YDIVISION/2,
+                          m_prevCentralTempLeft + factor * YDIVISION/2,
                           factor * YSCALESTEP );
     updatePlot();
 }
@@ -565,21 +565,21 @@ void PlotterDialog::moveTimeInterval()
 
 void PlotterDialog::moveTempInterval()
 {
-    double factor = dynamic_cast<QLCDNumber*>(m_lcdTempInterval->spinWidget())->value();
+    double factor = dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value();
     double offset = 0.0;
-    if( m_prevTempOffset - factor * m_msbTempInterval->value() > 0 ) {
-        offset = -m_msbTempInterval->step();
+    if( m_prevTempOffsetLeft - factor * m_msbTempIntervalLeft->value() > 0 ) {
+        offset = -m_msbTempIntervalLeft->step();
     } else {
-        offset = m_msbTempInterval->step();
+        offset = m_msbTempIntervalLeft->step();
     }
-    m_prevTempOffset = factor * m_msbTempInterval->value();
+    m_prevTempOffsetLeft = factor * m_msbTempIntervalLeft->value();
 
     m_plot->setAxisScale( QwtPlot::yLeft,
-                          m_prevCentralTemp + factor * ( offset - YDIVISION/2 ) ,
-                          m_prevCentralTemp + factor * ( offset + YDIVISION/2 ),
+                          m_prevCentralTempLeft + factor * ( offset - YDIVISION/2 ) ,
+                          m_prevCentralTempLeft + factor * ( offset + YDIVISION/2 ),
                           factor * YSCALESTEP );
 
-    m_prevCentralTemp += factor * offset;
+    m_prevCentralTempLeft += factor * offset;
 
     updatePlot();
 }
@@ -599,13 +599,13 @@ void PlotterDialog::changeTimeAccurateFactor(bool isChecked)
 void PlotterDialog::changeTempAccurateFactor(bool isChecked)
 {
     if(isChecked) {
-        m_TempAccurateFactor *= 0.1;
+        m_TempAccurateFactorLeft *= 0.1;
     } else {
-        m_TempAccurateFactor *= 10;
+        m_TempAccurateFactorLeft *= 10;
     }
-    m_msbTempInterval->setRange(LOWTEMP,
+    m_msbTempIntervalLeft->setRange(LOWTEMP,
                                 UPTEMP,
-                                m_TempAccurateFactor * STEPTEMP);
+                                m_TempAccurateFactorLeft * STEPTEMP);
 }
 
 void PlotterDialog::resetTime()
@@ -669,12 +669,12 @@ void PlotterDialog::toCurrentTime()
 void PlotterDialog::setupConnections()
 {
     connect(m_lcdTimeInterval, SIGNAL(valueChanged()), this, SLOT(changeTimeInterval()));
-    connect(m_lcdTempInterval, SIGNAL(valueChanged()), this, SLOT(changeTempInterval()));
+    connect(m_lcdTempIntervalLeft, SIGNAL(valueChanged()), this, SLOT(changeTempInterval()));
     connect(m_msbTimeInterval, SIGNAL(valueChanged()), this, SLOT(moveTimeInterval()));
-    connect(m_msbTempInterval, SIGNAL(valueChanged()), this, SLOT(moveTempInterval()));
+    connect(m_msbTempIntervalLeft, SIGNAL(valueChanged()), this, SLOT(moveTempInterval()));
 
     connect(m_cbTimeAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTimeAccurateFactor(bool)));
-    connect(m_cbTempAccurate, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactor(bool)));
+    connect(m_cbTempAccurateLeft, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactor(bool)));
 
     connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));

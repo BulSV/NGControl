@@ -49,22 +49,22 @@ public slots:
     void toCurrentTime();
 private:
     ISpinBox *m_lcdTimeInterval;
-    ISpinBox *m_lcdTempInterval;
+    ISpinBox *m_lcdTempIntervalLeft;
     ISpinBox *m_msbTimeInterval;
-    ISpinBox *m_msbTempInterval;
+    ISpinBox *m_msbTempIntervalLeft;
 
     QCheckBox *m_cbTimeAccurate;
-    QCheckBox *m_cbTempAccurate;
+    QCheckBox *m_cbTempAccurateLeft;
 
     QPushButton *m_bReset;
     QPushButton *m_bPauseRessume;
 
     double m_TimeAccurateFactor;
-    double m_TempAccurateFactor;
+    double m_TempAccurateFactorLeft;
 
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
-    QwtPlotPicker *m_picker;
+    QwtPlotPicker *m_pickerLeft;
 
     QTime *m_currentTime;
     QVector<QVector<double> > m_dataAxises;
@@ -74,8 +74,8 @@ private:
     bool m_isRessumed;
 
     double m_prevCurrentTime;
-    double m_prevCentralTemp;
-    double m_prevTempOffset;
+    double m_prevCentralTempLeft;
+    double m_prevTempOffsetLeft;
 
     QLabel *lPort;
     QComboBox *cbPort;
