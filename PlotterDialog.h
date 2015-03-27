@@ -73,7 +73,7 @@ private:
     QVector<QwtPlotCurve*> m_Curves;
     QwtPlotPicker *m_pickerLeft;
     QwtPlotPicker *m_pickerRight;
-    QwtPlotPicker *m_pickerRemark;
+    QwtPlotPicker *m_pickerRemarkEdit;
 
     QTime *m_currentTime;
     QMap<QString, QVector<double> > m_dataAxises;

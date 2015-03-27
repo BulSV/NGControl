@@ -24,24 +24,11 @@
 #define STOPBYTE 0xAA
 #define BYTESLENGTH 8
 
-#define NEGATIVE 32768 // 2^15
-#define OFFSET 65536 // 2^16
-#define SLOPE 128
-
-#define CPU_FACTOR 0.537
-#define CPU_OFFSET 900
-#define CPU_SLOPE 2.95
-
-#define ACCURACY 0.02
-
-#define FORMAT 'f'
 #define PRECISION 2
 
 #define BLINKTIMETX 200 // ms
 #define BLINKTIMERX 500 // ms
 #define DISPLAYTIME 100 // ms
-
-#define REWINDTIME 50 // ms
 
 #define TEMPRANGE_MIN -70 // degrees Celsius
 #define TEMPRANGE_MAX 70 // degrees Celsius
@@ -289,13 +276,13 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerRight->setTrackerFont(QFont(m_pickerRight->trackerFont().family(), 12));
     m_pickerRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
-    m_pickerRemark = new QwtPlotPicker(QwtPlot::xBottom,
-                                       QwtPlot::yRight,
-                                       QwtPlotPicker::NoRubberBand,
-                                       QwtPicker::ActiveOnly,
-                                       m_plot->canvas());
-    m_pickerRemark->setStateMachine(new QwtPickerClickPointMachine);
-    m_pickerRemark->setMousePattern(QwtPicker::MouseSelect1, Qt::MidButton);
+    m_pickerRemarkEdit = new QwtPlotPicker(QwtPlot::xBottom,
+                                           QwtPlot::yRight,
+                                           QwtPlotPicker::NoRubberBand,
+                                           QwtPicker::ActiveOnly,
+                                           m_plot->canvas());
+    m_pickerRemarkEdit->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerRemarkEdit->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
 
     m_marker = new QwtPlotMarker();
     m_marker->setLabel(QwtText("Освоить LaTeX проще,\nчем TeX. Человека,\nкоторый знает систему\nTeX{} и любит ее, можно\nназвать TeX ником."));
@@ -305,7 +292,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     connect(m_pickerLeft, SIGNAL(moved(QPointF)), this, SLOT(testMoveMarker(QPointF)));
     connect(m_pickerLeft, SIGNAL(appended(QPointF)), this, SLOT(testMoveMarker(QPointF)));
     connect(m_pickerLeft, SIGNAL(activated(bool)), this, SLOT(testAddMarker()));
-    connect(m_pickerRemark, SIGNAL(selected(QPointF)), this, SLOT(testSelect(QPointF)));
+    connect(m_pickerRemarkEdit, SIGNAL(selected(QPointF)), this, SLOT(testSelect(QPointF)));
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
