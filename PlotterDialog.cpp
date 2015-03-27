@@ -9,7 +9,6 @@
 #include <qwt_plot_grid.h>
 #include <qwt_scale_div.h>
 #include <qwt_picker_machine.h>
-
 #include <QApplication>
 #include <QFile>
 #include <QDesktopWidget>
@@ -18,6 +17,8 @@
 #include <QPalette>
 #include <QIcon>
 #include <qwt_scale_widget.h>
+#include <qwt_text_label.h>
+#include <QInputDialog>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -288,6 +289,24 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerRight->setTrackerFont(QFont(m_pickerRight->trackerFont().family(), 12));
     m_pickerRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
+    m_pickerRemark = new QwtPlotPicker(QwtPlot::xBottom,
+                                       QwtPlot::yRight,
+                                       QwtPlotPicker::NoRubberBand,
+                                       QwtPicker::ActiveOnly,
+                                       m_plot->canvas());
+    m_pickerRemark->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerRemark->setMousePattern(QwtPicker::MouseSelect1, Qt::MidButton);
+
+    m_marker = new QwtPlotMarker();
+    m_marker->setLabel(QwtText("Освоить LaTeX проще,\nчем TeX. Человека,\nкоторый знает систему\nTeX{} и любит ее, можно\nназвать TeX ником."));
+    m_marker->setValue(50, 1);
+    m_marker->attach(m_plot);
+
+    connect(m_pickerLeft, SIGNAL(moved(QPointF)), this, SLOT(testMoveMarker(QPointF)));
+    connect(m_pickerLeft, SIGNAL(appended(QPointF)), this, SLOT(testMoveMarker(QPointF)));
+    connect(m_pickerLeft, SIGNAL(activated(bool)), this, SLOT(testAddMarker()));
+    connect(m_pickerRemark, SIGNAL(selected(QPointF)), this, SLOT(testSelect(QPointF)));
+
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
     m_cbTimeAccurate->setEnabled( false );
@@ -309,7 +328,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     cbPort->addItems(portsNames);
 #if defined (Q_OS_LINUX)
-    cbPort->setEditable(true); // TODO Make correct viewing available ports in Linux
+    cbPort->setEditable(true); // TODO Make correct viewing available virtual ports in Linux
 #else
     cbPort->setEditable(false);
 #endif
@@ -347,7 +366,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     setCurves(curves, axis);
 
     setupGUI();
-    setupConnections();    
+    setupConnections();
 }
 
 PlotterDialog::~PlotterDialog()
@@ -509,7 +528,7 @@ void PlotterDialog::setupGUI()
     lSensor2->setStyleSheet("color: green; font: bold; font-size: 12pt");
     gridInfo->addWidget(lSensor2, 2, 1);
     gridInfo->addWidget(lcdSensor2Termo, 2, 2);
-    gridInfo->setSpacing(5);    
+    gridInfo->setSpacing(5);
 
     bSetTemp->setFixedHeight(45);
     QHBoxLayout *setTempLayout0 = new QHBoxLayout;
@@ -1045,4 +1064,28 @@ void PlotterDialog::display()
 void PlotterDialog::colorSetTempLCD()
 {
     setColorLCD(dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget()), sbSetTemp->value() > 0);
+}
+
+void PlotterDialog::testMoveMarker(const QPointF &pos)
+{
+    m_marker->setValue(pos);
+    updatePlot();
+}
+
+void PlotterDialog::testAddMarker()
+{
+    QwtPlotMarker *marker = new QwtPlotMarker();
+    marker->setLabel(QwtText("A"));
+    marker->attach(m_plot);
+}
+
+void PlotterDialog::testSelect(const QPointF &pos)
+{
+    if(  qAbs( pos.x() - m_marker->value().x() ) <= 0.5 * m_lcdTimeInterval->value()
+         && qAbs( pos.y() - m_marker->value().y() ) <= 0.5 * m_lcdTempIntervalLeft->value() ) {
+        m_marker->setLabel(QwtText(QInputDialog::getText(this,
+                                                         "Input Text Dialog",
+                                                         "The Text:")));
+        updatePlot();
+    }
 }

@@ -25,6 +25,7 @@
 #include <QSpinBox>
 #include <QRadioButton>
 #include <QButtonGroup>
+#include <qwt_plot_marker.h>
 
 #include "ComPort.h"
 #include "IProtocol.h"
@@ -72,6 +73,7 @@ private:
     QVector<QwtPlotCurve*> m_Curves;
     QwtPlotPicker *m_pickerLeft;
     QwtPlotPicker *m_pickerRight;
+    QwtPlotPicker *m_pickerRemark;
 
     QTime *m_currentTime;
     QMap<QString, QVector<double> > m_dataAxises;
@@ -135,6 +137,8 @@ private:
     void lcdStyling(QList<QLCDNumber *> &lcdList);
     void autoScroll(const double &elapsedTime);
     double roundToStep(const double &value, const double &step);
+
+    QwtPlotMarker *m_marker;
 private slots:
     void changeTimeInterval();
     void moveTimeInterval();
@@ -164,6 +168,10 @@ private slots:
     void display();
     // colored set temp LCD if value < 0
     void colorSetTempLCD();
+
+    void testMoveMarker(const QPointF &pos);
+    void testAddMarker();
+    void testSelect(const QPointF &pos);
 };
 
 #endif // PLOTTERDIALOG_H

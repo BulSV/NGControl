@@ -16,7 +16,7 @@
 #define CPU_OFFSET 900
 #define CPU_SLOPE 2.95
 
-#define ACCURACY 0.02
+#define ACCURACY 0.1
 
 #define FORMAT 'f'
 #define PRECISION 2
