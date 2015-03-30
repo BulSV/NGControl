@@ -79,6 +79,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_rbRelateLeft(new QRadioButton(this)),
     m_rbRelateRight(new QRadioButton(this)),
     m_bgRelate(new QButtonGroup(this)),
+    m_editText(new QPushButton(QIcon(":/Resources/editText.png"), QString::null, this)),
+    m_moveText(new QPushButton(QIcon(":/Resources/moveText.png"), QString::null, this)),
+    m_deleteText(new QPushButton(QIcon(":/Resources/deleteText.png"), QString::null, this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -532,18 +535,27 @@ void PlotterDialog::setupGUI()
 
     gbSetTemp->setLayout(setTempLayout);
 
+    QHBoxLayout *notesLayout = new QHBoxLayout;
+    notesLayout->addWidget(m_editText);
+    notesLayout->addWidget(m_moveText);
+    notesLayout->addWidget(m_deleteText);
+
+    QGroupBox *notes = new QGroupBox();
+    notes->setTitle("Notes");
+    notes->setLayout(notesLayout);
+
     QGridLayout *grid = new QGridLayout;
-    grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 0);
-    grid->addWidget(lPort, 0, 1);
-    grid->addWidget(cbPort, 0, 2);
-    grid->addWidget(lBaud, 0, 3);
-    grid->addWidget(cbBaud, 0, 4);
     // пещаю логотип фирмы
-//    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 7, 2, 5, Qt::AlignRight);
-    grid->addWidget(bPortStart, 0, 5);
-    grid->addWidget(bPortStop, 0, 6);
-    grid->addWidget(lTx, 0, 7);
-    grid->addWidget(lRx, 0, 8);
+    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='20' width='75'/>", this), 0, 0);
+    grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 1);
+    grid->addWidget(lPort, 0, 2);
+    grid->addWidget(cbPort, 0, 3);
+    grid->addWidget(lBaud, 0, 4);
+    grid->addWidget(cbBaud, 0, 5);
+    grid->addWidget(bPortStart, 0, 6);
+    grid->addWidget(bPortStop, 0, 7);
+    grid->addWidget(lTx, 0, 8);
+    grid->addWidget(lRx, 0, 9);
     grid->setSpacing(5);
 
     QHBoxLayout *timeLayout0 = new QHBoxLayout;
@@ -597,6 +609,7 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
+    knobsLayout->addWidget(notes);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 
@@ -1076,6 +1089,7 @@ void PlotterDialog::testSelect(const QPointF &pos)
 
     if(  qAbs( pos.x() - m_marker->value().x() ) <= text->boundingRect().width()/( 2 * pxXsec )
          && qAbs( pos.y() - m_marker->value().y() ) <= text->boundingRect().height()/( 2 * pxYdeg ) ) {
+
         m_marker->setLabel(QwtText(QInputDialog::getText(this,
                                                          "Input Text Dialog",
                                                          "The Text:")));

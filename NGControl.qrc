@@ -14,5 +14,11 @@
         <file>Resources/left.svg</file>
         <file>Resources/right.svg</file>
         <file>Resources/up.svg</file>
+        <file>Resources/moveText.svg</file>
+        <file>Resources/deleteText.png</file>
+        <file>Resources/deleteText.svg</file>
+        <file>Resources/moveText.png</file>
+        <file>Resources/editText.svg</file>
+        <file>Resources/editText.png</file>
     </qresource>
 </RCC>

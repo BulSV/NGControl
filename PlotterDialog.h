@@ -92,6 +92,10 @@ private:
     QRadioButton *m_rbRelateRight;
     QButtonGroup *m_bgRelate;
 
+    QPushButton *m_editText;
+    QPushButton *m_moveText;
+    QPushButton *m_deleteText;
+
     QLabel *lPort;
     QComboBox *cbPort;
     QLabel *lBaud;
