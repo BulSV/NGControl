@@ -79,9 +79,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_rbRelateLeft(new QRadioButton(this)),
     m_rbRelateRight(new QRadioButton(this)),
     m_bgRelate(new QButtonGroup(this)),
-    m_editText(new QPushButton(QIcon(":/Resources/editText.png"), QString::null, this)),
-    m_moveText(new QPushButton(QIcon(":/Resources/moveText.png"), QString::null, this)),
-    m_deleteText(new QPushButton(QIcon(":/Resources/deleteText.png"), QString::null, this)),
+    m_bEditNotes(new QPushButton(QIcon(":/Resources/editText.png"), QString::null, this)),
+    m_bMoveNotes(new QPushButton(QIcon(":/Resources/moveText.png"), QString::null, this)),
+    m_bDeleteNotes(new QPushButton(QIcon(":/Resources/deleteText.png"), QString::null, this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -295,7 +295,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     connect(m_pickerLeft, SIGNAL(moved(QPointF)), this, SLOT(testMoveMarker(QPointF)));
     connect(m_pickerLeft, SIGNAL(appended(QPointF)), this, SLOT(testMoveMarker(QPointF)));
-    connect(m_pickerLeft, SIGNAL(activated(bool)), this, SLOT(testAddMarker()));
+    connect(m_pickerLeft, SIGNAL(activated(bool)), this, SLOT(editNotes()));
     connect(m_pickerRemarkEdit, SIGNAL(selected(QPointF)), this, SLOT(testSelect(QPointF)));
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
@@ -536,9 +536,9 @@ void PlotterDialog::setupGUI()
     gbSetTemp->setLayout(setTempLayout);
 
     QHBoxLayout *notesLayout = new QHBoxLayout;
-    notesLayout->addWidget(m_editText);
-    notesLayout->addWidget(m_moveText);
-    notesLayout->addWidget(m_deleteText);
+    notesLayout->addWidget(m_bEditNotes);
+    notesLayout->addWidget(m_bMoveNotes);
+    notesLayout->addWidget(m_bDeleteNotes);
 
     QGroupBox *notes = new QGroupBox();
     notes->setTitle("Notes");
@@ -1073,7 +1073,7 @@ void PlotterDialog::testMoveMarker(const QPointF &pos)
     updatePlot();
 }
 
-void PlotterDialog::testAddMarker()
+void PlotterDialog::editNotes()
 {
     QwtPlotMarker *marker = new QwtPlotMarker();
     marker->setLabel(QwtText("A"));

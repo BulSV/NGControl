@@ -92,9 +92,9 @@ private:
     QRadioButton *m_rbRelateRight;
     QButtonGroup *m_bgRelate;
 
-    QPushButton *m_editText;
-    QPushButton *m_moveText;
-    QPushButton *m_deleteText;
+    QPushButton *m_bEditNotes;
+    QPushButton *m_bMoveNotes;
+    QPushButton *m_bDeleteNotes;
 
     QLabel *lPort;
     QComboBox *cbPort;
@@ -174,7 +174,7 @@ private slots:
     void colorSetTempLCD();
 
     void testMoveMarker(const QPointF &pos);
-    void testAddMarker();
+    void editNotes();
     void testSelect(const QPointF &pos);
 };
 
