@@ -19,6 +19,7 @@
 #include <qwt_scale_widget.h>
 #include <qwt_text_label.h>
 #include <QInputDialog>
+#include <QGraphicsTextItem>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -1068,8 +1069,13 @@ void PlotterDialog::testAddMarker()
 
 void PlotterDialog::testSelect(const QPointF &pos)
 {
-    if(  qAbs( pos.x() - m_marker->value().x() ) <= 0.5 * m_lcdTimeInterval->value()
-         && qAbs( pos.y() - m_marker->value().y() ) <= 0.5 * m_lcdTempIntervalLeft->value() ) {
+    QGraphicsTextItem *text = new QGraphicsTextItem(m_marker->label().text());
+
+    double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
+    double pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
+
+    if(  qAbs( pos.x() - m_marker->value().x() ) <= text->boundingRect().width()/( 2 * pxXsec )
+         && qAbs( pos.y() - m_marker->value().y() ) <= text->boundingRect().height()/( 2 * pxYdeg ) ) {
         m_marker->setLabel(QwtText(QInputDialog::getText(this,
                                                          "Input Text Dialog",
                                                          "The Text:")));
