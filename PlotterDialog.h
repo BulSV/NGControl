@@ -26,6 +26,8 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 #include <qwt_plot_marker.h>
+#include <QList>
+#include <QTextEdit>
 
 #include "ComPort.h"
 #include "IProtocol.h"
@@ -142,7 +144,7 @@ private:
     void autoScroll(const double &elapsedTime);
     double roundToStep(const double &value, const double &step);
 
-    QwtPlotMarker *m_marker;
+    QList<QwtPlotMarker *> m_markersList;
 private slots:
     void changeTimeInterval();
     void moveTimeInterval();
@@ -175,7 +177,9 @@ private slots:
 
     void testMoveMarker(const QPointF &pos);
     void editNotes();
-    void testSelect(const QPointF &pos);
+    bool isNoteSelected(const QPointF &pos);
+
+    void addText(QTextEdit *text);
 };
 
 #endif // PLOTTERDIALOG_H

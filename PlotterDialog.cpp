@@ -1,4 +1,6 @@
 #include "PlotterDialog.h"
+#include "NotesDialog.h"
+
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -288,15 +290,10 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerRemarkEdit->setStateMachine(new QwtPickerClickPointMachine);
     m_pickerRemarkEdit->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
 
-    m_marker = new QwtPlotMarker();
-    m_marker->setLabel(QwtText("Освоить LaTeX проще,\nчем TeX. Человека,\nкоторый знает систему\nTeX{} и любит ее, можно\nназвать TeX ником."));
-    m_marker->setValue(50, 1);
-    m_marker->attach(m_plot);
-
     connect(m_pickerLeft, SIGNAL(moved(QPointF)), this, SLOT(testMoveMarker(QPointF)));
     connect(m_pickerLeft, SIGNAL(appended(QPointF)), this, SLOT(testMoveMarker(QPointF)));
     connect(m_pickerLeft, SIGNAL(activated(bool)), this, SLOT(editNotes()));
-    connect(m_pickerRemarkEdit, SIGNAL(selected(QPointF)), this, SLOT(testSelect(QPointF)));
+    connect(m_pickerRemarkEdit, SIGNAL(selected(QPointF)), this, SLOT(isNoteSelected(QPointF)));
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
@@ -1069,30 +1066,61 @@ void PlotterDialog::colorSetTempLCD()
 
 void PlotterDialog::testMoveMarker(const QPointF &pos)
 {
-    m_marker->setValue(pos);
+//    m_marker->setValue(pos);
     updatePlot();
 }
 
 void PlotterDialog::editNotes()
 {
-    QwtPlotMarker *marker = new QwtPlotMarker();
-    marker->setLabel(QwtText("A"));
-    marker->attach(m_plot);
+//    if( isNoteSelected() ) {
+//        QwtPlotMarker *marker = new QwtPlotMarker();
+//        marker->setLabel(QwtText("A"));
+//        marker->attach(m_plot);
+
+//        m_markersList.append(marker);
+
+//        updatePlot();
+//    }
 }
 
-void PlotterDialog::testSelect(const QPointF &pos)
+bool PlotterDialog::isNoteSelected(const QPointF &pos)
 {
-    QGraphicsTextItem *text = new QGraphicsTextItem(m_marker->label().text());
+//    QGraphicsTextItem *text = new QGraphicsTextItem(m_marker->label().text());
 
-    double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
-    double pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
+//    double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
+//    double pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
 
-    if(  qAbs( pos.x() - m_marker->value().x() ) <= text->boundingRect().width()/( 2 * pxXsec )
-         && qAbs( pos.y() - m_marker->value().y() ) <= text->boundingRect().height()/( 2 * pxYdeg ) ) {
+//    if(  qAbs( pos.x() - m_marker->value().x() ) <= text->boundingRect().width()/( 2 * pxXsec )
+//         && qAbs( pos.y() - m_marker->value().y() ) <= text->boundingRect().height()/( 2 * pxYdeg ) ) {
 
-        m_marker->setLabel(QwtText(QInputDialog::getText(this,
-                                                         "Input Text Dialog",
-                                                         "The Text:")));
-        updatePlot();
-    }
+//        m_marker->setLabel(QwtText(QInputDialog::getText(this,
+//                                                         "Input Text Dialog",
+//                                                         "The Text:")));
+//        return true;
+//    }
+
+    NotesDialog *notes = new NotesDialog;
+    notes->show();
+
+    connect(notes, SIGNAL(textInputed(QTextEdit*)), this, SLOT(addText(QTextEdit*)));
+
+    return false;
+}
+
+void PlotterDialog::addText(QTextEdit *text)
+{
+    QwtPlotMarker *marker = new QwtPlotMarker();
+    QwtText label;
+    label.setColor(text->textColor());
+    label.setFont(text->font());
+    label.setText(text->toPlainText());
+    marker->setLabel(label);
+    marker->attach(m_plot);
+
+    qDebug() << "color:" << text->textColor();
+    qDebug() << "font:" << text->font();
+    qDebug() << "font is bold:" << text->font().bold();
+    qDebug() << "font is italic:" << text->font().italic();
+    qDebug() << "font is underline:" << text->font().underline();
+    qDebug() << "text:\n" << text->toPlainText();
 }
