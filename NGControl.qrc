@@ -20,5 +20,13 @@
         <file>Resources/moveText.png</file>
         <file>Resources/editText.svg</file>
         <file>Resources/editText.png</file>
+        <file>Resources/underline.svg</file>
+        <file>Resources/bold.png</file>
+        <file>Resources/bold.svg</file>
+        <file>Resources/color.png</file>
+        <file>Resources/color.svg</file>
+        <file>Resources/italic.png</file>
+        <file>Resources/italic.svg</file>
+        <file>Resources/underline.png</file>
     </qresource>
 </RCC>
