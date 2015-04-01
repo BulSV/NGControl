@@ -53,7 +53,21 @@ NotesDialog::NotesDialog(QWidget *parent) :
     connect(m_cbSize, SIGNAL(currentIndexChanged(int)), this, SLOT(setSize()));
 }
 
-QString NotesDialog::notes()
+void NotesDialog::setText(const QString &text, const QFont &font, const QColor &color)
+{
+    m_textEdit->setText(text);
+    m_textEdit->setFont(font);
+    m_textEdit->setTextColor(color);
+}
+
+void NotesDialog::setText(QTextEdit *textEdit)
+{
+    if( textEdit ) {
+        m_textEdit = textEdit;
+    }
+}
+
+QString NotesDialog::text()
 {
     return m_textEdit->toPlainText();
 }

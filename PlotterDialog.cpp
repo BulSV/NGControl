@@ -1,5 +1,4 @@
 #include "PlotterDialog.h"
-#include "NotesDialog.h"
 
 #include <QGridLayout>
 #include <QVBoxLayout>
@@ -21,7 +20,8 @@
 #include <qwt_scale_widget.h>
 #include <qwt_text_label.h>
 #include <QInputDialog>
-#include <QGraphicsTextItem>
+//#include <QGraphicsTextItem>
+#include <QFontMetricsF>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -81,9 +81,11 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_rbRelateLeft(new QRadioButton(this)),
     m_rbRelateRight(new QRadioButton(this)),
     m_bgRelate(new QButtonGroup(this)),
+    m_bArrow(new QPushButton(QIcon(":/Resources/arrow.png"), QString::null, this)),
     m_bEditNotes(new QPushButton(QIcon(":/Resources/editText.png"), QString::null, this)),
     m_bMoveNotes(new QPushButton(QIcon(":/Resources/moveText.png"), QString::null, this)),
     m_bDeleteNotes(new QPushButton(QIcon(":/Resources/deleteText.png"), QString::null, this)),
+    m_bgNotes(new QButtonGroup(this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -112,7 +114,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     itsBlinkTimeRxNone(new QTimer(this)),
     itsBlinkTimeTxColor(new QTimer(this)),
     itsBlinkTimeRxColor(new QTimer(this)),
-    itsTimeToDisplay(new QTimer(this))
+    itsTimeToDisplay(new QTimer(this)),
+    m_notesDialog(new NotesDialog(this))
 {
     QVector<double> timeSamples;
     timeSamples << 1 << 2 << 5 << 10 << 20 << 50 << 100;
@@ -282,18 +285,29 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerRight->setTrackerFont(QFont(m_pickerRight->trackerFont().family(), 12));
     m_pickerRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
-    m_pickerRemarkEdit = new QwtPlotPicker(QwtPlot::xBottom,
+    m_pickerNoteEdit = new QwtPlotPicker(QwtPlot::xBottom,
+                                         QwtPlot::yRight,
+                                         QwtPlotPicker::NoRubberBand,
+                                         QwtPicker::ActiveOnly,
+                                         m_plot->canvas());
+    m_pickerNoteEdit->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerNoteEdit->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
+
+    m_pickerNoteMove = new QwtPlotPicker(QwtPlot::xBottom,
+                                         QwtPlot::yRight,
+                                         QwtPlotPicker::NoRubberBand,
+                                         QwtPicker::ActiveOnly,
+                                         m_plot->canvas());
+    m_pickerNoteMove->setStateMachine(new QwtPickerDragPointMachine());
+    m_pickerNoteMove->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
+
+    m_pickerNoteDelete = new QwtPlotPicker(QwtPlot::xBottom,
                                            QwtPlot::yRight,
                                            QwtPlotPicker::NoRubberBand,
                                            QwtPicker::ActiveOnly,
                                            m_plot->canvas());
-    m_pickerRemarkEdit->setStateMachine(new QwtPickerClickPointMachine);
-    m_pickerRemarkEdit->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton, Qt::ControlModifier);
-
-    connect(m_pickerLeft, SIGNAL(moved(QPointF)), this, SLOT(testMoveMarker(QPointF)));
-    connect(m_pickerLeft, SIGNAL(appended(QPointF)), this, SLOT(testMoveMarker(QPointF)));
-    connect(m_pickerLeft, SIGNAL(activated(bool)), this, SLOT(editNotes()));
-    connect(m_pickerRemarkEdit, SIGNAL(selected(QPointF)), this, SLOT(isNoteSelected(QPointF)));
+    m_pickerNoteDelete->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerNoteDelete->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
@@ -306,6 +320,23 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bgRelate->setId(m_rbRelateRight, 2);
     m_bgRelate->setExclusive(true);
     m_rbRelateLeft->setChecked(true);
+
+    // Notes buttons config
+    m_bgNotes->addButton(m_bArrow);
+    m_bgNotes->addButton(m_bEditNotes);
+    m_bgNotes->addButton(m_bMoveNotes);
+    m_bgNotes->addButton(m_bDeleteNotes);
+    m_bgNotes->setId(m_bArrow, 0);
+    m_bgNotes->setId(m_bEditNotes, 1);
+    m_bgNotes->setId(m_bMoveNotes, 2);
+    m_bgNotes->setId(m_bDeleteNotes, 3);
+    m_bgNotes->setExclusive(true);
+    m_bArrow->setCheckable(true);
+    m_bArrow->setChecked(true);
+    arrow(true);
+    m_bEditNotes->setCheckable(true);
+    m_bMoveNotes->setCheckable(true);
+    m_bDeleteNotes->setCheckable(true);
 
     QStringList portsNames;
 
@@ -425,6 +456,42 @@ double PlotterDialog::roundToStep(const double &value, const double &step)
     return step * static_cast<double>( sign * ( tempValue + 1 ) );
 }
 
+void PlotterDialog::arrow(bool isChecked)
+{
+    m_pickerLeft->setEnabled(isChecked);
+    m_pickerRight->setEnabled(isChecked);
+    m_pickerNoteEdit->setEnabled(!isChecked);
+    m_pickerNoteMove->setEnabled(!isChecked);
+    m_pickerNoteDelete->setEnabled(!isChecked);
+}
+
+void PlotterDialog::textEdit(bool isChecked)
+{
+    m_pickerLeft->setEnabled(!isChecked);
+    m_pickerRight->setEnabled(!isChecked);
+    m_pickerNoteEdit->setEnabled(isChecked);
+    m_pickerNoteMove->setEnabled(!isChecked);
+    m_pickerNoteDelete->setEnabled(!isChecked);
+}
+
+void PlotterDialog::textMove(bool isChecked)
+{
+    m_pickerLeft->setEnabled(!isChecked);
+    m_pickerRight->setEnabled(!isChecked);
+    m_pickerNoteEdit->setEnabled(!isChecked);
+    m_pickerNoteMove->setEnabled(isChecked);
+    m_pickerNoteDelete->setEnabled(!isChecked);
+}
+
+void PlotterDialog::textDelete(bool isChecked)
+{
+    m_pickerLeft->setEnabled(!isChecked);
+    m_pickerRight->setEnabled(!isChecked);
+    m_pickerNoteEdit->setEnabled(!isChecked);
+    m_pickerNoteMove->setEnabled(!isChecked);
+    m_pickerNoteDelete->setEnabled(isChecked);
+}
+
 void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 {
     if(m_isReseted) {
@@ -533,6 +600,7 @@ void PlotterDialog::setupGUI()
     gbSetTemp->setLayout(setTempLayout);
 
     QHBoxLayout *notesLayout = new QHBoxLayout;
+    notesLayout->addWidget(m_bArrow);
     notesLayout->addWidget(m_bEditNotes);
     notesLayout->addWidget(m_bMoveNotes);
     notesLayout->addWidget(m_bDeleteNotes);
@@ -767,6 +835,24 @@ void PlotterDialog::radioButtonClicked(int id)
     updatePlot();
 }
 
+void PlotterDialog::notesButtonToggled(int id, bool isChecked)
+{
+    switch ( id ) {
+    case 0:
+        arrow(isChecked);
+        break;
+    case 1:
+        textEdit(isChecked);
+        break;
+    case 2:
+        textMove(isChecked);
+        break;
+    case 3:
+        textDelete(isChecked);
+        break;
+    }
+}
+
 void PlotterDialog::resetTime()
 {
     m_isReseted = true;
@@ -842,9 +928,17 @@ void PlotterDialog::setupConnections()
     connect(m_cbTempAccurateRight, SIGNAL(clicked(bool)), this, SLOT(changeTempAccurateFactorRight(bool)));
 
     connect(m_bgRelate, SIGNAL(buttonClicked(int)), this, SLOT(radioButtonClicked(int)));
+    connect(m_bgNotes, SIGNAL(buttonToggled(int,bool)), this, SLOT(notesButtonToggled(int,bool)));
 
     connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
+
+    connect(m_pickerNoteEdit, SIGNAL(selected(QPointF)), this, SLOT(editNotes(QPointF)));
+    connect(m_pickerNoteMove, SIGNAL(moved(QPointF)), this, SLOT(moveNotes(QPointF)));
+    connect(m_pickerNoteMove, SIGNAL(appended(QPointF)), this, SLOT(moveNotes(QPointF)));
+    connect(m_pickerNoteDelete, SIGNAL(selected(QPointF)), this, SLOT(deleteNotes(QPointF)));
+
+    connect(m_notesDialog, SIGNAL(textInputed(QTextEdit*)), this, SLOT(addText(QTextEdit*)));
 
     connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
@@ -1064,47 +1158,60 @@ void PlotterDialog::colorSetTempLCD()
     setColorLCD(dynamic_cast<QLCDNumber*>(sbSetTemp->spinWidget()), sbSetTemp->value() > 0);
 }
 
-void PlotterDialog::testMoveMarker(const QPointF &pos)
+void PlotterDialog::moveNotes(const QPointF &pos)
 {
-//    m_marker->setValue(pos);
+    int index = whichNoteSelected(pos);
+
+    if( index != -1 ) {
+        m_notesList.at(index)->setValue(pos);
+    }
+
     updatePlot();
 }
 
-void PlotterDialog::editNotes()
+void PlotterDialog::deleteNotes(const QPointF &pos)
 {
-//    if( isNoteSelected() ) {
-//        QwtPlotMarker *marker = new QwtPlotMarker();
-//        marker->setLabel(QwtText("A"));
-//        marker->attach(m_plot);
+    int index = whichNoteSelected(pos);
 
-//        m_markersList.append(marker);
+    if( index != -1 ) {
+        QwtPlotMarker *note = m_notesList[index];
+        m_notesList.removeAt(index);
+        note->detach();
+        delete note;
+    }
 
-//        updatePlot();
-//    }
+    updatePlot();
 }
 
-bool PlotterDialog::isNoteSelected(const QPointF &pos)
+void PlotterDialog::editNotes(const QPointF &pos)
 {
-//    QGraphicsTextItem *text = new QGraphicsTextItem(m_marker->label().text());
+    int index = whichNoteSelected(pos);
 
-//    double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
-//    double pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
+    if( index != -1 ) {
+        QwtText text = m_notesList.at(index)->label();
+        m_notesDialog->setText( text.text(), text.font(), text.color() );
+    }
 
-//    if(  qAbs( pos.x() - m_marker->value().x() ) <= text->boundingRect().width()/( 2 * pxXsec )
-//         && qAbs( pos.y() - m_marker->value().y() ) <= text->boundingRect().height()/( 2 * pxYdeg ) ) {
+    m_notesDialog->show();
+}
 
-//        m_marker->setLabel(QwtText(QInputDialog::getText(this,
-//                                                         "Input Text Dialog",
-//                                                         "The Text:")));
-//        return true;
-//    }
+int PlotterDialog::whichNoteSelected(const QPointF &pos)
+{
+    double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
+    double pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
 
-    NotesDialog *notes = new NotesDialog;
-    notes->show();
+    for( int i = 0; i < m_notesList.size(); ++i ) {
+        QFontMetricsF fontMetrics( m_notesList.at(i)->label().font() );
+        QRectF textRect = fontMetrics.boundingRect( m_notesList.at(i)->label().text() );
 
-    connect(notes, SIGNAL(textInputed(QTextEdit*)), this, SLOT(addText(QTextEdit*)));
+        if(  qAbs( pos.x() - m_notesList.at(i)->value().x() ) <= textRect.width()/( 2 * pxXsec )
+             && qAbs( pos.y() - m_notesList.at(i)->value().y() ) <= textRect.height()/( 2 * pxYdeg ) ) {
 
-    return false;
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 void PlotterDialog::addText(QTextEdit *text)
@@ -1117,10 +1224,7 @@ void PlotterDialog::addText(QTextEdit *text)
     marker->setLabel(label);
     marker->attach(m_plot);
 
-    qDebug() << "color:" << text->textColor();
-    qDebug() << "font:" << text->font();
-    qDebug() << "font is bold:" << text->font().bold();
-    qDebug() << "font is italic:" << text->font().italic();
-    qDebug() << "font is underline:" << text->font().underline();
-    qDebug() << "text:\n" << text->toPlainText();
+    m_notesList.push_back(marker);
+
+    updatePlot();
 }

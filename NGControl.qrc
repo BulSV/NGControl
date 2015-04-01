@@ -28,5 +28,7 @@
         <file>Resources/italic.png</file>
         <file>Resources/italic.svg</file>
         <file>Resources/underline.png</file>
+        <file>Resources/arrow.svg</file>
+        <file>Resources/arrow.png</file>
     </qresource>
 </RCC>

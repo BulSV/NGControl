@@ -40,9 +40,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.2"
-     inkscape:cx="17.352788"
-     inkscape:cy="9.7501449"
+     inkscape:zoom="7.919596"
+     inkscape:cx="50.692998"
+     inkscape:cy="12.117174"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -74,7 +74,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -84,51 +84,51 @@
      id="layer1"
      transform="translate(0,-1020.3622)">
     <g
-       id="g3006"
-       transform="translate(0.286051,1.01305)">
+       id="g3007"
+       transform="translate(1.4014953,0.25583409)">
       <text
          sodipodi:linespacing="125%"
          id="text2985"
-         y="1045.0532"
-         x="11.98482"
+         y="1046.0546"
+         x="12.270871"
          style="font-size:27.50839424px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Verdana;-inkscape-font-specification:Sans Bold"
          xml:space="preserve"><tspan
-           y="1045.0532"
-           x="11.98482"
+           y="1046.0546"
+           x="12.270871"
            id="tspan2987"
            sodipodi:role="line">A</tspan></text>
       <g
-         transform="translate(-0.25213116,0)"
-         id="g3001">
+         transform="translate(0.25000067,-3.4094407e-5)"
+         id="g3002">
         <path
-           style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 26.822024,1025.8032 0,19.0919"
+           style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 26.855943,1027.0546 0,18.1036"
            id="path2989"
            inkscape:path-effect="#path-effect2991"
-           inkscape:original-d="m 26.822024,1025.8032 0,19.0919"
+           inkscape:original-d="m 26.855943,1027.0546 0,18.1036"
            inkscape:connector-curvature="0" />
         <path
-           style="fill:none;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 24.079463,1025.5532 5.485121,0"
+           style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 24.113382,1027.0546 5.485121,0"
            id="path2993"
            inkscape:path-effect="#path-effect2995"
-           inkscape:original-d="m 24.079463,1025.5532 5.485121,0"
+           inkscape:original-d="m 24.113382,1027.0546 5.485121,0"
            inkscape:connector-curvature="0" />
         <path
            inkscape:connector-curvature="0"
-           inkscape:original-d="m 24.079463,1045.1451 5.485121,0"
+           inkscape:original-d="m 24.113383,1045.1582 5.485121,0"
            inkscape:path-effect="#path-effect2999"
            id="path2997"
-           d="m 24.079463,1045.1451 5.485121,0"
-           style="fill:none;stroke:#000000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+           d="m 24.113383,1045.1582 5.485121,0"
+           style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       </g>
     </g>
     <rect
-       style="fill:none;stroke:#000000;stroke-width:0.5"
+       style="fill:none;stroke:#000000;stroke-width:1.5"
        id="rect3014"
        width="39.5"
        height="27.5"
-       x="1"
+       x="0.75"
        y="1022.6122" />
   </g>
 </svg>

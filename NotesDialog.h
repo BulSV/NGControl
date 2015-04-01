@@ -17,7 +17,9 @@ public:
 signals:
     void textInputed(QTextEdit *);
 public slots:
-    QString notes();
+    void setText(const QString &text, const QFont &font = QFont(), const QColor &color = QColor());
+    void setText(QTextEdit *textEdit);
+    QString text();
     QFont font() const;
 private:
     QComboBox *m_cbFont;

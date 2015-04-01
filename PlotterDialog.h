@@ -35,6 +35,7 @@
 #include "LCDSpinBox.h"
 #include "LCDSampleSpinBox.h"
 #include "MoveSpinBox.h"
+#include "NotesDialog.h"
 
 class PlotterDialog : public QDialog
 {
@@ -75,7 +76,9 @@ private:
     QVector<QwtPlotCurve*> m_Curves;
     QwtPlotPicker *m_pickerLeft;
     QwtPlotPicker *m_pickerRight;
-    QwtPlotPicker *m_pickerRemarkEdit;
+    QwtPlotPicker *m_pickerNoteEdit;
+    QwtPlotPicker *m_pickerNoteMove;
+    QwtPlotPicker *m_pickerNoteDelete;
 
     QTime *m_currentTime;
     QMap<QString, QVector<double> > m_dataAxises;
@@ -94,9 +97,11 @@ private:
     QRadioButton *m_rbRelateRight;
     QButtonGroup *m_bgRelate;
 
+    QPushButton *m_bArrow;
     QPushButton *m_bEditNotes;
     QPushButton *m_bMoveNotes;
     QPushButton *m_bDeleteNotes;
+    QButtonGroup *m_bgNotes;
 
     QLabel *lPort;
     QComboBox *cbPort;
@@ -144,7 +149,13 @@ private:
     void autoScroll(const double &elapsedTime);
     double roundToStep(const double &value, const double &step);
 
-    QList<QwtPlotMarker *> m_markersList;
+    void arrow(bool isChecked);
+    void textEdit(bool isChecked);
+    void textMove(bool isChecked);
+    void textDelete(bool isChecked);
+
+    QList<QwtPlotMarker *> m_notesList;
+    NotesDialog *m_notesDialog;
 private slots:
     void changeTimeInterval();
     void moveTimeInterval();
@@ -160,6 +171,7 @@ private slots:
     void changeTempAccurateFactorRight(bool isChecked);
 
     void radioButtonClicked(int id);
+    void notesButtonToggled(int id, bool isChecked);
 
     void openPort();
     void closePort();
@@ -175,9 +187,10 @@ private slots:
     // colored set temp LCD if value < 0
     void colorSetTempLCD();
 
-    void testMoveMarker(const QPointF &pos);
-    void editNotes();
-    bool isNoteSelected(const QPointF &pos);
+    void editNotes(const QPointF &pos);
+    void moveNotes(const QPointF &pos);
+    void deleteNotes(const QPointF &pos);
+    int whichNoteSelected(const QPointF &pos);
 
     void addText(QTextEdit *text);
 };
