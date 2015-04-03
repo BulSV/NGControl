@@ -36,13 +36,15 @@ NotesDialog::NotesDialog(QWidget *parent) :
     updateFontSizes();
     setSize();
 
-    m_textEdit->setFocus();
-
     m_bBold->setCheckable(true);
     m_bItalic->setCheckable(true);
     m_bUnderline->setCheckable(true);
 
-    connect(m_bCancel, SIGNAL(clicked()), this, SLOT(close()));
+    m_textEdit->setAutoFormatting(QTextEdit::AutoAll);
+    m_textEdit->setAcceptRichText(false);
+
+    connect(this, SIGNAL(rejected()), SLOT(rejected()));
+    connect(m_bCancel, SIGNAL(clicked()), this, SLOT(rejected()));
     connect(m_bOK, SIGNAL(clicked()), this, SLOT(accepted()));
     connect(m_bColor, SIGNAL(clicked()), this, SLOT(setColor()));
     connect(m_bBold, SIGNAL(toggled(bool)), this, SLOT(setBold(bool)));
@@ -53,17 +55,33 @@ NotesDialog::NotesDialog(QWidget *parent) :
     connect(m_cbSize, SIGNAL(currentIndexChanged(int)), this, SLOT(setSize()));
 }
 
-void NotesDialog::setText(const QString &text, const QFont &font, const QColor &color)
+void NotesDialog::show()
+{
+    QDialog::show();
+    m_textEdit->setFocus();
+}
+
+void NotesDialog::setText(const QString &text, const QPointF &pos, const QFont &font, const QColor &color)
 {
     m_textEdit->setText(text);
     m_textEdit->setFont(font);
-    m_textEdit->setTextColor(color);
+    m_cbFont->setCurrentText(font.family());
+    m_cbSize->setCurrentText(QString::number(font.pointSize()));
+    m_color = color;
+    m_textEdit->setTextColor(m_color);
+    m_pos = pos;
+
+    qDebug() << "setText\nfont:" << "\nfamily:" << m_textEdit->font().family()
+             << "\nsize:" << m_textEdit->font().pointSize() << "\nbold:" << m_textEdit->font().bold()
+             << "\nitalic:" << m_textEdit->font().italic() << "\nunderline:" << m_textEdit->font().underline();
+    qDebug() << "color:" << m_textEdit->textColor().name();
 }
 
-void NotesDialog::setText(QTextEdit *textEdit)
+void NotesDialog::setText(QTextEdit *textEdit, const QPointF &pos)
 {
     if( textEdit ) {
         m_textEdit = textEdit;
+        m_pos = pos;
     }
 }
 
@@ -72,9 +90,19 @@ QString NotesDialog::text()
     return m_textEdit->toPlainText();
 }
 
+QPointF NotesDialog::pos() const
+{
+    return m_pos;
+}
+
 QFont NotesDialog::font() const
 {
     return m_font;
+}
+
+QColor NotesDialog::color() const
+{
+    return m_color;
 }
 
 void NotesDialog::fillFontFamilies()
@@ -88,23 +116,37 @@ void NotesDialog::fillFontFamilies()
 void NotesDialog::accepted()
 {
     if(m_textEdit->toPlainText().isEmpty()) {
-        close();
+        accept();
         return;
     }
 
-    emit textInputed(m_textEdit);
-    close();
+    emit textInputed(m_textEdit, m_pos);
+    accept();
+}
+
+void NotesDialog::rejected()
+{
+    if(m_textEdit->toPlainText().isEmpty()) {
+        accept();
+        return;
+    }
+
+    emit textInputed(m_textEdit, m_pos);
+    accept();
 }
 
 void NotesDialog::setColor()
 {
     m_textEdit->selectAll();
 
-    m_textEdit->setTextColor(QColorDialog::getColor());
+    m_color = QColorDialog::getColor();
+    m_textEdit->setTextColor(m_color);
 
     QTextCursor cursor = m_textEdit->textCursor();
     cursor.clearSelection();
     m_textEdit->setTextCursor(cursor);
+
+    m_textEdit->setFocus();
 }
 
 void NotesDialog::updateFontSizes()
@@ -137,6 +179,8 @@ void NotesDialog::setFontFamily()
     QTextCursor cursor = m_textEdit->textCursor();
     cursor.clearSelection();
     m_textEdit->setTextCursor(cursor);
+
+    m_textEdit->setFocus();
 }
 
 void NotesDialog::setSize()
@@ -150,6 +194,8 @@ void NotesDialog::setSize()
         QTextCursor cursor = m_textEdit->textCursor();
         cursor.clearSelection();
         m_textEdit->setTextCursor(cursor);
+
+        m_textEdit->setFocus();
     }
 }
 
@@ -163,6 +209,8 @@ void NotesDialog::setBold(bool isChecked)
     QTextCursor cursor = m_textEdit->textCursor();
     cursor.clearSelection();
     m_textEdit->setTextCursor(cursor);
+
+    m_textEdit->setFocus();
 }
 
 void NotesDialog::setItalic(bool isChecked)
@@ -175,6 +223,8 @@ void NotesDialog::setItalic(bool isChecked)
     QTextCursor cursor = m_textEdit->textCursor();
     cursor.clearSelection();
     m_textEdit->setTextCursor(cursor);
+
+    m_textEdit->setFocus();
 }
 
 void NotesDialog::setUnderline(bool isChecked)
@@ -187,4 +237,6 @@ void NotesDialog::setUnderline(bool isChecked)
     QTextCursor cursor = m_textEdit->textCursor();
     cursor.clearSelection();
     m_textEdit->setTextCursor(cursor);
+
+    m_textEdit->setFocus();
 }

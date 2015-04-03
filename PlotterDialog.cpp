@@ -115,7 +115,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     itsBlinkTimeTxColor(new QTimer(this)),
     itsBlinkTimeRxColor(new QTimer(this)),
     itsTimeToDisplay(new QTimer(this)),
-    m_notesDialog(new NotesDialog(this))
+    m_notesDialog(new NotesDialog(this)),
+    m_prevNotesFont(QFont("Arial", 12)),
+    m_prevNotesColor(QColor(Qt::black))
 {
     QVector<double> timeSamples;
     timeSamples << 1 << 2 << 5 << 10 << 20 << 50 << 100;
@@ -288,7 +290,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerNoteEdit = new QwtPlotPicker(QwtPlot::xBottom,
                                          QwtPlot::yRight,
                                          QwtPlotPicker::NoRubberBand,
-                                         QwtPicker::ActiveOnly,
+                                         QwtPicker::AlwaysOff,
                                          m_plot->canvas());
     m_pickerNoteEdit->setStateMachine(new QwtPickerClickPointMachine);
     m_pickerNoteEdit->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
@@ -296,7 +298,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerNoteMove = new QwtPlotPicker(QwtPlot::xBottom,
                                          QwtPlot::yRight,
                                          QwtPlotPicker::NoRubberBand,
-                                         QwtPicker::ActiveOnly,
+                                         QwtPicker::AlwaysOff,
                                          m_plot->canvas());
     m_pickerNoteMove->setStateMachine(new QwtPickerDragPointMachine());
     m_pickerNoteMove->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
@@ -304,7 +306,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerNoteDelete = new QwtPlotPicker(QwtPlot::xBottom,
                                            QwtPlot::yRight,
                                            QwtPlotPicker::NoRubberBand,
-                                           QwtPicker::ActiveOnly,
+                                           QwtPicker::AlwaysOff,
                                            m_plot->canvas());
     m_pickerNoteDelete->setStateMachine(new QwtPickerClickPointMachine);
     m_pickerNoteDelete->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
@@ -858,6 +860,10 @@ void PlotterDialog::resetTime()
     m_isReseted = true;
 
     QStringList dataAxisKeysList = m_dataAxises.keys();
+    // Protection from reset at the begin & from incomplete data
+    if( dataAxisKeysList.size() != m_Curves.size() ) {
+        return;
+    }
 
     m_timeAxis.clear();
     m_dataAxises.clear();
@@ -938,7 +944,8 @@ void PlotterDialog::setupConnections()
     connect(m_pickerNoteMove, SIGNAL(appended(QPointF)), this, SLOT(moveNotes(QPointF)));
     connect(m_pickerNoteDelete, SIGNAL(selected(QPointF)), this, SLOT(deleteNotes(QPointF)));
 
-    connect(m_notesDialog, SIGNAL(textInputed(QTextEdit*)), this, SLOT(addText(QTextEdit*)));
+    connect(m_notesDialog, SIGNAL(textInputed(QTextEdit*,QPointF)), this, SLOT(addText(QTextEdit*,QPointF)));
+//    connect(m_notesDialog, SIGNAL(textNotChanged(QTextEdit*,QPointF)), this, SLOT(addText(QTextEdit*,QPointF)));
 
     connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
@@ -1189,12 +1196,33 @@ void PlotterDialog::editNotes(const QPointF &pos)
 
     if( index != -1 ) {
         QwtText text = m_notesList.at(index)->label();
-        m_notesDialog->setText( text.text(), text.font(), text.color() );
+        QwtPlotMarker *note = m_notesList[index];
+
+        qDebug() << "\neditNotes\nfont:" << "\nfamily:" << text.font().family()
+                 << "\nsize:" << text.font().pointSize() << "\nbold:" << text.font().bold()
+                 << "\nitalic:" << text.font().italic() << "\nunderline:" << text.font().underline();
+        qDebug() << "color:" << text.color().name();
+
+        m_notesDialog->setText( text.text(), note->value(), text.font(), text.color() );
+        m_prevNotesFont = text.font();
+        m_prevNotesColor = text.color();
+
+        m_notesList.removeAt(index);
+        note->detach();
+        delete note;
+        note = 0;
+    } else {
+        qDebug() << "\neditNotes\nfont:" << "\nfamily:" << m_prevNotesFont.family()
+                 << "\nsize:" << m_prevNotesFont.pointSize() << "\nbold:" << m_prevNotesFont.bold()
+                 << "\nitalic:" << m_prevNotesFont.italic() << "\nunderline:" << m_prevNotesFont.underline();
+        qDebug() << "color:" <<  m_prevNotesColor.name();
+        m_notesDialog->setText(QString::null, pos, m_prevNotesFont, m_prevNotesColor);
     }
 
     m_notesDialog->show();
 }
 
+// FIXME fix coordinates, while changing scale for y-axis
 int PlotterDialog::whichNoteSelected(const QPointF &pos)
 {
     double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
@@ -1214,7 +1242,7 @@ int PlotterDialog::whichNoteSelected(const QPointF &pos)
     return -1;
 }
 
-void PlotterDialog::addText(QTextEdit *text)
+void PlotterDialog::addText(QTextEdit *text, const QPointF &pos)
 {
     QwtPlotMarker *marker = new QwtPlotMarker();
     QwtText label;
@@ -1223,6 +1251,7 @@ void PlotterDialog::addText(QTextEdit *text)
     label.setText(text->toPlainText());
     marker->setLabel(label);
     marker->attach(m_plot);
+    marker->setValue(pos);
 
     m_notesList.push_back(marker);
 

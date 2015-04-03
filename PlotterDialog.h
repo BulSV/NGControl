@@ -156,6 +156,9 @@ private:
 
     QList<QwtPlotMarker *> m_notesList;
     NotesDialog *m_notesDialog;
+
+    QFont m_prevNotesFont;
+    QColor m_prevNotesColor;
 private slots:
     void changeTimeInterval();
     void moveTimeInterval();
@@ -192,7 +195,7 @@ private slots:
     void deleteNotes(const QPointF &pos);
     int whichNoteSelected(const QPointF &pos);
 
-    void addText(QTextEdit *text);
+    void addText(QTextEdit *text, const QPointF &pos);
 };
 
 #endif // PLOTTERDIALOG_H
