@@ -40,12 +40,12 @@
 
 #define XDIVISION 10
 #define XMAJORDIVISION 10
-#define XMINORDIVISION 5
+#define XMINORDIVISION 10
 #define XSCALESTEP 1
 
 #define YDIVISION 8
-#define YMAJORDIVISION 10
-#define YMINORDIVISION 5
+#define YMAJORDIVISION 8
+#define YMINORDIVISION 10
 #define YSCALESTEP 1
 
 #define MIN_INT -32767
@@ -227,9 +227,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                           0,
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
-    m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );
+    m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );    
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
-    m_plot->setAxisAutoScale( QwtPlot::xBottom, false);
+    m_plot->setAxisAutoScale( QwtPlot::xBottom, false );
 
     // Temperature Left
     m_plot->setAxisTitle( QwtPlot::yLeft, "Sensor 1, °C" );
@@ -239,7 +239,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                           dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
-    m_plot->setAxisAutoScale( QwtPlot::yLeft, false);
+    m_plot->setAxisAutoScale( QwtPlot::yLeft, false );
 
     // Temperature Right
     m_plot->enableAxis(QwtPlot::yRight);
@@ -250,7 +250,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                           dynamic_cast<QLCDNumber*>(m_lcdTempIntervalRight->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yRight, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yRight, YMINORDIVISION );
-    m_plot->setAxisAutoScale( QwtPlot::yRight, false);
+    m_plot->setAxisAutoScale( QwtPlot::yRight, false );
 
     // Colored Temperature Axis
     QPalette yLeftPalette = m_plot->axisWidget(QwtPlot::yLeft)->palette();
