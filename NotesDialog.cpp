@@ -53,6 +53,8 @@ NotesDialog::NotesDialog(QWidget *parent) :
     connect(m_cbFont, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFontSizes()));
     connect(m_cbFont, SIGNAL(currentIndexChanged(int)), this, SLOT(setFontFamily()));
     connect(m_cbSize, SIGNAL(currentIndexChanged(int)), this, SLOT(setSize()));
+
+    connect(m_textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(refresh()));
 }
 
 void NotesDialog::show()
@@ -70,6 +72,8 @@ void NotesDialog::setText(const QString &text, const QPointF &pos, const QFont &
     m_color = color;
     m_textEdit->setTextColor(m_color);
     m_pos = pos;
+
+    refresh();
 
     qDebug() << "setText\nfont:" << "\nfamily:" << m_textEdit->font().family()
              << "\nsize:" << m_textEdit->font().pointSize() << "\nbold:" << m_textEdit->font().bold()
@@ -126,12 +130,6 @@ void NotesDialog::accepted()
 
 void NotesDialog::rejected()
 {
-    if(m_textEdit->toPlainText().isEmpty()) {
-        accept();
-        return;
-    }
-
-    emit textInputed(m_textEdit, m_pos);
     accept();
 }
 
@@ -167,6 +165,23 @@ void NotesDialog::updateFontSizes()
 
     m_cbSize->addItems(sizesStrList);
     m_cbSize->setCurrentIndex(m_prevFontSizeIndex);
+}
+
+void NotesDialog::refresh()
+{
+    m_cbFont->setCurrentText(m_font.family());
+    m_cbSize->setCurrentText(QString::number(m_font.pointSize()));
+    m_textEdit->selectAll();
+
+    m_textEdit->setFont(m_font);
+    m_textEdit->setTextColor(m_color);
+    qDebug() << "M_color:" << m_color.name();
+
+    QTextCursor cursor = m_textEdit->textCursor();
+    cursor.clearSelection();
+    m_textEdit->setTextCursor(cursor);
+
+    m_textEdit->setFocus();
 }
 
 void NotesDialog::setFontFamily()

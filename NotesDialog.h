@@ -52,6 +52,8 @@ private slots:
     void setUnderline(bool isChecked);
     void setColor();
     void updateFontSizes();
+
+    void refresh();
 };
 
 #endif // NOTESDIALOG_H

@@ -1199,13 +1199,6 @@ void PlotterDialog::editNotes(const QPointF &pos)
         qDebug() << "color:" << text.color().name();
 
         m_notesDialog->setText( text.text(), note->value(), text.font(), text.color() );
-        m_prevNotesFont = text.font();
-        m_prevNotesColor = text.color();
-
-        m_notesList.removeAt(index);
-        note->detach();
-        delete note;
-        note = 0;
     } else {
         qDebug() << "\neditNotes\nfont:" << "\nfamily:" << m_prevNotesFont.family()
                  << "\nsize:" << m_prevNotesFont.pointSize() << "\nbold:" << m_prevNotesFont.bold()
@@ -1239,6 +1232,19 @@ int PlotterDialog::whichNoteSelected(const QPointF &pos)
 
 void PlotterDialog::addText(QTextEdit *text, const QPointF &pos)
 {
+    int index = whichNoteSelected(pos);
+
+    if( index != -1 ) {
+        QwtPlotMarker *note = m_notesList[index];
+
+        m_notesList.removeAt(index);
+        note->detach();
+        delete note;
+        note = 0;
+    }
+    m_prevNotesFont = text->font();
+    m_prevNotesColor = text->textColor();
+
     QwtPlotMarker *marker = new QwtPlotMarker();
     QwtText label;
     label.setColor(text->textColor());
