@@ -288,7 +288,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
     m_pickerNoteEdit = new QwtPlotPicker(QwtPlot::xBottom,
-                                         QwtPlot::yRight,
+                                         QwtPlot::yLeft,
                                          QwtPlotPicker::NoRubberBand,
                                          QwtPicker::AlwaysOff,
                                          m_plot->canvas());
@@ -296,7 +296,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerNoteEdit->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
 
     m_pickerNoteMove = new QwtPlotPicker(QwtPlot::xBottom,
-                                         QwtPlot::yRight,
+                                         QwtPlot::yLeft,
                                          QwtPlotPicker::NoRubberBand,
                                          QwtPicker::AlwaysOff,
                                          m_plot->canvas());
@@ -304,7 +304,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerNoteMove->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
 
     m_pickerNoteDelete = new QwtPlotPicker(QwtPlot::xBottom,
-                                           QwtPlot::yRight,
+                                           QwtPlot::yLeft,
                                            QwtPlotPicker::NoRubberBand,
                                            QwtPicker::AlwaysOff,
                                            m_plot->canvas());
@@ -945,7 +945,6 @@ void PlotterDialog::setupConnections()
     connect(m_pickerNoteDelete, SIGNAL(selected(QPointF)), this, SLOT(deleteNotes(QPointF)));
 
     connect(m_notesDialog, SIGNAL(textInputed(QTextEdit*,QPointF)), this, SLOT(addText(QTextEdit*,QPointF)));
-//    connect(m_notesDialog, SIGNAL(textNotChanged(QTextEdit*,QPointF)), this, SLOT(addText(QTextEdit*,QPointF)));
 
     connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
@@ -1150,10 +1149,6 @@ void PlotterDialog::display()
         }
 
         setColorLCD(list[k], tempStr.toDouble() > 0.0);
-#ifdef DEBUG
-        qDebug() << "itsTempSensorsList.size() =" << itsSensorsList.size();
-        qDebug() << "Temperature[" << k << "] =" << list.at(k)->value();
-#endif
     }
 
     itsSensorsList.clear();
