@@ -265,6 +265,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     m_plot->setAutoReplot( false );
 
+    // pickers
     m_pickerLeft = new QwtPlotPicker(QwtPlot::xBottom,
                                      QwtPlot::yLeft,
                                      QwtPlotPicker::CrossRubberBand,
@@ -287,29 +288,55 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerRight->setTrackerFont(QFont(m_pickerRight->trackerFont().family(), 12));
     m_pickerRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
-    m_pickerNoteEdit = new QwtPlotPicker(QwtPlot::xBottom,
-                                         QwtPlot::yLeft,
-                                         QwtPlotPicker::NoRubberBand,
-                                         QwtPicker::AlwaysOff,
-                                         m_plot->canvas());
-    m_pickerNoteEdit->setStateMachine(new QwtPickerClickPointMachine);
-    m_pickerNoteEdit->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
+    // pickers left axis notes manipulate
+    m_pickerNoteEditLeft = new QwtPlotPicker(QwtPlot::xBottom,
+                                             QwtPlot::yLeft,
+                                             QwtPlotPicker::NoRubberBand,
+                                             QwtPicker::AlwaysOff,
+                                             m_plot->canvas());
+    m_pickerNoteEditLeft->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerNoteEditLeft->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
 
-    m_pickerNoteMove = new QwtPlotPicker(QwtPlot::xBottom,
-                                         QwtPlot::yLeft,
-                                         QwtPlotPicker::NoRubberBand,
-                                         QwtPicker::AlwaysOff,
-                                         m_plot->canvas());
-    m_pickerNoteMove->setStateMachine(new QwtPickerDragPointMachine());
-    m_pickerNoteMove->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
+    m_pickerNoteMoveLeft = new QwtPlotPicker(QwtPlot::xBottom,
+                                             QwtPlot::yLeft,
+                                             QwtPlotPicker::NoRubberBand,
+                                             QwtPicker::AlwaysOff,
+                                             m_plot->canvas());
+    m_pickerNoteMoveLeft->setStateMachine(new QwtPickerDragPointMachine());
+    m_pickerNoteMoveLeft->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
 
-    m_pickerNoteDelete = new QwtPlotPicker(QwtPlot::xBottom,
-                                           QwtPlot::yLeft,
-                                           QwtPlotPicker::NoRubberBand,
-                                           QwtPicker::AlwaysOff,
-                                           m_plot->canvas());
-    m_pickerNoteDelete->setStateMachine(new QwtPickerClickPointMachine);
-    m_pickerNoteDelete->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
+    m_pickerNoteDeleteLeft = new QwtPlotPicker(QwtPlot::xBottom,
+                                               QwtPlot::yLeft,
+                                               QwtPlotPicker::NoRubberBand,
+                                               QwtPicker::AlwaysOff,
+                                               m_plot->canvas());
+    m_pickerNoteDeleteLeft->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerNoteDeleteLeft->setMousePattern(QwtPicker::MouseSelect1, Qt::LeftButton);
+
+    // pickers right axis notes manipulate
+    m_pickerNoteEditRight = new QwtPlotPicker(QwtPlot::xBottom,
+                                              QwtPlot::yRight,
+                                              QwtPlotPicker::NoRubberBand,
+                                              QwtPicker::AlwaysOff,
+                                              m_plot->canvas());
+    m_pickerNoteEditRight->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerNoteEditRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
+
+    m_pickerNoteMoveRight = new QwtPlotPicker(QwtPlot::xBottom,
+                                              QwtPlot::yRight,
+                                              QwtPlotPicker::NoRubberBand,
+                                              QwtPicker::AlwaysOff,
+                                              m_plot->canvas());
+    m_pickerNoteMoveRight->setStateMachine(new QwtPickerDragPointMachine());
+    m_pickerNoteMoveRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
+
+    m_pickerNoteDeleteRight = new QwtPlotPicker(QwtPlot::xBottom,
+                                                QwtPlot::yRight,
+                                                QwtPlotPicker::NoRubberBand,
+                                                QwtPicker::AlwaysOff,
+                                                m_plot->canvas());
+    m_pickerNoteDeleteRight->setStateMachine(new QwtPickerClickPointMachine);
+    m_pickerNoteDeleteRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
@@ -462,36 +489,56 @@ void PlotterDialog::arrow(bool isChecked)
 {
     m_pickerLeft->setEnabled(isChecked);
     m_pickerRight->setEnabled(isChecked);
-    m_pickerNoteEdit->setEnabled(!isChecked);
-    m_pickerNoteMove->setEnabled(!isChecked);
-    m_pickerNoteDelete->setEnabled(!isChecked);
+
+    m_pickerNoteEditLeft->setEnabled(!isChecked);
+    m_pickerNoteMoveLeft->setEnabled(!isChecked);
+    m_pickerNoteDeleteLeft->setEnabled(!isChecked);
+
+    m_pickerNoteEditRight->setEnabled(!isChecked);
+    m_pickerNoteMoveRight->setEnabled(!isChecked);
+    m_pickerNoteDeleteRight->setEnabled(!isChecked);
 }
 
 void PlotterDialog::textEdit(bool isChecked)
 {
     m_pickerLeft->setEnabled(!isChecked);
     m_pickerRight->setEnabled(!isChecked);
-    m_pickerNoteEdit->setEnabled(isChecked);
-    m_pickerNoteMove->setEnabled(!isChecked);
-    m_pickerNoteDelete->setEnabled(!isChecked);
+
+    m_pickerNoteEditLeft->setEnabled(isChecked);
+    m_pickerNoteMoveLeft->setEnabled(!isChecked);
+    m_pickerNoteDeleteLeft->setEnabled(!isChecked);
+
+    m_pickerNoteEditRight->setEnabled(isChecked);
+    m_pickerNoteMoveRight->setEnabled(!isChecked);
+    m_pickerNoteDeleteRight->setEnabled(!isChecked);
 }
 
 void PlotterDialog::textMove(bool isChecked)
 {
     m_pickerLeft->setEnabled(!isChecked);
     m_pickerRight->setEnabled(!isChecked);
-    m_pickerNoteEdit->setEnabled(!isChecked);
-    m_pickerNoteMove->setEnabled(isChecked);
-    m_pickerNoteDelete->setEnabled(!isChecked);
+
+    m_pickerNoteEditLeft->setEnabled(!isChecked);
+    m_pickerNoteMoveLeft->setEnabled(isChecked);
+    m_pickerNoteDeleteLeft->setEnabled(!isChecked);
+
+    m_pickerNoteEditRight->setEnabled(!isChecked);
+    m_pickerNoteMoveRight->setEnabled(isChecked);
+    m_pickerNoteDeleteRight->setEnabled(!isChecked);
 }
 
 void PlotterDialog::textDelete(bool isChecked)
 {
     m_pickerLeft->setEnabled(!isChecked);
     m_pickerRight->setEnabled(!isChecked);
-    m_pickerNoteEdit->setEnabled(!isChecked);
-    m_pickerNoteMove->setEnabled(!isChecked);
-    m_pickerNoteDelete->setEnabled(isChecked);
+
+    m_pickerNoteEditLeft->setEnabled(!isChecked);
+    m_pickerNoteMoveLeft->setEnabled(!isChecked);
+    m_pickerNoteDeleteLeft->setEnabled(isChecked);
+
+    m_pickerNoteEditRight->setEnabled(!isChecked);
+    m_pickerNoteMoveRight->setEnabled(!isChecked);
+    m_pickerNoteDeleteRight->setEnabled(isChecked);
 }
 
 void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
@@ -939,10 +986,23 @@ void PlotterDialog::setupConnections()
     connect(m_bReset, SIGNAL(clicked()), this, SLOT(resetTime()));
     connect(m_bPauseRessume, SIGNAL(clicked()), this, SLOT(pauseRessume()));
 
-    connect(m_pickerNoteEdit, SIGNAL(selected(QPointF)), this, SLOT(editNotes(QPointF)));
-    connect(m_pickerNoteMove, SIGNAL(moved(QPointF)), this, SLOT(moveNotes(QPointF)));
-    connect(m_pickerNoteMove, SIGNAL(appended(QPointF)), this, SLOT(moveNotes(QPointF)));
-    connect(m_pickerNoteDelete, SIGNAL(selected(QPointF)), this, SLOT(deleteNotes(QPointF)));
+    connect(m_pickerNoteEditLeft, SIGNAL(appended(QPoint)), this, SLOT(linkNotesTo_yLeft()));
+    connect(m_pickerNoteMoveLeft, SIGNAL(appended(QPoint)), this, SLOT(linkNotesTo_yLeft()));
+    connect(m_pickerNoteDeleteLeft, SIGNAL(appended(QPoint)), this, SLOT(linkNotesTo_yLeft()));
+
+    connect(m_pickerNoteEditLeft, SIGNAL(selected(QPointF)), this, SLOT(editNotes(QPointF)));
+    connect(m_pickerNoteMoveLeft, SIGNAL(moved(QPointF)), this, SLOT(moveNotes(QPointF)));
+    connect(m_pickerNoteMoveLeft, SIGNAL(appended(QPointF)), this, SLOT(moveNotes(QPointF)));
+    connect(m_pickerNoteDeleteLeft, SIGNAL(selected(QPointF)), this, SLOT(deleteNotes(QPointF)));
+
+    connect(m_pickerNoteEditRight, SIGNAL(appended(QPoint)), this, SLOT(linkNotesTo_yRight()));
+    connect(m_pickerNoteMoveRight, SIGNAL(appended(QPoint)), this, SLOT(linkNotesTo_yRight()));
+    connect(m_pickerNoteDeleteRight, SIGNAL(appended(QPoint)), this, SLOT(linkNotesTo_yRight()));
+
+    connect(m_pickerNoteEditRight, SIGNAL(selected(QPointF)), this, SLOT(editNotes(QPointF)));
+    connect(m_pickerNoteMoveRight, SIGNAL(moved(QPointF)), this, SLOT(moveNotes(QPointF)));
+    connect(m_pickerNoteMoveRight, SIGNAL(appended(QPointF)), this, SLOT(moveNotes(QPointF)));
+    connect(m_pickerNoteDeleteRight, SIGNAL(selected(QPointF)), this, SLOT(deleteNotes(QPointF)));
 
     connect(m_notesDialog, SIGNAL(textInputed(QTextEdit*,QPointF)), this, SLOT(addText(QTextEdit*,QPointF)));
 
@@ -1204,6 +1264,7 @@ void PlotterDialog::editNotes(const QPointF &pos)
                  << "\nsize:" << m_prevNotesFont.pointSize() << "\nbold:" << m_prevNotesFont.bold()
                  << "\nitalic:" << m_prevNotesFont.italic() << "\nunderline:" << m_prevNotesFont.underline();
         qDebug() << "color:" <<  m_prevNotesColor.name();
+
         m_notesDialog->setText(QString::null, pos, m_prevNotesFont, m_prevNotesColor);
     }
 
@@ -1223,7 +1284,8 @@ int PlotterDialog::whichNoteSelected(const QPointF &pos)
         QRectF textRect = fontMetrics.boundingRect();
 
         if(  qAbs( pos.x() - m_notesList.at(i)->value().x() ) <= textRect.width()/( 2 * pxXsec )
-             && qAbs( pos.y() - m_notesList.at(i)->value().y() ) <= textRect.height()/( 2 * pxYdeg ) ) {
+             && qAbs( pos.y() - m_notesList.at(i)->value().y() ) <= textRect.height()/( 2 * pxYdeg )
+             && m_notesLinkAxis == m_notesList.at(i)->yAxis() ) {
 
             return i;
         }
@@ -1252,15 +1314,31 @@ void PlotterDialog::addText(QTextEdit *text, const QPointF &pos)
     label.setColor(text->textColor());
     label.setFont(text->font());
     label.setText(text->toPlainText());
-    label.setBackgroundBrush(QBrush(QColor(255, 0, 0, 20)));
-    label.setBorderPen(QPen(QBrush(Qt::red), 2));
+    label.setBackgroundBrush(QBrush(QColor(255, 255, 255, 150)));
     label.setBorderRadius(3);
+
+    if( m_notesLinkAxis == QwtPlot::yLeft ) {
+        label.setBorderPen(QPen(QBrush(Qt::red), 2));
+    } else {
+        label.setBorderPen(QPen(QBrush(Qt::green), 2));
+    }
+
     marker->setLabel(label);
     marker->attach(m_plot);
     marker->setValue(pos);
-//    marker->setAxes(QwtPlot::xBottom, QwtPlot::yRight);
+    marker->setAxes(QwtPlot::xBottom, m_notesLinkAxis);
 
     m_notesList.push_back(marker);
 
     updatePlot();
+}
+
+void PlotterDialog::linkNotesTo_yLeft()
+{
+    m_notesLinkAxis = QwtPlot::yLeft;
+}
+
+void PlotterDialog::linkNotesTo_yRight()
+{
+    m_notesLinkAxis = QwtPlot::yRight;
 }

@@ -74,11 +74,17 @@ private:
 
     QwtPlot *m_plot;
     QVector<QwtPlotCurve*> m_Curves;
+
     QwtPlotPicker *m_pickerLeft;
     QwtPlotPicker *m_pickerRight;
-    QwtPlotPicker *m_pickerNoteEdit;
-    QwtPlotPicker *m_pickerNoteMove;
-    QwtPlotPicker *m_pickerNoteDelete;
+
+    QwtPlotPicker *m_pickerNoteEditLeft;
+    QwtPlotPicker *m_pickerNoteMoveLeft;
+    QwtPlotPicker *m_pickerNoteDeleteLeft;
+
+    QwtPlotPicker *m_pickerNoteEditRight;
+    QwtPlotPicker *m_pickerNoteMoveRight;
+    QwtPlotPicker *m_pickerNoteDeleteRight;
 
     QTime *m_currentTime;
     QMap<QString, QVector<double> > m_dataAxises;
@@ -159,6 +165,8 @@ private:
 
     QFont m_prevNotesFont;
     QColor m_prevNotesColor;
+
+    QwtPlot::Axis m_notesLinkAxis;
 private slots:
     void changeTimeInterval();
     void moveTimeInterval();
@@ -196,6 +204,9 @@ private slots:
     int whichNoteSelected(const QPointF &pos);
 
     void addText(QTextEdit *text, const QPointF &pos);
+
+    void linkNotesTo_yLeft();
+    void linkNotesTo_yRight();
 };
 
 #endif // PLOTTERDIALOG_H
