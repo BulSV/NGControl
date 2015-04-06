@@ -20,7 +20,7 @@
 #include <qwt_scale_widget.h>
 #include <qwt_text_label.h>
 #include <QInputDialog>
-//#include <QGraphicsTextItem>
+#include <QGraphicsTextItem>
 #include <QFontMetricsF>
 
 #define STARTBYTE 0x55
@@ -227,7 +227,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                           0,
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XDIVISION,
                           dynamic_cast<QLCDNumber*>(m_lcdTimeInterval->spinWidget())->value() * XSCALESTEP );
-    m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );    
+    m_plot->setAxisMaxMajor( QwtPlot::xBottom, XMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::xBottom, XMINORDIVISION );
     m_plot->setAxisAutoScale( QwtPlot::xBottom, false );
 
@@ -514,7 +514,7 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     double elapsedTime = static_cast<double>( m_currentTime->elapsed() ) / 1000; // sec
 
     // keeping vectors sizes constant
-    if( elapsedTime > 2 * 60 * XDIVISION ) {
+    if( elapsedTime > 2 * 100 * XDIVISION ) {
         m_timeAxis.pop_front();
         for( int i = 0; i < m_dataAxises.size(); ++i ) {
             QVector<double> data = m_dataAxises.value( listKeys.at(i) );
@@ -1210,15 +1210,16 @@ void PlotterDialog::editNotes(const QPointF &pos)
     m_notesDialog->show();
 }
 
-// FIXME fix coordinates, while changing scale for y-axis
 int PlotterDialog::whichNoteSelected(const QPointF &pos)
 {
     double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
     double pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
 
     for( int i = 0; i < m_notesList.size(); ++i ) {
-        QFontMetricsF fontMetrics( m_notesList.at(i)->label().font() );
-        QRectF textRect = fontMetrics.boundingRect( m_notesList.at(i)->label().text() );
+//        QFontMetricsF fontMetrics( m_notesList.at(i)->label().font() );
+//        QRectF textRect = fontMetrics.boundingRect( m_notesList.at(i)->label().text() );
+        QGraphicsTextItem fontMetrics( m_notesList.at(i)->label().text() );
+        QRectF textRect = fontMetrics.boundingRect();
 
         if(  qAbs( pos.x() - m_notesList.at(i)->value().x() ) <= textRect.width()/( 2 * pxXsec )
              && qAbs( pos.y() - m_notesList.at(i)->value().y() ) <= textRect.height()/( 2 * pxYdeg ) ) {
