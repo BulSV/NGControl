@@ -21,7 +21,7 @@
 #include <qwt_text_label.h>
 #include <QInputDialog>
 #include <QGraphicsTextItem>
-#include <QFontMetricsF>
+//#include <QFontMetricsF>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -1219,6 +1219,7 @@ int PlotterDialog::whichNoteSelected(const QPointF &pos)
 //        QFontMetricsF fontMetrics( m_notesList.at(i)->label().font() );
 //        QRectF textRect = fontMetrics.boundingRect( m_notesList.at(i)->label().text() );
         QGraphicsTextItem fontMetrics( m_notesList.at(i)->label().text() );
+        fontMetrics.setFont( m_notesList.at(i)->label().font() );
         QRectF textRect = fontMetrics.boundingRect();
 
         if(  qAbs( pos.x() - m_notesList.at(i)->value().x() ) <= textRect.width()/( 2 * pxXsec )
@@ -1251,9 +1252,13 @@ void PlotterDialog::addText(QTextEdit *text, const QPointF &pos)
     label.setColor(text->textColor());
     label.setFont(text->font());
     label.setText(text->toPlainText());
+    label.setBackgroundBrush(QBrush(QColor(255, 0, 0, 20)));
+    label.setBorderPen(QPen(QBrush(Qt::red), 2));
+    label.setBorderRadius(3);
     marker->setLabel(label);
     marker->attach(m_plot);
     marker->setValue(pos);
+//    marker->setAxes(QwtPlot::xBottom, QwtPlot::yRight);
 
     m_notesList.push_back(marker);
 
