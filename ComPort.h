@@ -13,10 +13,11 @@ public:
             int startByte = 0x55,
             int stopByte = 0xAA,
             int packetLenght = 8,
+            bool isMaster = true,
             QObject *parent = 0);
     QByteArray getReadData() const;
     void setWriteData(const QByteArray &data);
-    QByteArray getWriteData() const;
+    QByteArray getWriteData() const;    
 public slots:
     void writeData();
 signals:
@@ -38,6 +39,9 @@ private:
     int m_counter;
 
     bool m_isDataWritten;
+    bool m_isMaster;
+
+    void privateWriteData();
 };
 
 #endif // ONEPACKET_H

@@ -187,6 +187,7 @@ private slots:
     void openPort();
     void closePort();
     void received(bool isReceived);
+    void written(bool isWritten);
     void writeTemp();
     // мигание надписей "Rx" - при получении и "Tx" - при отправке пакета
     void colorTxNone();

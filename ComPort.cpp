@@ -7,6 +7,7 @@ ComPort::ComPort(QSerialPort *port,
                  int startByte,
                  int stopByte,
                  int packetLenght,
+                 bool isMaster,
                  QObject *parent)
     : QObject(parent),
       itsPort(port),
@@ -14,7 +15,8 @@ ComPort::ComPort(QSerialPort *port,
       itsStopByte(stopByte),
       itsPacketLenght(packetLenght),
       m_counter(0),
-      m_isDataWritten(true)
+      m_isDataWritten(true),
+      m_isMaster(isMaster)
 {
     itsReadData.clear();
     itsPort->setReadBufferSize(1); // for reading 1 byte at a time
@@ -42,8 +44,8 @@ void ComPort::readData()
                     emit DataIsReaded(true);
                     emit ReadedData(itsReadData);
 
-                    if(!m_isDataWritten) {
-                        writeData();
+                    if(!m_isMaster && !m_isDataWritten) {
+                        privateWriteData();
                     }
 
                     itsReadData.clear();
@@ -75,12 +77,19 @@ QByteArray ComPort::getWriteData() const
     return itsWriteData;
 }
 
-void ComPort::writeData()
+void ComPort::privateWriteData()
 {
-    if(itsPort->openMode() != QSerialPort::ReadOnly && itsPort->isOpen()) {
+    if( itsPort->openMode() != QSerialPort::ReadOnly && itsPort->isOpen() ) {
         itsPort->write(itsWriteData);
         emit DataIsWrited(true);
         emit WritedData(itsWriteData);
         m_isDataWritten = true;
+    }
+}
+
+void ComPort::writeData()
+{
+    if(m_isMaster) {
+        privateWriteData();
     }
 }

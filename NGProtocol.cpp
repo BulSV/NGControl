@@ -32,6 +32,7 @@ NGProtocol::NGProtocol(ComPort *comPort, QObject *parent) :
     itsWasPrevSensor2Temp(false)
 {
     connect(itsComPort, SIGNAL(DataIsReaded(bool)), this, SLOT(readData(bool)));
+    connect(itsComPort, SIGNAL(DataIsWrited(bool)), this, SIGNAL(DataIsWrited(bool)));
 }
 
 void NGProtocol::setDataToWrite(const QMultiMap<QString, QString> &data)
@@ -84,7 +85,7 @@ void NGProtocol::writeData()
         qDebug() << "ba =" << (int)ba.at(i);
     }
 #endif
-//    itsComPort->writeData();
+    itsComPort->writeData();
 }
 
 void NGProtocol::resetProtocol()

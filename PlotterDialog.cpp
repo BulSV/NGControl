@@ -109,7 +109,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     bSetTemp(new QPushButton(QString::fromUtf8("Set"), this)),
     gbSetTemp(new QGroupBox(QString::fromUtf8("Temperature, °C"), this)),
     itsPort(new QSerialPort(this)),
-    itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENGTH, this)),
+    itsComPort(new ComPort(itsPort, STARTBYTE, STOPBYTE, BYTESLENGTH, false, this)),
     itsProtocol(new NGProtocol(itsComPort, this)),
     itsBlinkTimeTxNone(new QTimer(this)),
     itsBlinkTimeRxNone(new QTimer(this)),
@@ -1012,6 +1012,7 @@ void PlotterDialog::setupConnections()
     connect(cbPort, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
     connect(cbBaud, SIGNAL(currentIndexChanged(int)), this, SLOT(closePort()));
     connect(itsProtocol, SIGNAL(DataIsReaded(bool)), this, SLOT(received(bool)));
+    connect(itsProtocol, SIGNAL(DataIsWrited(bool)), this, SLOT(written(bool)));
     connect(bSetTemp, SIGNAL(clicked()), this, SLOT(writeTemp()));
     connect(itsBlinkTimeTxColor, SIGNAL(timeout()), this, SLOT(colorIsTx()));
     connect(itsBlinkTimeRxColor, SIGNAL(timeout()), this, SLOT(colorIsRx()));
@@ -1099,20 +1100,24 @@ void PlotterDialog::received(bool isReceived)
     }
 }
 
+void PlotterDialog::written(bool isWritten)
+{
+    if(isWritten && !itsBlinkTimeTxColor->isActive() && !itsBlinkTimeTxNone->isActive()) {
+        itsBlinkTimeTxColor->start();
+        lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
+    }
+}
+
 void PlotterDialog::writeTemp()
 {
     if(itsPort->isOpen()) {
-        QMultiMap<QString, QString> dataTemp;
-
-        if(!itsBlinkTimeTxColor->isActive() && !itsBlinkTimeTxNone->isActive()) {
-            itsBlinkTimeTxColor->start();
-            lTx->setStyleSheet("background: red; font: bold; font-size: 10pt");
-        }
+        QMultiMap<QString, QString> dataTemp;        
 
         dataTemp.insert("CODE", "0");
         dataTemp.insert("TEMP", QString::number(static_cast<int>(sbSetTemp->value())));
         itsProtocol->setDataToWrite(dataTemp);
         itsProtocol->writeData();
+
         if(chbSynchronize->isChecked()) {
             resetTime();
         }
