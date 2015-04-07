@@ -5,7 +5,6 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QTextEdit>
-//#include <QFontDialog>
 #include <QColorDialog>
 #include <QFont>
 

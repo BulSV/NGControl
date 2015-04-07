@@ -2,7 +2,10 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <QFontDatabase>
+
+#ifdef DEBUG
 #include <QDebug>
+#endif
 
 NotesDialog::NotesDialog(QWidget *parent) :
     QDialog(parent)
@@ -77,11 +80,12 @@ void NotesDialog::setText(const QString &text, const QPointF &pos, const QFont &
     m_pos = pos;
 
     refresh();
-
+#ifdef DEBUG
     qDebug() << "setText\nfont:" << "\nfamily:" << m_textEdit->font().family()
              << "\nsize:" << m_textEdit->font().pointSize() << "\nbold:" << m_textEdit->font().bold()
              << "\nitalic:" << m_textEdit->font().italic() << "\nunderline:" << m_textEdit->font().underline();
     qDebug() << "color:" << m_textEdit->textColor().name();
+#endif
 }
 
 void NotesDialog::setText(QTextEdit *textEdit, const QPointF &pos)
@@ -185,7 +189,9 @@ void NotesDialog::refresh()
 
     m_textEdit->setFont(m_font);
     m_textEdit->setTextColor(m_color);
+#ifdef DEBUG
     qDebug() << "M_color:" << m_color.name();
+#endif
 
     if( !m_textEdit->toPlainText().isEmpty() ) {
         QTextCursor cursor = m_textEdit->textCursor();

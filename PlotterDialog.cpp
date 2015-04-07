@@ -1252,19 +1252,20 @@ void PlotterDialog::editNotes(const QPointF &pos)
     if( index != -1 ) {
         QwtText text = m_notesList.at(index)->label();
         QwtPlotMarker *note = m_notesList[index];
-
+#ifdef DEBUG
         qDebug() << "\neditNotes\nfont:" << "\nfamily:" << text.font().family()
                  << "\nsize:" << text.font().pointSize() << "\nbold:" << text.font().bold()
                  << "\nitalic:" << text.font().italic() << "\nunderline:" << text.font().underline();
         qDebug() << "color:" << text.color().name();
-
+#endif
         m_notesDialog->setText( text.text(), note->value(), text.font(), text.color() );
     } else {
+#ifdef DEBUG
         qDebug() << "\neditNotes\nfont:" << "\nfamily:" << m_prevNotesFont.family()
                  << "\nsize:" << m_prevNotesFont.pointSize() << "\nbold:" << m_prevNotesFont.bold()
                  << "\nitalic:" << m_prevNotesFont.italic() << "\nunderline:" << m_prevNotesFont.underline();
         qDebug() << "color:" <<  m_prevNotesColor.name();
-
+#endif
         m_notesDialog->setText(QString::null, pos, m_prevNotesFont, m_prevNotesColor);
     }
 
