@@ -1276,7 +1276,12 @@ void PlotterDialog::editNotes(const QPointF &pos)
 int PlotterDialog::whichNoteSelected(const QPointF &pos)
 {
     double pxXsec = m_plot->canvas()->size().width() / ( XDIVISION * m_lcdTimeInterval->value() );
-    double pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
+    double pxYdeg = 0.5;
+    if( m_notesLinkAxis == QwtPlot::yLeft ) {
+        pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalLeft->value() );
+    } else {
+        pxYdeg = m_plot->canvas()->size().height() / ( YDIVISION * m_lcdTempIntervalRight->value() );
+    }
 
     for( int i = 0; i < m_notesList.size(); ++i ) {
 //        QFontMetricsF fontMetrics( m_notesList.at(i)->label().font() );
