@@ -22,6 +22,7 @@
 #include <QInputDialog>
 #include <QGraphicsTextItem>
 //#include <QFontMetricsF>
+//#include <qwt_widget_overlay.h>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA

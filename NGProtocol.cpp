@@ -84,7 +84,7 @@ void NGProtocol::writeData()
         qDebug() << "ba =" << (int)ba.at(i);
     }
 #endif
-    itsComPort->writeData();
+//    itsComPort->writeData();
 }
 
 void NGProtocol::resetProtocol()

@@ -1,6 +1,7 @@
 #include "ComPort.h"
 #include <QApplication>
 #include <QTime>
+#include <QDebug>
 
 ComPort::ComPort(QSerialPort *port,
                  int startByte,
@@ -12,7 +13,8 @@ ComPort::ComPort(QSerialPort *port,
       itsStartByte(startByte),
       itsStopByte(stopByte),
       itsPacketLenght(packetLenght),
-      m_counter(0)
+      m_counter(0),
+      m_isDataWritten(true)
 {
     itsReadData.clear();
     itsPort->setReadBufferSize(1); // for reading 1 byte at a time
@@ -40,6 +42,10 @@ void ComPort::readData()
                     emit DataIsReaded(true);
                     emit ReadedData(itsReadData);
 
+                    if(!m_isDataWritten) {
+                        writeData();
+                    }
+
                     itsReadData.clear();
                     m_counter = 0;
                 }
@@ -61,6 +67,7 @@ QByteArray ComPort::getReadData() const
 void ComPort::setWriteData(const QByteArray &data)
 {
     itsWriteData = data;
+    m_isDataWritten = false;
 }
 
 QByteArray ComPort::getWriteData() const
@@ -74,5 +81,6 @@ void ComPort::writeData()
         itsPort->write(itsWriteData);
         emit DataIsWrited(true);
         emit WritedData(itsWriteData);
+        m_isDataWritten = true;
     }
 }

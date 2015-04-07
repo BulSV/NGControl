@@ -36,6 +36,8 @@ private:
     int itsStopByte;
     int itsPacketLenght;
     int m_counter;
+
+    bool m_isDataWritten;
 };
 
 #endif // ONEPACKET_H
