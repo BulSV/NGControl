@@ -10,6 +10,7 @@ QDataStream &operator<<(QDataStream &out, const QwtPlot &plot)
 {
     qDebug() << "out <<";
     for(int i = 0; i < plot.itemList(QwtPlotItem::Rtti_PlotCurve).size(); ++i) {
+        out << static_cast<qint32>(dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->size());
         for(int j = 0; j < dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->size(); ++j) {
             out << dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->sample(j);
         }
@@ -25,7 +26,7 @@ QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
 
     qint32 pointSize;
 
-    while( !in.atEnd()) {
+    for(int i = 0; i < 3; ++i) {
         qDebug() << "in.atEnd():" << in.atEnd();
         QVector<QPointF> v;
 
@@ -60,10 +61,9 @@ void PlotStorage::witePlot(const QString &fileName, QwtPlot *plot)
     file.close();
 }
 
-QwtPlot *PlotStorage::readPlot(const QString &fileName)
+void PlotStorage::readPlot(const QString &fileName, QwtPlot *plot)
 {
-    qDebug() << "reading...";
-    QwtPlot *plot = new QwtPlot();
+    qDebug() << "reading...";    
     QFile file(fileName);
     file.open(QFile::ReadOnly);
     QDataStream in;
@@ -73,8 +73,7 @@ QwtPlot *PlotStorage::readPlot(const QString &fileName)
     qDebug() << "plot->itemList(QwtPlotItem::Rtti_PlotCurve).size():"
                 << plot->itemList(QwtPlotItem::Rtti_PlotCurve).size();
     for(int i = 0; i < plot->itemList(QwtPlotItem::Rtti_PlotCurve).size(); ++i) {
-        qDebug() << dynamic_cast<QwtPlotCurve *>(plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->sample(0);
-    }
-
-    return plot;
+        for(int j = 0; j < dynamic_cast<QwtPlotCurve *>(plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->size(); ++j)
+            qDebug() << dynamic_cast<QwtPlotCurve *>(plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->sample(j);
+    }    
 }

@@ -13,7 +13,7 @@ public:
     friend QDataStream &operator>>(QDataStream &in, QwtPlot &plot);
 public slots:
     virtual void witePlot(const QString &fileName, QwtPlot *plot);
-    virtual QwtPlot *readPlot(const QString &fileName);
+    virtual void readPlot(const QString &fileName, QwtPlot *plot);
 };
 
 #endif // PLOTSTORAGE_H

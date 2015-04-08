@@ -1126,7 +1126,7 @@ void PlotterDialog::writeTemp()
 
     PlotStorage st;
     st.witePlot("1.ngph", m_plot);
-    st.readPlot("1.ngph");
+    st.readPlot("1.ngph", m_plot);
 }
 
 void PlotterDialog::colorTxNone()
