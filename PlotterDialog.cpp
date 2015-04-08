@@ -23,6 +23,7 @@
 #include <QGraphicsTextItem>
 //#include <QFontMetricsF>
 //#include <qwt_widget_overlay.h>
+#include "PlotStorage.h"
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -1122,6 +1123,10 @@ void PlotterDialog::writeTemp()
             resetTime();
         }
     }
+
+    PlotStorage st;
+    st.witePlot("1.ngph", m_plot);
+    st.readPlot("1.ngph");
 }
 
 void PlotterDialog::colorTxNone()

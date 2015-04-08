@@ -56,7 +56,9 @@ HEADERS += \
     PlotterDialog.h \
     LCDSampleSpinBox.h \
     MoveSpinBox.h \
-    NotesDialog.h
+    NotesDialog.h \
+    IPlotStorage.h \
+    PlotStorage.h
 
 SOURCES += \
     ComPort.cpp \
@@ -70,7 +72,9 @@ SOURCES += \
     PlotterDialog.cpp \
     LCDSampleSpinBox.cpp \
     MoveSpinBox.cpp \
-    NotesDialog.cpp
+    NotesDialog.cpp \
+    IPlotStorage.cpp \
+    PlotStorage.cpp
 
 RESOURCES += \
     NGControl.qrc
