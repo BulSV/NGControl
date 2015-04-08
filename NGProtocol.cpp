@@ -29,10 +29,16 @@ NGProtocol::NGProtocol(ComPort *comPort, QObject *parent) :
     itsPrevSensor2Temp(0.0),
     itsWasPrevCPUTemp(false),
     itsWasPrevSensor1Temp(false),
-    itsWasPrevSensor2Temp(false)
+    itsWasPrevSensor2Temp(false),
+    m_resend(new QTimer(this)),
+    m_numResends(3),
+    m_currentResend(0)
 {
+    m_resend->setInterval(100);
+
     connect(itsComPort, SIGNAL(DataIsReaded(bool)), this, SLOT(readData(bool)));
     connect(itsComPort, SIGNAL(DataIsWrited(bool)), this, SIGNAL(DataIsWrited(bool)));
+    connect(m_resend, SIGNAL(timeout()), this, SLOT(writeData()));
 }
 
 void NGProtocol::setDataToWrite(const QMultiMap<QString, QString> &data)
@@ -60,6 +66,14 @@ void NGProtocol::readData(bool isReaded)
         itsReadData.insert(QString("SENS2"),
                            QString::number(tempCorr(tempSensors(wordToInt(ba.mid(5, 2))), SENSOR2), FORMAT, PRECISION));
 
+        if( !itsWriteData.isEmpty() && itsReadData.value("TEMP") != itsWriteData.value("TEMP")
+                && m_currentResend < m_numResends ) {
+            m_resend->start();
+            ++m_currentResend;
+        } else {
+            m_currentResend = 0;
+            m_resend->stop();
+        }
         emit DataIsReaded(true);
     } else {
         emit DataIsReaded(false);

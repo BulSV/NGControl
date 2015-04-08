@@ -1111,7 +1111,7 @@ void PlotterDialog::written(bool isWritten)
 void PlotterDialog::writeTemp()
 {
     if(itsPort->isOpen()) {
-        QMultiMap<QString, QString> dataTemp;        
+        QMultiMap<QString, QString> dataTemp;
 
         dataTemp.insert("CODE", "0");
         dataTemp.insert("TEMP", QString::number(static_cast<int>(sbSetTemp->value())));
@@ -1327,7 +1327,7 @@ void PlotterDialog::addText(QTextEdit *text, const QPointF &pos)
     label.setFont(text->font());
     label.setText(text->toPlainText());
     label.setBackgroundBrush(QBrush(QColor(255, 255, 255, 150)));
-    label.setBorderRadius(3);
+    label.setBorderRadius(5);
 
     if( m_notesLinkAxis == QwtPlot::yLeft ) {
         label.setBorderPen(QPen(QBrush(Qt::red), 2));

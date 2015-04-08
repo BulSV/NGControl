@@ -4,6 +4,8 @@
 #include "IProtocol.h"
 #include "ComPort.h"
 
+#include <QTimer>
+
 class NGProtocol : public IProtocol
 {
     Q_OBJECT
@@ -31,6 +33,10 @@ private:
     bool itsWasPrevCPUTemp;
     bool itsWasPrevSensor1Temp;
     bool itsWasPrevSensor2Temp;
+
+    QTimer *m_resend;
+    int m_numResends;
+    int m_currentResend;
 
     // датчики температуры
     enum SENSORS {
