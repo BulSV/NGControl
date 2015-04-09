@@ -22,7 +22,7 @@
 #include <QInputDialog>
 #include <QGraphicsTextItem>
 //#include <QFontMetricsF>
-//#include <qwt_widget_overlay.h>
+#include <QFileDialog>
 #include "PlotStorage.h"
 
 #define STARTBYTE 0x55
@@ -88,10 +88,11 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bMoveNotes(new QPushButton(QIcon(":/Resources/moveText.png"), QString::null, this)),
     m_bDeleteNotes(new QPushButton(QIcon(":/Resources/deleteText.png"), QString::null, this)),
     m_bgNotes(new QButtonGroup(this)),
-    m_bRec(new QPushButton(QIcon(":/Resources/startRecToFile.png"), QString::null, this)),
-    m_bStop(new QPushButton(QIcon(":/Resources/stopRecToFile.png"), QString::null, this)),
-    m_bOpen(new QPushButton(QIcon(":/Resources/openFile.png"), QString::null, this)),
-    m_bClose(new QPushButton(QIcon(":/Resources/closeFile.png"), QString::null, this)),
+    m_bRecPlot(new QPushButton(QIcon(":/Resources/startRecToFile.png"), QString::null, this)),
+    m_bOpenPlot(new QPushButton(QIcon(":/Resources/openFile.png"), QString::null, this)),
+    m_bClosePlot(new QPushButton(QIcon(":/Resources/closeFile.png"), QString::null, this)),
+    m_blinkRecTimer(new QTimer(this)),
+    m_isBright(true),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -374,7 +375,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bDeleteNotes->setCheckable(true);
 
     // Files buttons config
-    m_bRec->setCheckable(true);
+    m_bRecPlot->setCheckable(true);
+    m_blinkRecTimer->setInterval(1000);
 
     QStringList portsNames;
 
@@ -641,19 +643,19 @@ void PlotterDialog::setupGUI()
     lSensor2->setStyleSheet("color: green; font: bold; font-size: 12pt");
     gridInfo->addWidget(lSensor2, 2, 1);
     gridInfo->addWidget(lcdSensor2Termo, 2, 2);
-    gridInfo->setSpacing(5);
+//    gridInfo->setSpacing(5);
 
     bSetTemp->setFixedHeight(45);
     QHBoxLayout *setTempLayout0 = new QHBoxLayout;
     setTempLayout0->addWidget(sbSetTemp);
     setTempLayout0->addWidget(bSetTemp);
-    setTempLayout0->setSpacing(5);
+//    setTempLayout0->setSpacing(5);
 
     QVBoxLayout *setTempLayout = new QVBoxLayout;
     setTempLayout->addItem(setTempLayout0);
     setTempLayout->addWidget(chbSynchronize);
     setTempLayout->addItem(gridInfo);
-    setTempLayout->setSpacing(5);
+//    setTempLayout->setSpacing(5);
 
     gbSetTemp->setLayout(setTempLayout);
 
@@ -662,21 +664,20 @@ void PlotterDialog::setupGUI()
     notesLayout->addWidget(m_bEditNotes);
     notesLayout->addWidget(m_bMoveNotes);
     notesLayout->addWidget(m_bDeleteNotes);
-    notesLayout->setSpacing(5);
+//    notesLayout->setSpacing(5);
 
     QGroupBox *notes = new QGroupBox;
-    notes->setTitle("Notes");
+    notes->setTitle("Note");
     notes->setLayout(notesLayout);
 
     QHBoxLayout *filesLayout = new QHBoxLayout;
-    filesLayout->addWidget(m_bRec);
-    filesLayout->addWidget(m_bStop);
-    filesLayout->addWidget(m_bOpen);
-    filesLayout->addWidget(m_bClose);
-    filesLayout->setSpacing(5);
+    filesLayout->addWidget(m_bRecPlot);
+    filesLayout->addWidget(m_bOpenPlot);
+    filesLayout->addWidget(m_bClosePlot);
+//    filesLayout->setSpacing(5);
 
     QGroupBox *files = new QGroupBox;
-    files->setTitle("Files");
+    files->setTitle("File");
     files->setLayout(filesLayout);
 
     QGridLayout *grid = new QGridLayout;
@@ -691,17 +692,17 @@ void PlotterDialog::setupGUI()
     grid->addWidget(bPortStop, 0, 7);
     grid->addWidget(lTx, 0, 8);
     grid->addWidget(lRx, 0, 9);
-    grid->setSpacing(5);
+//    grid->setSpacing(5);
 
     QHBoxLayout *timeLayout0 = new QHBoxLayout;
     timeLayout0->addWidget(m_lcdTimeInterval);
     timeLayout0->addWidget(m_msbTimeInterval);
-    timeLayout0->setSpacing(5);
+//    timeLayout0->setSpacing(5);
 
     QVBoxLayout *timeLayout = new QVBoxLayout;
     timeLayout->addItem(timeLayout0);
     timeLayout->addWidget(m_cbTimeAccurate);
-    timeLayout->setSpacing(5);
+//    timeLayout->setSpacing(5);
 
     QGroupBox *gbTime = new QGroupBox("sec/div", this);
     gbTime->setLayout(timeLayout);
@@ -709,27 +710,27 @@ void PlotterDialog::setupGUI()
     QHBoxLayout *tempLeftLayout0 = new QHBoxLayout;
     tempLeftLayout0->addWidget(m_lcdTempIntervalLeft);
     tempLeftLayout0->addWidget(m_msbTempIntervalLeft);
-    tempLeftLayout0->setSpacing(5);
+//    tempLeftLayout0->setSpacing(5);
 
     QVBoxLayout *tempLeftLayout = new QVBoxLayout;
     tempLeftLayout->addItem(tempLeftLayout0);
     tempLeftLayout->addWidget(m_cbTempAccurateLeft);
-    tempLeftLayout->setSpacing(5);
+//    tempLeftLayout->setSpacing(5);
 
     QHBoxLayout *tempRightLayout0 = new QHBoxLayout;
     tempRightLayout0->addWidget(m_lcdTempIntervalRight);
     tempRightLayout0->addWidget(m_msbTempIntervalRight);
-    tempRightLayout0->setSpacing(5);
+//    tempRightLayout0->setSpacing(5);
 
     QVBoxLayout *tempRightLayout = new QVBoxLayout;
     tempRightLayout->addItem(tempRightLayout0);
     tempRightLayout->addWidget(m_cbTempAccurateRight);
-    tempRightLayout->setSpacing(5);
+//    tempRightLayout->setSpacing(5);
 
     QVBoxLayout *tempLayout = new QVBoxLayout;
     tempLayout->addItem(tempLeftLayout);
     tempLayout->addItem(tempRightLayout);
-    tempLayout->setSpacing(5);
+//    tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);
     gbTemp->setLayout(tempLayout);
@@ -737,7 +738,7 @@ void PlotterDialog::setupGUI()
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
     buttonsLayout->addWidget(m_bReset);
     buttonsLayout->addWidget(m_bPauseRessume);
-    buttonsLayout->setSpacing(5);
+//    buttonsLayout->setSpacing(5);
 
     QVBoxLayout *knobsLayout = new QVBoxLayout;
     knobsLayout->addWidget(gbTime);
@@ -747,17 +748,17 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(notes);
     knobsLayout->addWidget(files);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
-    knobsLayout->setSpacing(5);
+//    knobsLayout->setSpacing(5);
 
     QHBoxLayout *plotLayout = new QHBoxLayout;
     plotLayout->addWidget(m_plot, 1);
     plotLayout->addItem(knobsLayout);
-    plotLayout->setSpacing(5);
+//    plotLayout->setSpacing(5);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addItem(plotLayout);
     mainLayout->addItem(grid);
-    mainLayout->setSpacing(5);
+//    mainLayout->setSpacing(5);
 
     setLayout(mainLayout);
 }
@@ -1027,6 +1028,11 @@ void PlotterDialog::setupConnections()
     connect(m_pickerNoteDeleteRight, SIGNAL(selected(QPointF)), this, SLOT(deleteNotes(QPointF)));
 
     connect(m_notesDialog, SIGNAL(textInputed(QTextEdit*,QPointF)), this, SLOT(addText(QTextEdit*,QPointF)));
+
+    connect(m_bRecPlot, SIGNAL(toggled(bool)), this, SLOT(startRecPlotToFile(bool)));
+    connect(m_bOpenPlot, SIGNAL(clicked()), this, SLOT(openPlotFile()));
+    connect(m_bClosePlot, SIGNAL(clicked()), this, SLOT(closePlotFile()));
+    connect(m_blinkRecTimer, SIGNAL(timeout()), this, SLOT(blinkRecButton()));
 
     connect(bPortStart, SIGNAL(clicked()), this, SLOT(openPort()));
     connect(bPortStop, SIGNAL(clicked()), this, SLOT(closePort()));
@@ -1378,4 +1384,35 @@ void PlotterDialog::linkNotesTo_yLeft()
 void PlotterDialog::linkNotesTo_yRight()
 {
     m_notesLinkAxis = QwtPlot::yRight;
+}
+
+void PlotterDialog::startRecPlotToFile(bool isRecChecked)
+{
+    if(!isRecChecked) {
+        m_blinkRecTimer->stop();
+        m_isBright = true;
+        m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));
+    } else {
+        m_blinkRecTimer->start();
+    }
+}
+
+void PlotterDialog::openPlotFile()
+{
+    QFileDialog::getOpenFileName(0, "Open Plot", ".", "Plot Files (*.ngph)");
+}
+
+void PlotterDialog::closePlotFile()
+{
+}
+
+void PlotterDialog::blinkRecButton()
+{
+    if(m_isBright) {
+        m_isBright = false;
+        m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFileBlink.png"));
+    } else {
+        m_isBright = true;
+        m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));
+    }
 }

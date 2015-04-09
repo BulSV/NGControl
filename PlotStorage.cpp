@@ -1,7 +1,6 @@
 #include "PlotStorage.h"
 
 #include <QFile>
-//#include <QFileDialog>
 #include <QDebug>
 
 PlotStorage::PlotStorage(QObject *parent) :
@@ -11,7 +10,6 @@ PlotStorage::PlotStorage(QObject *parent) :
 
 void PlotStorage::witePlot(const QString &fileName, QwtPlot *plot)
 {
-//    QFileDialog::getOpenFileName(0, "Open Plot", ".", "Plot Files (*.ngh)");
     qDebug() << "writing...";
     QFile file(fileName);
     file.open(QFile::WriteOnly);

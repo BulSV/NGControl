@@ -109,10 +109,11 @@ private:
     QPushButton *m_bDeleteNotes;
     QButtonGroup *m_bgNotes;
 
-    QPushButton *m_bRec;
-    QPushButton *m_bStop;
-    QPushButton *m_bOpen;
-    QPushButton *m_bClose;
+    QPushButton *m_bRecPlot;
+    QPushButton *m_bOpenPlot;
+    QPushButton *m_bClosePlot;
+    QTimer *m_blinkRecTimer;
+    bool m_isBright;
 
     QLabel *lPort;
     QComboBox *cbPort;
@@ -213,6 +214,11 @@ private slots:
 
     void linkNotesTo_yLeft();
     void linkNotesTo_yRight();
+
+    void startRecPlotToFile(bool isRecChecked);
+    void openPlotFile();
+    void closePlotFile();
+    void blinkRecButton();
 };
 
 #endif // PLOTTERDIALOG_H
