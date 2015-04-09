@@ -109,6 +109,11 @@ private:
     QPushButton *m_bDeleteNotes;
     QButtonGroup *m_bgNotes;
 
+    QPushButton *m_bRec;
+    QPushButton *m_bStop;
+    QPushButton *m_bOpen;
+    QPushButton *m_bClose;
+
     QLabel *lPort;
     QComboBox *cbPort;
     QLabel *lBaud;

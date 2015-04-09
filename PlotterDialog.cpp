@@ -88,6 +88,10 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bMoveNotes(new QPushButton(QIcon(":/Resources/moveText.png"), QString::null, this)),
     m_bDeleteNotes(new QPushButton(QIcon(":/Resources/deleteText.png"), QString::null, this)),
     m_bgNotes(new QButtonGroup(this)),
+    m_bRec(new QPushButton(QIcon(":/Resources/startRecToFile.png"), QString::null, this)),
+    m_bStop(new QPushButton(QIcon(":/Resources/stopRecToFile.png"), QString::null, this)),
+    m_bOpen(new QPushButton(QIcon(":/Resources/openFile.png"), QString::null, this)),
+    m_bClose(new QPushButton(QIcon(":/Resources/closeFile.png"), QString::null, this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -368,6 +372,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bEditNotes->setCheckable(true);
     m_bMoveNotes->setCheckable(true);
     m_bDeleteNotes->setCheckable(true);
+
+    // Files buttons config
+    m_bRec->setCheckable(true);
 
     QStringList portsNames;
 
@@ -655,10 +662,22 @@ void PlotterDialog::setupGUI()
     notesLayout->addWidget(m_bEditNotes);
     notesLayout->addWidget(m_bMoveNotes);
     notesLayout->addWidget(m_bDeleteNotes);
+    notesLayout->setSpacing(5);
 
-    QGroupBox *notes = new QGroupBox();
+    QGroupBox *notes = new QGroupBox;
     notes->setTitle("Notes");
     notes->setLayout(notesLayout);
+
+    QHBoxLayout *filesLayout = new QHBoxLayout;
+    filesLayout->addWidget(m_bRec);
+    filesLayout->addWidget(m_bStop);
+    filesLayout->addWidget(m_bOpen);
+    filesLayout->addWidget(m_bClose);
+    filesLayout->setSpacing(5);
+
+    QGroupBox *files = new QGroupBox;
+    files->setTitle("Files");
+    files->setLayout(filesLayout);
 
     QGridLayout *grid = new QGridLayout;
     // пещаю логотип фирмы
@@ -726,6 +745,7 @@ void PlotterDialog::setupGUI()
     knobsLayout->addItem(buttonsLayout);
     knobsLayout->addWidget(gbSetTemp);
     knobsLayout->addWidget(notes);
+    knobsLayout->addWidget(files);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 
