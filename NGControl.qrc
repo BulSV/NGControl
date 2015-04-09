@@ -30,5 +30,13 @@
         <file>Resources/underline.png</file>
         <file>Resources/arrow.svg</file>
         <file>Resources/arrow.png</file>
+        <file>Resources/stopRecToFile.svg</file>
+        <file>Resources/closeFile.png</file>
+        <file>Resources/closeFile.svg</file>
+        <file>Resources/openFile.png</file>
+        <file>Resources/openFile.svg</file>
+        <file>Resources/startRecToFile.png</file>
+        <file>Resources/startRecToFile.svg</file>
+        <file>Resources/stopRecToFile.png</file>
     </qresource>
 </RCC>
