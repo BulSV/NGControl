@@ -32,13 +32,13 @@ inline QDataStream &operator<<(QDataStream &out, const QwtPlot &plot)
 inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
 {
     qDebug() << "in >>";
-    QwtPlotCurve curve;
 
     qint32 pointSize;
 
     for(int i = 0; i < 3; ++i) {
-        qDebug() << "in.atEnd():" << in.atEnd();
+        QwtPlotCurve *curve = new QwtPlotCurve;
         QVector<QPointF> v;
+        QwtPlotCurve *originCurveStyles = dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i));
 
         in >> pointSize;
         qDebug() << "pointSize:" << pointSize;
@@ -47,8 +47,14 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
             in >> p;
             v.push_back(p);
         }
-        curve.setSamples(v);
-        curve.attach(&plot);
+
+        curve->setSamples(v);
+        curve->setRenderHint( QwtPlotItem::RenderAntialiased );
+        curve->setLegendAttribute( QwtPlotCurve::LegendShowLine );
+        curve->setXAxis( QwtPlot::xBottom );
+        curve->setYAxis( originCurveStyles->yAxis() );
+        curve->setPen( originCurveStyles->pen() );
+        curve->attach(&plot);
     }
 
     return in;

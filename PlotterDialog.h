@@ -36,6 +36,7 @@
 #include "LCDSampleSpinBox.h"
 #include "MoveSpinBox.h"
 #include "NotesDialog.h"
+#include "PlotStorage.h"
 
 class PlotterDialog : public QDialog
 {
@@ -114,6 +115,8 @@ private:
     QPushButton *m_bClosePlot;
     QTimer *m_blinkRecTimer;
     bool m_isBright;
+
+    IPlotStorage *m_plotStorage;
 
     QLabel *lPort;
     QComboBox *cbPort;

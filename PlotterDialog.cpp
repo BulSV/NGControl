@@ -23,7 +23,6 @@
 #include <QGraphicsTextItem>
 //#include <QFontMetricsF>
 #include <QFileDialog>
-#include "PlotStorage.h"
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -93,6 +92,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bClosePlot(new QPushButton(QIcon(":/Resources/closeFile.png"), QString::null, this)),
     m_blinkRecTimer(new QTimer(this)),
     m_isBright(true),
+    m_plotStorage(new PlotStorage(this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
     lBaud(new QLabel(QString::fromUtf8("Baud"), this)),
@@ -1149,10 +1149,6 @@ void PlotterDialog::writeTemp()
             resetTime();
         }
     }
-
-    PlotStorage st;
-    st.witePlot("1.ngph", m_plot);
-    st.readPlot("1.ngph", m_plot);
 }
 
 void PlotterDialog::colorTxNone()
@@ -1392,6 +1388,7 @@ void PlotterDialog::startRecPlotToFile(bool isRecChecked)
         m_blinkRecTimer->stop();
         m_isBright = true;
         m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));
+        m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), m_plot);
     } else {
         m_blinkRecTimer->start();
     }
@@ -1399,11 +1396,15 @@ void PlotterDialog::startRecPlotToFile(bool isRecChecked)
 
 void PlotterDialog::openPlotFile()
 {
-    QFileDialog::getOpenFileName(0, "Open Plot", ".", "Plot Files (*.ngph)");
+    m_plotStorage->readPlot(QFileDialog::getOpenFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), m_plot);
+    updatePlot();
 }
 
 void PlotterDialog::closePlotFile()
 {
+//    m_plot->detachItems(QwtPlotItem::Rtti_PlotCurve);
+    updatePlot();
+    m_plot->repaint();
 }
 
 void PlotterDialog::blinkRecButton()
