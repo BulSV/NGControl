@@ -31,11 +31,5 @@ void PlotStorage::readPlot(const QString &fileName, QwtPlot *plot)
     in.setDevice(&file);
     in >> (*plot);
     file.close();
-
-//    qDebug() << "plot->itemList(QwtPlotItem::Rtti_PlotCurve).size():"
-//                << plot->itemList(QwtPlotItem::Rtti_PlotCurve).size();
-//    for(int i = 0; i < plot->itemList(QwtPlotItem::Rtti_PlotCurve).size(); ++i) {
-//        for(int j = 0; j < dynamic_cast<QwtPlotCurve *>(plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->size(); ++j)
-//            qDebug() << dynamic_cast<QwtPlotCurve *>(plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->sample(j);
-//    }
+    qDebug() << "exiting readPlot()...";
 }

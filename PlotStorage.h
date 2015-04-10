@@ -34,6 +34,7 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
     qDebug() << "in >>";
 
     qint32 pointSize;
+    QVector<QwtPlotCurve *> curves;
 
     for(int i = 0; i < 3; ++i) {
         QwtPlotCurve *curve = new QwtPlotCurve;
@@ -54,7 +55,15 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
         curve->setXAxis( QwtPlot::xBottom );
         curve->setYAxis( originCurveStyles->yAxis() );
         curve->setPen( originCurveStyles->pen() );
-        curve->attach(&plot);
+        curve->setTitle( originCurveStyles->title() );
+        curves.append(curve);
+    }
+    qDebug() << "detaching in >>";
+    plot.detachItems(QwtPlotItem::Rtti_PlotCurve);
+    qDebug() << "detached in >>";
+    for(int i = 0; i < curves.size(); ++i) {
+        qDebug() << "attaching in >>";
+        curves[i]->attach(&plot);
     }
 
     return in;

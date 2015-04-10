@@ -1402,7 +1402,27 @@ void PlotterDialog::openPlotFile()
 
 void PlotterDialog::closePlotFile()
 {
-//    m_plot->detachItems(QwtPlotItem::Rtti_PlotCurve);
+    for(int i = 0; i < m_Curves.size(); ++i) {
+        qDebug() << "i =" << i;
+        QwtPlotCurve *curve = new QwtPlotCurve;
+        QwtPlotCurve *originCurveStyles = dynamic_cast<QwtPlotCurve *>(m_plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i));
+
+        curve->setRenderHint( QwtPlotItem::RenderAntialiased );
+        curve->setLegendAttribute( QwtPlotCurve::LegendShowLine );
+        curve->setXAxis( QwtPlot::xBottom );
+        curve->setYAxis( originCurveStyles->yAxis() );
+        curve->setPen( originCurveStyles->pen() );
+        curve->setTitle( originCurveStyles->title() );
+        m_Curves.removeFirst();
+        m_Curves.append(curve);
+    }
+    qDebug() << "detaching...";
+    m_plot->detachItems(QwtPlotItem::Rtti_PlotCurve);
+    qDebug() << "attaching...";
+    for(int i = 0; i < m_Curves.size(); ++i) {
+        m_Curves[i]->attach(m_plot);
+    }
+
     updatePlot();
     m_plot->repaint();
 }
