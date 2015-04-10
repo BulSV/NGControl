@@ -345,9 +345,9 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_pickerNoteDeleteRight->setStateMachine(new QwtPickerClickPointMachine);
     m_pickerNoteDeleteRight->setMousePattern(QwtPicker::MouseSelect1, Qt::RightButton);
 
-    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
-    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
-    m_cbTimeAccurate->setEnabled( false );
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( true );
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( true );
+    m_cbTimeAccurate->setEnabled( true );
 
     // Radiobuttons config
     m_bgRelate->addButton(m_rbRelateLeft);
@@ -376,6 +376,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     // Files buttons config
     m_bRecPlot->setCheckable(true);
+    m_bRecPlot->setEnabled(false);
     m_blinkRecTimer->setInterval(1000);
 
     QStringList portsNames;
@@ -1083,6 +1084,15 @@ void PlotterDialog::openPort()
         bPortStop->setEnabled(true);
         lTx->setStyleSheet("background: none; font: bold; font-size: 10pt");
         lRx->setStyleSheet("background: none; font: bold; font-size: 10pt");
+
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( false );
+        dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( false );
+        m_cbTimeAccurate->setEnabled( false );
+
+        m_bRecPlot->setEnabled(true);
+        m_bOpenPlot->setEnabled(false);
+        m_bClosePlot->setEnabled(false);
+        closePlotFile();
     }
     else
     {
@@ -1103,6 +1113,14 @@ void PlotterDialog::closePort()
     bPortStop->setEnabled(false);
     bPortStart->setEnabled(true);
     itsProtocol->resetProtocol();
+
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonUpWidget() )->setEnabled( true );
+    dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( true );
+    m_cbTimeAccurate->setEnabled( true );
+
+    m_bRecPlot->setEnabled(false);
+    m_bOpenPlot->setEnabled(true);
+    m_bClosePlot->setEnabled(true);
 }
 
 void PlotterDialog::received(bool isReceived)
