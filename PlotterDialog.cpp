@@ -644,19 +644,19 @@ void PlotterDialog::setupGUI()
     lSensor2->setStyleSheet("color: green; font: bold; font-size: 12pt");
     gridInfo->addWidget(lSensor2, 2, 1);
     gridInfo->addWidget(lcdSensor2Termo, 2, 2);
-//    gridInfo->setSpacing(5);
+    gridInfo->setSpacing(5);
 
     bSetTemp->setFixedHeight(45);
     QHBoxLayout *setTempLayout0 = new QHBoxLayout;
     setTempLayout0->addWidget(sbSetTemp);
     setTempLayout0->addWidget(bSetTemp);
-//    setTempLayout0->setSpacing(5);
+    setTempLayout0->setSpacing(5);
 
     QVBoxLayout *setTempLayout = new QVBoxLayout;
     setTempLayout->addItem(setTempLayout0);
     setTempLayout->addWidget(chbSynchronize);
     setTempLayout->addItem(gridInfo);
-//    setTempLayout->setSpacing(5);
+    setTempLayout->setSpacing(5);
 
     gbSetTemp->setLayout(setTempLayout);
 
@@ -665,7 +665,7 @@ void PlotterDialog::setupGUI()
     notesLayout->addWidget(m_bEditNotes);
     notesLayout->addWidget(m_bMoveNotes);
     notesLayout->addWidget(m_bDeleteNotes);
-//    notesLayout->setSpacing(5);
+    notesLayout->setSpacing(5);
 
     QGroupBox *notes = new QGroupBox;
     notes->setTitle("Note");
@@ -675,7 +675,7 @@ void PlotterDialog::setupGUI()
     filesLayout->addWidget(m_bRecPlot);
     filesLayout->addWidget(m_bOpenPlot);
     filesLayout->addWidget(m_bClosePlot);
-//    filesLayout->setSpacing(5);
+    filesLayout->setSpacing(5);
 
     QGroupBox *files = new QGroupBox;
     files->setTitle("File");
@@ -683,27 +683,34 @@ void PlotterDialog::setupGUI()
 
     QGridLayout *grid = new QGridLayout;
     // пещаю логотип фирмы
-    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='20' width='75'/>", this), 0, 0);
+    grid->addWidget(new QLabel("<img src=':/Resources/elisat.png' height='40' width='150'/>", this), 0, 0);
     grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 1);
-    grid->addWidget(lPort, 0, 2);
-    grid->addWidget(cbPort, 0, 3);
-    grid->addWidget(lBaud, 0, 4);
-    grid->addWidget(cbBaud, 0, 5);
-    grid->addWidget(bPortStart, 0, 6);
-    grid->addWidget(bPortStop, 0, 7);
-    grid->addWidget(lTx, 0, 8);
-    grid->addWidget(lRx, 0, 9);
-//    grid->setSpacing(5);
+    grid->addWidget(notes, 0, 2);
+    grid->addWidget(files, 0, 3);
+    grid->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding), 0, 4);
+    grid->addWidget(lPort, 0, 5);
+    grid->addWidget(cbPort, 0, 6);
+    grid->addWidget(lBaud, 0, 7);
+    grid->addWidget(cbBaud, 0, 8);
+    grid->addWidget(bPortStart, 0, 9);
+    grid->addWidget(bPortStop, 0, 10);
+    lTx->setMaximumSize(30, 30);
+    lTx->setMinimumSize(30, 30);
+    grid->addWidget(lTx, 0, 11);
+    lRx->setMaximumSize(30, 30);
+    lRx->setMinimumSize(30, 30);
+    grid->addWidget(lRx, 0, 12);
+    grid->setSpacing(5);
 
     QHBoxLayout *timeLayout0 = new QHBoxLayout;
     timeLayout0->addWidget(m_lcdTimeInterval);
     timeLayout0->addWidget(m_msbTimeInterval);
-//    timeLayout0->setSpacing(5);
+    timeLayout0->setSpacing(5);
 
     QVBoxLayout *timeLayout = new QVBoxLayout;
     timeLayout->addItem(timeLayout0);
     timeLayout->addWidget(m_cbTimeAccurate);
-//    timeLayout->setSpacing(5);
+    timeLayout->setSpacing(5);
 
     QGroupBox *gbTime = new QGroupBox("sec/div", this);
     gbTime->setLayout(timeLayout);
@@ -711,27 +718,27 @@ void PlotterDialog::setupGUI()
     QHBoxLayout *tempLeftLayout0 = new QHBoxLayout;
     tempLeftLayout0->addWidget(m_lcdTempIntervalLeft);
     tempLeftLayout0->addWidget(m_msbTempIntervalLeft);
-//    tempLeftLayout0->setSpacing(5);
+    tempLeftLayout0->setSpacing(5);
 
     QVBoxLayout *tempLeftLayout = new QVBoxLayout;
     tempLeftLayout->addItem(tempLeftLayout0);
     tempLeftLayout->addWidget(m_cbTempAccurateLeft);
-//    tempLeftLayout->setSpacing(5);
+    tempLeftLayout->setSpacing(5);
 
     QHBoxLayout *tempRightLayout0 = new QHBoxLayout;
     tempRightLayout0->addWidget(m_lcdTempIntervalRight);
     tempRightLayout0->addWidget(m_msbTempIntervalRight);
-//    tempRightLayout0->setSpacing(5);
+    tempRightLayout0->setSpacing(5);
 
     QVBoxLayout *tempRightLayout = new QVBoxLayout;
     tempRightLayout->addItem(tempRightLayout0);
     tempRightLayout->addWidget(m_cbTempAccurateRight);
-//    tempRightLayout->setSpacing(5);
+    tempRightLayout->setSpacing(5);
 
     QVBoxLayout *tempLayout = new QVBoxLayout;
     tempLayout->addItem(tempLeftLayout);
     tempLayout->addItem(tempRightLayout);
-//    tempLayout->setSpacing(5);
+    tempLayout->setSpacing(5);
 
     QGroupBox *gbTemp = new QGroupBox("°C/div", this);
     gbTemp->setLayout(tempLayout);
@@ -739,27 +746,25 @@ void PlotterDialog::setupGUI()
     QHBoxLayout *buttonsLayout = new QHBoxLayout;
     buttonsLayout->addWidget(m_bReset);
     buttonsLayout->addWidget(m_bPauseRessume);
-//    buttonsLayout->setSpacing(5);
+    buttonsLayout->setSpacing(5);
 
     QVBoxLayout *knobsLayout = new QVBoxLayout;
     knobsLayout->addWidget(gbTime);
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
-    knobsLayout->addWidget(gbSetTemp);
-    knobsLayout->addWidget(notes);
-    knobsLayout->addWidget(files);
+    knobsLayout->addWidget(gbSetTemp);    
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
-//    knobsLayout->setSpacing(5);
+    knobsLayout->setSpacing(5);
 
     QHBoxLayout *plotLayout = new QHBoxLayout;
     plotLayout->addWidget(m_plot, 1);
     plotLayout->addItem(knobsLayout);
-//    plotLayout->setSpacing(5);
+    plotLayout->setSpacing(5);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addItem(plotLayout);
     mainLayout->addItem(grid);
-//    mainLayout->setSpacing(5);
+    mainLayout->setSpacing(5);
 
     setLayout(mainLayout);
 }
