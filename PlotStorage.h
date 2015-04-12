@@ -21,7 +21,7 @@ inline QDataStream &operator<<(QDataStream &out, const QwtPlot &plot)
     qDebug() << "out <<";
     for(int i = 0; i < plot.itemList(QwtPlotItem::Rtti_PlotCurve).size(); ++i) {
         out << static_cast<qint32>(dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->size());
-        for(int j = 0; j < dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->size(); ++j) {
+        for(size_t j = 0; j < dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->data()->size(); ++j) {
             out << dynamic_cast<QwtPlotCurve *>(plot.itemList(QwtPlotItem::Rtti_PlotCurve).value(i))->sample(j);
         }
     }

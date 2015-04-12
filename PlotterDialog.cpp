@@ -124,7 +124,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     itsTimeToDisplay(new QTimer(this)),
     m_notesDialog(new NotesDialog(this)),
     m_prevNotesFont(QFont("Arial", 12)),
-    m_prevNotesColor(QColor(Qt::black))
+    m_prevNotesColor(QColor(Qt::black)),
+    m_startRec(0)
 {
     QVector<double> timeSamples;
     timeSamples << 1 << 2 << 5 << 10 << 20 << 50 << 100;
@@ -1410,10 +1411,38 @@ void PlotterDialog::startRecPlotToFile(bool isRecChecked)
     if(!isRecChecked) {
         m_blinkRecTimer->stop();
         m_isBright = true;
-        m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));
-        m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), m_plot);
+        m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));                
+
+        QVector<QwtPlotCurve*> curves;
+        for(int i = 0; i < m_Curves.size(); ++i) {
+            QwtPlotCurve *curve = new QwtPlotCurve;
+            QwtPlotCurve *originCurveStyles = dynamic_cast<QwtPlotCurve *>(m_plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i));
+
+            curve->setRenderHint( QwtPlotItem::RenderAntialiased );
+            curve->setLegendAttribute( QwtPlotCurve::LegendShowLine );
+            curve->setXAxis( QwtPlot::xBottom );
+            curve->setYAxis( originCurveStyles->yAxis() );
+            curve->setPen( originCurveStyles->pen() );
+            curve->setTitle( originCurveStyles->title() );
+            QVector<QPointF> coords;
+            for(int j = m_startRec; j < m_timeAxis.size(); ++j) {
+                coords.append(m_Curves.at(i)->sample(j));
+            }
+            curve->setSamples(coords);
+            curves.append(curve);
+        }
+        QwtPlot *plot = new QwtPlot;
+
+        for(int i = 0; i < curves.size(); ++i) {
+            curves[i]->attach(plot);
+        }
+
+        m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), plot);
     } else {
         m_blinkRecTimer->start();
+        if( !m_timeAxis.isEmpty() ) {
+            m_startRec = m_timeAxis.size() - 1;
+        }
     }
 }
 

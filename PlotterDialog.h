@@ -176,6 +176,8 @@ private:
     QColor m_prevNotesColor;
 
     QwtPlot::Axis m_notesLinkAxis;
+
+    int m_startRec;
 private slots:
     void changeTimeInterval();
     void moveTimeInterval();
