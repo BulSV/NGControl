@@ -23,6 +23,7 @@
 #include <QGraphicsTextItem>
 //#include <QFontMetricsF>
 #include <QFileDialog>
+#include <QDateTime>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -576,6 +577,17 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
     // keeping vectors sizes constant
     if( elapsedTime > 2 * 100 * XDIVISION ) {
         m_timeAxis.pop_front();
+
+        --m_startRec;
+        if( !m_startRec ) {
+            qDebug() << "[=>m_startRec" << m_startRec;
+            m_plotStorage->witePlot(QString("NGControl_")
+                                    + QDateTime::currentDateTime().toString("yyyy_MM_dd-hh_mm_ss")
+                                    + QString(".ngph"),
+                                    curvesSegment());
+            m_startRec = m_timeAxis.size() - 1;
+            qDebug() << "m_startRec=>]" << m_startRec;
+        }
         for( int i = 0; i < m_dataAxises.size(); ++i ) {
             QVector<double> data = m_dataAxises.value( listKeys.at(i) );
             data.pop_front();
@@ -1406,6 +1418,35 @@ void PlotterDialog::linkNotesTo_yRight()
     m_notesLinkAxis = QwtPlot::yRight;
 }
 
+QwtPlot * PlotterDialog::curvesSegment()
+{
+    QVector<QwtPlotCurve*> curves;
+    for(int i = 0; i < m_Curves.size(); ++i) {
+        QwtPlotCurve *curve = new QwtPlotCurve;
+        QwtPlotCurve *originCurveStyles = dynamic_cast<QwtPlotCurve *>(m_plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i));
+
+        curve->setRenderHint( QwtPlotItem::RenderAntialiased );
+        curve->setLegendAttribute( QwtPlotCurve::LegendShowLine );
+        curve->setXAxis( QwtPlot::xBottom );
+        curve->setYAxis( originCurveStyles->yAxis() );
+        curve->setPen( originCurveStyles->pen() );
+        curve->setTitle( originCurveStyles->title() );
+        QVector<QPointF> coords;
+        for(int j = m_startRec; j < m_timeAxis.size(); ++j) {
+            coords.append(m_Curves.at(i)->sample(j));
+        }
+        curve->setSamples(coords);
+        curves.append(curve);
+    }
+    QwtPlot *plot = new QwtPlot;
+
+    for(int i = 0; i < curves.size(); ++i) {
+        curves[i]->attach(plot);
+    }
+
+    return plot;
+}
+
 void PlotterDialog::startRecPlotToFile(bool isRecChecked)
 {
     if(!isRecChecked) {
@@ -1413,29 +1454,7 @@ void PlotterDialog::startRecPlotToFile(bool isRecChecked)
         m_isBright = true;
         m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));                
 
-        QVector<QwtPlotCurve*> curves;
-        for(int i = 0; i < m_Curves.size(); ++i) {
-            QwtPlotCurve *curve = new QwtPlotCurve;
-            QwtPlotCurve *originCurveStyles = dynamic_cast<QwtPlotCurve *>(m_plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i));
-
-            curve->setRenderHint( QwtPlotItem::RenderAntialiased );
-            curve->setLegendAttribute( QwtPlotCurve::LegendShowLine );
-            curve->setXAxis( QwtPlot::xBottom );
-            curve->setYAxis( originCurveStyles->yAxis() );
-            curve->setPen( originCurveStyles->pen() );
-            curve->setTitle( originCurveStyles->title() );
-            QVector<QPointF> coords;
-            for(int j = m_startRec; j < m_timeAxis.size(); ++j) {
-                coords.append(m_Curves.at(i)->sample(j));
-            }
-            curve->setSamples(coords);
-            curves.append(curve);
-        }
-        QwtPlot *plot = new QwtPlot;
-
-        for(int i = 0; i < curves.size(); ++i) {
-            curves[i]->attach(plot);
-        }
+        QwtPlot *plot = curvesSegment();
 
         m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), plot);
     } else {

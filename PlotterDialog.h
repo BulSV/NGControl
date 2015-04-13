@@ -45,7 +45,7 @@ public:
     explicit PlotterDialog(const QString &title, QWidget *parent = 0);
     ~PlotterDialog();
     void setCurves(const QMap<QString, QPen> &curves,
-                   const QMap<QString, QwtPlot::Axis> &axis);
+                   const QMap<QString, QwtPlot::Axis> &axis);    
 signals:
 
 public slots:
@@ -178,6 +178,7 @@ private:
     QwtPlot::Axis m_notesLinkAxis;
 
     int m_startRec;
+    QwtPlot * curvesSegment();
 private slots:
     void changeTimeInterval();
     void moveTimeInterval();
