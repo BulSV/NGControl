@@ -93,6 +93,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_bClosePlot(new QPushButton(QIcon(":/Resources/closeFile.png"), QString::null, this)),
     m_blinkRecTimer(new QTimer(this)),
     m_isBright(true),
+    m_isRecToFile(false),
     m_plotStorage(new PlotStorage(this)),
     lPort(new QLabel(QString::fromUtf8("Port"), this)),
     cbPort(new QComboBox(this)),
@@ -580,6 +581,7 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 
         --m_startRec;
         if( !m_startRec ) {
+            qDebug() << "elapsedTime:" << elapsedTime;
             qDebug() << "[=>m_startRec" << m_startRec;
             m_plotStorage->witePlot(QString("NGControl_")
                                     + QDateTime::currentDateTime().toString("yyyy_MM_dd-hh_mm_ss")
@@ -765,7 +767,7 @@ void PlotterDialog::setupGUI()
     knobsLayout->addWidget(gbTime);
     knobsLayout->addWidget(gbTemp);
     knobsLayout->addItem(buttonsLayout);
-    knobsLayout->addWidget(gbSetTemp);    
+    knobsLayout->addWidget(gbSetTemp);
     knobsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
     knobsLayout->setSpacing(5);
 
@@ -1137,6 +1139,7 @@ void PlotterDialog::closePort()
     m_cbTimeAccurate->setEnabled( true );
 
     m_bRecPlot->setEnabled(false);
+    startRecPlotToFile(false);
     m_bOpenPlot->setEnabled(true);
     m_bClosePlot->setEnabled(true);
 }
@@ -1452,15 +1455,29 @@ void PlotterDialog::startRecPlotToFile(bool isRecChecked)
     if(!isRecChecked) {
         m_blinkRecTimer->stop();
         m_isBright = true;
-        m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));                
+        m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));
 
         QwtPlot *plot = curvesSegment();
 
-        m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), plot);
+        if( m_isRecToFile ) {
+            if( !bPortStop->isEnabled() ) {
+                m_plotStorage->witePlot(QString("NGControl_")
+                                        + QDateTime::currentDateTime().toString("yyyy_MM_dd-hh_mm_ss")
+                                        + QString(".ngph"),
+                                        curvesSegment());
+            } else {
+                m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), plot);
+            }
+
+            m_isRecToFile = false;
+        }
     } else {
         m_blinkRecTimer->start();
+        m_isRecToFile = true;
         if( !m_timeAxis.isEmpty() ) {
             m_startRec = m_timeAxis.size() - 1;
+        } else {
+            m_startRec = 0;
         }
     }
 }

@@ -45,7 +45,7 @@ public:
     explicit PlotterDialog(const QString &title, QWidget *parent = 0);
     ~PlotterDialog();
     void setCurves(const QMap<QString, QPen> &curves,
-                   const QMap<QString, QwtPlot::Axis> &axis);    
+                   const QMap<QString, QwtPlot::Axis> &axis);
 signals:
 
 public slots:
@@ -115,6 +115,7 @@ private:
     QPushButton *m_bClosePlot;
     QTimer *m_blinkRecTimer;
     bool m_isBright;
+    bool m_isRecToFile;
 
     IPlotStorage *m_plotStorage;
 
