@@ -1512,7 +1512,6 @@ void PlotterDialog::closePlotFile()
     }
 
     updatePlot();
-    m_plot->repaint();
 }
 
 void PlotterDialog::blinkRecButton()
