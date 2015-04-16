@@ -1312,6 +1312,7 @@ void PlotterDialog::deleteNotes(const QPointF &pos)
         m_notesList.removeAt(index);
         note->detach();
         delete note;
+        note = 0;
     }
 
     updatePlot();
@@ -1512,22 +1513,32 @@ void PlotterDialog::openPlotFile()
 
 void PlotterDialog::closePlotFile()
 {
-    for(int i = 0; i < m_Curves.size(); ++i) {
-        qDebug() << "i =" << i;
+    for(int i = 0; i < m_Curves.size(); ++i) {        
         QwtPlotCurve *curve = new QwtPlotCurve;
-        QwtPlotCurve *originCurveStyles = dynamic_cast<QwtPlotCurve *>(m_plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i));
+        QwtPlotCurve *originCurveStyles = dynamic_cast<QwtPlotCurve *>( m_plot->itemList(QwtPlotItem::Rtti_PlotCurve).value(i) );
 
         curve->setRenderHint( QwtPlotItem::RenderAntialiased );
         curve->setLegendAttribute( QwtPlotCurve::LegendShowLine );
-        curve->setXAxis( QwtPlot::xBottom );
+        curve->setXAxis( originCurveStyles->xAxis() );
         curve->setYAxis( originCurveStyles->yAxis() );
         curve->setPen( originCurveStyles->pen() );
         curve->setTitle( originCurveStyles->title() );
         m_Curves.removeFirst();
         m_Curves.append(curve);
     }
+
+    int size = m_notesList.size();
+    for(int i = 0; i < size; ++i) {
+        QwtPlotMarker *marker = m_notesList[i];
+        m_notesList.removeAt(i);
+        marker->detach();
+        delete marker;
+        marker = 0;
+    }
+//    m_notesList.clear();
     qDebug() << "detaching...";
     m_plot->detachItems(QwtPlotItem::Rtti_PlotCurve);
+//    m_plot->detachItems(QwtPlotItem::Rtti_PlotMarker);
     qDebug() << "attaching...";
     for(int i = 0; i < m_Curves.size(); ++i) {
         m_Curves[i]->attach(m_plot);
