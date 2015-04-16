@@ -1409,6 +1409,8 @@ void PlotterDialog::addText(QTextEdit *text, const QPointF &pos)
     m_notesList.push_back(marker);
 
     updatePlot();
+
+    qDebug() << "Notes count:" << m_plot->itemList(QwtPlotItem::Rtti_PlotMarker).size();
 }
 
 void PlotterDialog::linkNotesTo_yLeft()
@@ -1441,10 +1443,30 @@ QwtPlot * PlotterDialog::curvesSegment()
         curve->setSamples(coords);
         curves.append(curve);
     }
+
+    QVector<QwtPlotMarker *> markers;
+    for(int i = 0; i < m_notesList.size(); ++i) {
+        QwtPlotMarker *originMarkerStyles = dynamic_cast<QwtPlotMarker *>( m_plot->itemList(QwtPlotItem::Rtti_PlotMarker).value(i) );
+
+        if( originMarkerStyles->value().x() >= m_timeAxis.at(m_startRec)
+                && originMarkerStyles->value().x() <= m_timeAxis.last() ) {
+            QwtPlotMarker *marker = new QwtPlotMarker;
+
+            marker->setLabel( originMarkerStyles->label() );
+            marker->setAxes( originMarkerStyles->xAxis(), originMarkerStyles->yAxis() );
+            marker->setValue( originMarkerStyles->value() );
+
+            markers.append(marker);
+        }
+    }
     QwtPlot *plot = new QwtPlot;
 
     for(int i = 0; i < curves.size(); ++i) {
         curves[i]->attach(plot);
+    }
+
+    for(int i = 0; i < markers.size(); ++i) {
+        markers[i]->attach(plot);
     }
 
     return plot;

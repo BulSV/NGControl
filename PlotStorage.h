@@ -47,6 +47,7 @@ inline QDataStream &operator<<(QDataStream &out, const QwtPlot &plot)
         QByteArray text = dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().text().toUtf8();
         out << static_cast<qint32>( text.size() );
         out << text;
+        qDebug() << "Writing text:" << text;
         out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().color();
         out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().font();
         out << static_cast<qint32>( dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->yAxis() );
@@ -117,48 +118,58 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
 
         qint32 textBytes;
         in >> textBytes;
+        qDebug() << "text bytes:" << textBytes;
 
         QString textStr;
-        for(int j = 0; j < textBytes; ++j) {
-            char *c = new char;
-            in.readRawData(c, textBytes);
-            textStr.append(c);
-            delete c;
-            c = 0;
-        }
+        char *c;
+        in.readBytes(c, (uint &)textBytes);
+        QByteArray ba;
+        ba.append(c, textBytes);
+        textStr.append(ba);
+        delete[] c;
+        c = 0;
         qDebug() << "Marker text:" << textStr;
 
         QColor color;
         in >> color;
+        qDebug() << "Color:" << color;
 
         QFont font;
         in >> font;
+        qDebug() << "Font:" << font;
 
         QwtPlot::Axis yAxis;
         qint32 intAxis;
         in >> intAxis;
+        qDebug() << "yAxis:" << intAxis;
         yAxis = static_cast<QwtPlot::Axis>( intAxis );
 
         QPointF coordinate;
         in >> coordinate;
+        qDebug() << "Coord:" << coordinate;
         markersCoordinates.push_back(coordinate);
 
+        qDebug() << "Befor QwtText...";
         QwtText text;
+        qDebug() << "setText...";
         text.setText(textStr);
+        qDebug() << "setColor...";
         text.setColor(color);
+        qDebug() << "setFont...";
         text.setFont(font);
-        text.setBackgroundBrush( originMarkerStyles->label().backgroundBrush() );
-        text.setBorderPen( originMarkerStyles->label().borderPen() );
-        text.setBorderRadius( originMarkerStyles->label().borderRadius() );
+        qDebug() << "setBackgroundBrush...";
+//        text.setBackgroundBrush( originMarkerStyles->label().backgroundBrush() );
+        qDebug() << "setBorderPen...";
+//        text.setBorderPen( originMarkerStyles->label().borderPen() );
+        qDebug() << "setBorderRadius...";
+//        text.setBorderRadius( originMarkerStyles->label().borderRadius() );
+        qDebug() << "Before push_back...";
 
         markersText.push_back(text);
-        markersXAxis.push_back( static_cast<QwtPlot::Axis>( originMarkerStyles->xAxis() ) );
+        markersXAxis.push_back( QwtPlot::xBottom/*static_cast<QwtPlot::Axis>( originMarkerStyles->xAxis() )*/ );
         markersYAxis.push_back( static_cast<QwtPlot::Axis>( yAxis ) );
-//        marker->setLabel( text );
-//        marker->setXAxis( originMarkerStyles->xAxis() );
-//        marker->setYAxis( axis );
-//        marker->setValue( coordinate );
         markers.append(marker);
+        qDebug() << "next note...";
     }
 
     qDebug() << "detaching markers in >>";
