@@ -4,6 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     include($$QTSERIALPORT_PROJECT_ROOT/src/serialport/qt4support/serialport.prf)
 }
 
+CONFIG += C++11
+
 unix:QWT_LOCATION = /usr/local/qwt-6.1.2
 win32:QWT_LOCATION = C:\qwt-6.1.2
 INCLUDEPATH += $${QWT_LOCATION}/include/

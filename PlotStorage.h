@@ -50,6 +50,10 @@ inline QDataStream &operator<<(QDataStream &out, const QwtPlot &plot)
         qDebug() << "Writing text:" << text;
         out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().color();
         out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().font();
+        out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().backgroundBrush();
+        out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().borderPen();
+        out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->label().borderRadius();
+        out << static_cast<qint32>( dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->xAxis() );
         out << static_cast<qint32>( dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->yAxis() );
         out << dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) )->value();
     }
@@ -87,9 +91,9 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
         in >> pointSize;
         qDebug() << "pointSize:" << pointSize;
         for(int j = 0; j < pointSize; ++j) {
-            QPointF p;
-            in >> p;
-            curvesPoints.push_back(p);
+            QPointF point;
+            in >> point;
+            curvesPoints.push_back(point);
         }
 
         curve->setSamples(curvesPoints);
@@ -114,7 +118,6 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
     qDebug() << "Number of markers:" << numMarkers;
     for(int i = 0; i < numMarkers; ++i) {
         QwtPlotMarker *marker = new QwtPlotMarker;
-        QwtPlotMarker *originMarkerStyles = dynamic_cast<QwtPlotMarker *>( plot.itemList(QwtPlotItem::Rtti_PlotMarker).value(i) );
 
         qint32 textBytes;
         in >> textBytes;
@@ -122,7 +125,7 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
 
         QString textStr;
         char *c;
-        in.readBytes(c, (uint &)textBytes);
+        in.readBytes(c, reinterpret_cast<uint &>( textBytes ) );
         QByteArray ba;
         ba.append(c, textBytes);
         textStr.append(ba);
@@ -138,11 +141,26 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
         in >> font;
         qDebug() << "Font:" << font;
 
+        QBrush backgroundBrush;
+        in >> backgroundBrush;
+
+        QPen borderPen;
+        in >> borderPen;
+
+        double borderRadius;
+        in >> borderRadius;
+
         QwtPlot::Axis yAxis;
-        qint32 intAxis;
-        in >> intAxis;
-        qDebug() << "yAxis:" << intAxis;
-        yAxis = static_cast<QwtPlot::Axis>( intAxis );
+        qint32 intyAxis;
+        in >> intyAxis;
+        qDebug() << "yAxis:" << intyAxis;
+        yAxis = static_cast<QwtPlot::Axis>( intyAxis );
+
+        QwtPlot::Axis xAxis;
+        qint32 intxAxis;
+        in >> intxAxis;
+        qDebug() << "yAxis:" << intxAxis;
+        yAxis = static_cast<QwtPlot::Axis>( intxAxis );
 
         QPointF coordinate;
         in >> coordinate;
@@ -158,15 +176,15 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
         qDebug() << "setFont...";
         text.setFont(font);
         qDebug() << "setBackgroundBrush...";
-//        text.setBackgroundBrush( originMarkerStyles->label().backgroundBrush() );
+        text.setBackgroundBrush( backgroundBrush );
         qDebug() << "setBorderPen...";
-//        text.setBorderPen( originMarkerStyles->label().borderPen() );
+        text.setBorderPen( borderPen );
         qDebug() << "setBorderRadius...";
-//        text.setBorderRadius( originMarkerStyles->label().borderRadius() );
+        text.setBorderRadius( borderRadius );
         qDebug() << "Before push_back...";
 
         markersText.push_back(text);
-        markersXAxis.push_back( QwtPlot::xBottom/*static_cast<QwtPlot::Axis>( originMarkerStyles->xAxis() )*/ );
+        markersXAxis.push_back( static_cast<QwtPlot::Axis>( xAxis ) );
         markersYAxis.push_back( static_cast<QwtPlot::Axis>( yAxis ) );
         markers.append(marker);
         qDebug() << "next note...";
