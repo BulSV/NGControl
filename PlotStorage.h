@@ -150,17 +150,17 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
         double borderRadius;
         in >> borderRadius;
 
+        QwtPlot::Axis xAxis;
+        qint32 intxAxis;
+        in >> intxAxis;
+        qDebug() << "xAxis:" << intxAxis;
+        xAxis = static_cast<QwtPlot::Axis>( intxAxis );
+
         QwtPlot::Axis yAxis;
         qint32 intyAxis;
         in >> intyAxis;
         qDebug() << "yAxis:" << intyAxis;
-        yAxis = static_cast<QwtPlot::Axis>( intyAxis );
-
-        QwtPlot::Axis xAxis;
-        qint32 intxAxis;
-        in >> intxAxis;
-        qDebug() << "yAxis:" << intxAxis;
-        yAxis = static_cast<QwtPlot::Axis>( intxAxis );
+        yAxis = static_cast<QwtPlot::Axis>( intyAxis );        
 
         QPointF coordinate;
         in >> coordinate;
