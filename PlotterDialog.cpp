@@ -459,8 +459,12 @@ void PlotterDialog::setCurves(const QMap<QString, QPen > &curves,
 
 void PlotterDialog::autoScroll(const double &elapsedTime)
 {
+    if( !m_isRessumed ) {
+        return;
+    }
+
     double timeFactor = dynamic_cast<QLCDNumber *>(m_lcdTimeInterval->spinWidget())->value();
-    if( elapsedTime > timeFactor * XDIVISION && m_isRessumed ) {
+    if( elapsedTime > timeFactor * XDIVISION ) {
         toCurrentTime();
         updatePlot();
     }
