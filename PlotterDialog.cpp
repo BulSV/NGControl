@@ -129,6 +129,8 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_prevNotesColor(QColor(Qt::black)),
     m_startRec(0)
 {
+    qApp->installEventFilter(this);
+
     QVector<double> timeSamples;
     timeSamples << 1 << 2 << 5 << 10 << 20 << 50 << 100;
 
@@ -1012,6 +1014,28 @@ void PlotterDialog::toCurrentTime()
                               factor * XSCALESTEP );
     }
     updatePlot();
+}
+
+bool PlotterDialog::eventFilter(QObject *obj, QEvent *event)
+{
+    if( event->type() == QEvent::Wheel
+            && ( obj == m_lcdTimeInterval ||
+                 obj == m_lcdTempIntervalLeft ||
+                 obj == m_lcdTempIntervalRight ||
+                 obj == m_msbTimeInterval ||
+                 obj == m_msbTempIntervalLeft ||
+                 obj == m_msbTempIntervalRight ) ) {
+
+        if( static_cast<QWheelEvent *>(event)->angleDelta().ry() > 0 ) {
+            static_cast<ISpinBox *>(obj)->upStep();
+        } else {
+            static_cast<ISpinBox *>(obj)->downStep();
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 void PlotterDialog::setupConnections()

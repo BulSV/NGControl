@@ -54,6 +54,8 @@ public slots:
     void resetTime();
     void pauseRessume();
     void toCurrentTime();
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 private:
     ISpinBox *m_lcdTimeInterval;
     ISpinBox *m_lcdTempIntervalLeft;
