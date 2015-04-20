@@ -37,10 +37,12 @@
 #include "MoveSpinBox.h"
 #include "NotesDialog.h"
 #include "PlotStorage.h"
+#include <QGraphicsView>
 
 class PlotterDialog : public QDialog
 {
     Q_OBJECT
+    QGraphicsView *view;
 public:
     explicit PlotterDialog(const QString &title, QWidget *parent = 0);
     ~PlotterDialog();
@@ -55,7 +57,7 @@ public slots:
     void pauseRessume();
     void toCurrentTime();
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);    
 private:
     ISpinBox *m_lcdTimeInterval;
     ISpinBox *m_lcdTempIntervalLeft;
@@ -228,6 +230,8 @@ private slots:
     void openPlotFile();
     void closePlotFile();
     void blinkRecButton();
+
+    void resizeView(const QSize &newSize);
 };
 
 #endif // PLOTTERDIALOG_H

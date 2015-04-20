@@ -25,6 +25,9 @@
 #include <QFileDialog>
 #include <QDateTime>
 #include <QMessageBox>
+#include <QGraphicsRectItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -216,7 +219,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
         lcd->setDigitCount(6);
         lcd->setFixedSize(100, 40);
     }
-    colorSetTempLCD();
+    colorSetTempLCD();    
 
     QwtPlotCanvas *canvas = new QwtPlotCanvas();
     canvas->setBorderRadius(5);
@@ -230,7 +233,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     grid->enableXMin( true );
     grid->enableYMin( true );
     grid->setMajorPen( Qt::black, 0 );
-    grid->setMinorPen( Qt::gray, 0, Qt::DotLine );
+    grid->setMinorPen( Qt::gray, 0, Qt::DotLine );    
     grid->attach( m_plot );
 
     // axes
@@ -252,7 +255,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
                           dynamic_cast<QLCDNumber*>(m_lcdTempIntervalLeft->spinWidget())->value() * YSCALESTEP );
     m_plot->setAxisMaxMajor( QwtPlot::yLeft, YMAJORDIVISION );
     m_plot->setAxisMaxMinor( QwtPlot::yLeft, YMINORDIVISION );
-    m_plot->setAxisAutoScale( QwtPlot::yLeft, false );
+    m_plot->setAxisAutoScale( QwtPlot::yLeft, false );    
 
     // Temperature Right
     m_plot->enableAxis(QwtPlot::yRight);
@@ -433,6 +436,22 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
 
     setupGUI();
     setupConnections();
+
+    QGraphicsRectItem *viewMargins = new QGraphicsRectItem(0, 0, 200, 200);
+    QGraphicsRectItem *selectPlot = new QGraphicsRectItem(100, 100, 200, 200);
+    selectPlot->setPen(QPen(QBrush(QColor("red")), 2, Qt::DashLine));
+    selectPlot->setBrush(QBrush(QColor(255, 205, 205, 100)));
+    selectPlot->setFlag(QGraphicsItem::ItemIsMovable);
+    view = new QGraphicsView(m_plot->canvas());
+    QGraphicsScene *scene = new QGraphicsScene(m_plot->canvas());
+    scene->addItem(selectPlot);
+    scene->addItem(viewMargins);
+    view->setScene(scene);
+    view->setStyleSheet("background: transparent");
+    view->setAttribute(Qt::WA_TransparentForMouseEvents);
+    view->setSceneRect(m_plot->canvas()->rect());
+    view->setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    view->setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
 }
 
 PlotterDialog::~PlotterDialog()
@@ -518,7 +537,7 @@ void PlotterDialog::arrow(bool isChecked)
 
     m_pickerNoteEditRight->setEnabled(!isChecked);
     m_pickerNoteMoveRight->setEnabled(!isChecked);
-    m_pickerNoteDeleteRight->setEnabled(!isChecked);
+    m_pickerNoteDeleteRight->setEnabled(!isChecked);    
 }
 
 void PlotterDialog::textEdit(bool isChecked)
@@ -533,6 +552,11 @@ void PlotterDialog::textEdit(bool isChecked)
     m_pickerNoteEditRight->setEnabled(isChecked);
     m_pickerNoteMoveRight->setEnabled(!isChecked);
     m_pickerNoteDeleteRight->setEnabled(!isChecked);
+    view->setSceneRect(m_plot->canvas()->rect());
+    view->adjustSize();
+    QGraphicsRectItem *margin = new QGraphicsRectItem(view->rect());
+    margin->setBrush(QColor(255, 0, 0, 100));
+    view->scene()->addItem(margin);
 }
 
 void PlotterDialog::textMove(bool isChecked)
@@ -624,7 +648,7 @@ void PlotterDialog::appendData(const QMap<QString, double> &curvesData)
 }
 
 void PlotterDialog::updatePlot()
-{
+{    
     m_plot->replot();
 }
 
@@ -1100,7 +1124,7 @@ void PlotterDialog::setupConnections()
     connect(sbSetTemp, SIGNAL(valueChanged()), this, SLOT(colorSetTempLCD()));
 
     QShortcut *aboutShortcut = new QShortcut(QKeySequence("F1"), this);
-    connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));
+    connect(aboutShortcut, SIGNAL(activated()), qApp, SLOT(aboutQt()));    
 }
 
 void PlotterDialog::openPort()
@@ -1591,4 +1615,9 @@ void PlotterDialog::blinkRecButton()
         m_isBright = true;
         m_bRecPlot->setIcon(QIcon(":/Resources/startRecToFile.png"));
     }
+}
+
+void PlotterDialog::resizeView(const QSize &newSize)
+{
+    view->setSceneRect(0, 0, newSize.width(), newSize.height());
 }
