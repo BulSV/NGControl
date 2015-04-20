@@ -8,11 +8,19 @@ PlotStorage::PlotStorage(QObject *parent) :
 {
 }
 
-void PlotStorage::witePlot(const QString &fileName, QwtPlot *plot)
+void PlotStorage::witePlot(const QString &fileName, QwtPlot *plot) throw(QString)
 {
     qDebug() << "writing...";
+    if(fileName.isNull()) {
+        return;
+    }
+
     QFile file(fileName);
-    file.open(QFile::WriteOnly);
+
+    if( !file.open(QFile::WriteOnly) ) {
+        throw QString("File can't be write");
+    }
+
     QDataStream out;
     out.setVersion(QDataStream::Qt_5_2);
     out.setDevice(&file);
@@ -21,15 +29,27 @@ void PlotStorage::witePlot(const QString &fileName, QwtPlot *plot)
     file.close();
 }
 
-void PlotStorage::readPlot(const QString &fileName, QwtPlot *plot)
+void PlotStorage::readPlot(const QString &fileName, QwtPlot *plot) throw(QString)
 {
     qDebug() << "reading...";
+    if(fileName.isNull()) {
+        return;
+    }
+
     QFile file(fileName);
-    file.open(QFile::ReadOnly);
+
+    if(! file.open(QFile::ReadOnly) ) {
+        throw QString("File can't be read");
+    }
+
     QDataStream in;
     in.setVersion(QDataStream::Qt_5_2);
     in.setDevice(&file);
-    in >> (*plot);
+    try {
+        in >> (*plot);
+    } catch (QString &s) {
+        throw s;
+    }
     file.close();
     qDebug() << "exiting readPlot()...";
 }

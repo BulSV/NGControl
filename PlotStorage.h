@@ -18,8 +18,8 @@ public:
     explicit PlotStorage(QObject *parent = 0);
     virtual ~PlotStorage() {}
 public slots:
-    virtual void witePlot(const QString &fileName, QwtPlot *plot);
-    virtual void readPlot(const QString &fileName, QwtPlot *plot);
+    virtual void witePlot(const QString &fileName, QwtPlot *plot)throw (QString);
+    virtual void readPlot(const QString &fileName, QwtPlot *plot) throw(QString);
 };
 
 inline QDataStream &operator<<(QDataStream &out, const QwtPlot &plot)
@@ -78,7 +78,7 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
 
     in >> fileFormat;
     if( fileFormat != QString("NGPH").toUtf8() ) {
-        throw QString("Incorrect file format"); // TODO write code for this option
+        throw QString("Incorrect file format");
     }
 
     // curves
@@ -160,7 +160,7 @@ inline QDataStream &operator>>(QDataStream &in, QwtPlot &plot)
         qint32 intyAxis;
         in >> intyAxis;
         qDebug() << "yAxis:" << intyAxis;
-        yAxis = static_cast<QwtPlot::Axis>( intyAxis );        
+        yAxis = static_cast<QwtPlot::Axis>( intyAxis );
 
         QPointF coordinate;
         in >> coordinate;

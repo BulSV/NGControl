@@ -24,6 +24,7 @@
 //#include <QFontMetricsF>
 #include <QFileDialog>
 #include <QDateTime>
+#include <QMessageBox>
 
 #define STARTBYTE 0x55
 #define STOPBYTE 0xAA
@@ -1166,6 +1167,7 @@ void PlotterDialog::closePort()
     dynamic_cast<QPushButton *>( m_msbTimeInterval->buttonDownWidget() )->setEnabled( true );
     m_cbTimeAccurate->setEnabled( true );
 
+    m_bRecPlot->setChecked(false);
     m_bRecPlot->setEnabled(false);
     startRecPlotToFile(false);
     m_bOpenPlot->setEnabled(true);
@@ -1512,12 +1514,20 @@ void PlotterDialog::startRecPlotToFile(bool isRecChecked)
 
         if( m_isRecToFile ) {
             if( !bPortStop->isEnabled() ) {
-                m_plotStorage->witePlot(QString("NGControl_")
-                                        + QDateTime::currentDateTime().toString("yyyy_MM_dd-hh_mm_ss")
-                                        + QString(".ngph"),
-                                        curvesSegment());
+                try {
+                    m_plotStorage->witePlot(QString("NGControl_")
+                                            + QDateTime::currentDateTime().toString("yyyy_MM_dd-hh_mm_ss")
+                                            + QString(".ngph"),
+                                            curvesSegment());
+                } catch (QString &s) {
+                    QMessageBox::warning(this, QString::null, s);
+                }
             } else {
-                m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), plot);
+                try {
+                    m_plotStorage->witePlot(QFileDialog::getSaveFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), plot);
+                } catch (QString &s) {
+                    QMessageBox::warning(this, QString::null, s);
+                }
             }
 
             m_isRecToFile = false;
@@ -1535,7 +1545,12 @@ void PlotterDialog::startRecPlotToFile(bool isRecChecked)
 
 void PlotterDialog::openPlotFile()
 {
-    m_plotStorage->readPlot(QFileDialog::getOpenFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), m_plot);
+    try {
+        m_plotStorage->readPlot(QFileDialog::getOpenFileName(this, "Open Plot", ".", "Plot Files (*.ngph)"), m_plot);
+    } catch (QString &s) {
+        QMessageBox::warning(this, QString::null, s);
+    }
+
     updatePlot();
 }
 
