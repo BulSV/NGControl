@@ -58,7 +58,7 @@
 #define UPTIME MAX_INT
 #define STEPTIME 1
 
-#define LOWTEMP MIN_INT
+#define LOWTEMP -273
 #define UPTEMP MAX_INT
 #define STEPTEMP 1
 
@@ -76,6 +76,7 @@ PlotterDialog::PlotterDialog(const QString &title, QWidget *parent) :
     m_currentTime( new QTime()),
     m_isReseted( false ),
     m_isRessumed( true ),
+    m_isStarted( false ),
     m_prevCurrentTime( 0.0 ),
     m_prevCentralTempLeft( 0.0 ),
     m_prevTempOffsetLeft( 0.0 ),
@@ -978,6 +979,11 @@ void PlotterDialog::resetTime()
 
 void PlotterDialog::pauseRessume()
 {
+    if(!m_isStarted) {
+        m_bPauseRessume->setChecked(false);
+        return;
+    }
+
     m_isReseted = false;
 
     if(m_bPauseRessume->text() == QString::fromUtf8("Pause")) {
@@ -1110,6 +1116,8 @@ void PlotterDialog::openPort()
 
     if(itsPort->open(QSerialPort::ReadWrite))
     {
+        m_isStarted = true;
+
         switch (cbBaud->currentIndex()) {
         case 0:
             itsPort->setBaudRate(QSerialPort::Baud115200);
@@ -1152,6 +1160,8 @@ void PlotterDialog::openPort()
 
 void PlotterDialog::closePort()
 {
+    m_isStarted = false;
+
     itsPort->close();
     itsBlinkTimeTxNone->stop();
     itsBlinkTimeTxColor->stop();

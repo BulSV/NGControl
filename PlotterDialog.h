@@ -95,6 +95,7 @@ private:
 
     bool m_isReseted;
     bool m_isRessumed;
+    bool m_isStarted;
 
     double m_prevCurrentTime;
     double m_prevCentralTempLeft;
