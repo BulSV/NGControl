@@ -62,7 +62,7 @@ void NGProtocol::readData(bool isReaded)
 
         itsReadData.insert(QString("TEMP"), QString::number(negativeTempCorr(wordToInt(ba.mid(1, 2)))));
         itsReadData.insert(QString("SENS1"),
-                           QString::number(tempCorr(tempSensors(wordToInt(ba.mid(3, 2))), SENSOR1), FORMAT, PRECISION));
+                           QString::number(newSensor(wordToInt(ba.mid(3, 2))), FORMAT, PRECISION));
         itsReadData.insert(QString("SENS2"),
                            QString::number(tempCorr(tempSensors(wordToInt(ba.mid(5, 2))), SENSOR2), FORMAT, PRECISION));
 
@@ -240,4 +240,10 @@ float NGProtocol::negativeTempCorr(int temp)
     } else {
         return static_cast<float>(temp);
     }
+}
+
+float NGProtocol::newSensor(int temp)
+{
+    float t = 0.01 * ( (-1.5)*40781 + temp*0.0001 * ( 32791 + temp*0.00001 * ( (-2)*36016 + temp*0.00001 * ( 4*24926 + (-2)*0.00001*28446*temp ) ) ) );
+    return t;
 }

@@ -57,6 +57,9 @@ private:
     QByteArray intToByteArray(const int &value, const int &numBytes);
     // negative temp correction for non sensors
     float negativeTempCorr(int temp);
+
+    // Testing new sensor
+    float newSensor(int temp);
 };
 
 #endif // READSENSORPROTOCOL_H
